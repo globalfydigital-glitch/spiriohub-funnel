@@ -551,14 +551,14 @@ function SummaryView({
     ? <RichTitle title={step.title.replace(accent, '')} accent={accent} accentColor={RED} />
     : <Title>{step.title}</Title>
   return (
-    <Stack center>
+    <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
       {titleNode}
       {step.body && <Subtitle>{step.body}</Subtitle>}
 
-      <div className="mt-5 rounded-2xl border border-cardborder bg-white/[0.03] p-3">
+      <div className="relative mt-5 overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03] p-4">
         {/* Gauge */}
         {step.gaugeValue != null && (
-          <>
+          <div className="relative z-10">
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-medium text-muted">Vibrations</span>
               {step.gaugeTarget && (
@@ -577,12 +577,12 @@ function SummaryView({
             <div className="flex justify-between text-[10px] font-medium uppercase tracking-wide text-muted">
               <span>Low</span><span>Normal</span><span>Medium</span><span>High</span>
             </div>
-          </>
+          </div>
         )}
 
         {/* Alert */}
         {step.alertTitle && (
-          <div className="mt-4 flex gap-3 rounded-xl p-3" style={{ background: 'rgba(224,88,79,0.14)', border: '1px solid rgba(224,88,79,0.4)' }}>
+          <div className="relative z-10 mt-4 flex gap-3 rounded-xl p-3" style={{ background: 'rgba(224,88,79,0.14)', border: '1px solid rgba(224,88,79,0.4)' }}>
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ background: RED }}>
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z" />
@@ -597,25 +597,25 @@ function SummaryView({
           </div>
         )}
 
-        {/* Breakdown rows + person image */}
+        {/* Breakdown rows + person image anchored to the card's bottom-right corner */}
         {step.rows && step.rows.length > 0 && (
-          <div className="relative mt-4 min-h-[168px]">
+          <div className="relative mt-5 min-h-[190px]">
             {step.image && (
               <img
                 src={step.image}
                 alt=""
                 loading="lazy"
-                className="pointer-events-none absolute bottom-0 right-0 h-[172px] w-auto object-contain object-bottom"
-                style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, #000 40%)', maskImage: 'linear-gradient(to right, transparent, #000 40%)' }}
+                className="pointer-events-none absolute -bottom-4 -right-4 z-0 h-[210px] w-auto object-contain object-bottom"
+                style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, #000 50%)', maskImage: 'linear-gradient(to right, transparent, #000 50%)' }}
               />
             )}
-            <div className="relative z-10 max-w-[64%] space-y-3.5">
+            <div className="relative z-10 max-w-[58%] space-y-5">
               {step.rows.map((r: SummaryRow, i) => (
                 <div key={i} className="flex items-start gap-2.5">
                   {r.emoji && <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-sm">{r.emoji}</span>}
                   <div className="leading-tight">
                     <div className="text-[11px] text-muted">{r.title}</div>
-                    <div className="text-[13px] font-bold text-white">{fill(r.description, answers)}</div>
+                    <div className="mt-0.5 text-[13px] font-bold text-white">{fill(r.description, answers)}</div>
                   </div>
                 </div>
               ))}
@@ -624,10 +624,10 @@ function SummaryView({
         )}
       </div>
 
-      <div className="mt-6">
+      <div className="mt-auto pt-6">
         <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
-    </Stack>
+    </div>
   )
 }
 
