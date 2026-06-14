@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { STEPS, BRAND } from './steps'
+import { STEPS } from './steps'
 import { QUESTION_TYPES, type Answers } from './types'
 import { ProgressBar, StepView } from './screens'
 
@@ -34,22 +34,29 @@ export function FunnelApp() {
   const onNext = () => setIndex((i) => (i < STEPS.length - 1 ? i + 1 : 0))
   const onBack = () => setIndex((i) => Math.max(0, i - 1))
 
-  const showProgress = step.type !== 'loader' && step.type !== 'success'
+  const showProgress = step.type !== 'loader' && step.type !== 'success' && step.type !== 'gender'
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center">
-      <div className="w-full max-w-[460px] flex flex-col px-5 pb-10 min-h-screen">
-        {/* Header */}
-        <div className="flex items-center justify-center pt-4 pb-1">
-          <span className="text-sm font-semibold tracking-wide text-white/80">{BRAND}</span>
-        </div>
+    <div className="min-h-screen w-full flex flex-col">
+      {/* Full-width header: logo left, rating right */}
+      <header className="w-full flex items-center justify-between px-5 sm:px-8 pt-4 pb-2">
+        <span className="font-serif text-xl tracking-wide text-white">
+          Spirio
+          <span className="ml-2 align-middle font-sans text-xs font-normal tracking-[0.2em] text-muted">| QUIZ</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-sm">
+          <span className="text-emerald-400">★</span>
+          <span className="text-white/90">4,6</span>
+          <span className="text-muted">/ 5</span>
+        </span>
+      </header>
 
+      {/* Centered content column */}
+      <div className="mx-auto flex w-full max-w-[460px] flex-1 flex-col px-5 pb-10">
         {showProgress && (
           <ProgressBar current={currentQuestion} total={totalQuestions} onBack={onBack} />
         )}
-
-        {/* Step */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex flex-1 flex-col justify-center">
           <StepView key={step.id} step={step} answers={answers} onAnswer={onAnswer} onNext={onNext} />
         </div>
       </div>

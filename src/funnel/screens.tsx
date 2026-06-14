@@ -120,6 +120,68 @@ function Hero({ src, fallbackEmoji }: { src?: string; fallbackEmoji?: string }) 
   return null
 }
 
+// Two-tone title: white base + gold accent.
+function RichTitle({ title, accent }: { title: string; accent?: string }) {
+  return (
+    <h1 className="text-[1.7rem] leading-tight font-semibold text-white text-center">
+      {title}
+      {accent && <span className="text-gold">{accent}</span>}
+    </h1>
+  )
+}
+
+function Disclaimer({ text }: { text: string }) {
+  const parts = text.split(/(Terms of Use|Privacy Policy|Cookie Policy)/g)
+  return (
+    <p className="text-[11px] leading-relaxed text-muted mt-2">
+      {parts.map((p, i) =>
+        /Terms of Use|Privacy Policy|Cookie Policy/.test(p) ? (
+          <u key={i}>{p}</u>
+        ) : (
+          <span key={i}>{p}</span>
+        ),
+      )}
+    </p>
+  )
+}
+
+// Gender select — photo cards with a colored label bar + chevron.
+function GenderScreen({
+  step,
+  onAnswer,
+  onNext,
+}: {
+  step: Extract<Step, { type: 'gender' }>
+  onAnswer: (k: string, v: string) => void
+  onNext: () => void
+}) {
+  return (
+    <Stack>
+      <RichTitle title={step.title} accent={step.accent} />
+      {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
+      <div className="grid grid-cols-2 gap-3 mt-6">
+        {step.options.map((o) => (
+          <button
+            key={o.value}
+            onClick={() => { onAnswer(step.saveAs, o.value); onNext() }}
+            className="group overflow-hidden rounded-2xl border border-cardborder transition-all hover:border-violet/60 active:scale-[0.99]"
+          >
+            {o.image && <img src={o.image} alt="" loading="lazy" className="w-full aspect-[4/5] object-cover" />}
+            <div className="flex items-center justify-between px-4 py-3 font-medium text-white" style={{ backgroundColor: o.color }}>
+              <span>{o.label}</span>
+              <span aria-hidden className="text-lg leading-none text-white/90">›</span>
+            </div>
+          </button>
+        ))}
+      </div>
+      <div className="mt-7 text-center">
+        <div className="text-xs font-bold tracking-wider text-white/90">1-MINUTE QUIZ</div>
+        {step.disclaimer && <Disclaimer text={step.disclaimer} />}
+      </div>
+    </Stack>
+  )
+}
+
 /* ------------------------------- Step view -------------------------------- */
 export function StepView({
   step,
@@ -134,15 +196,16 @@ export function StepView({
 }) {
   switch (step.type) {
     case 'gender':
+      return <GenderScreen step={step} onAnswer={onAnswer} onNext={onNext} />
+
     case 'single':
     case 'scale': {
-      const cols = step.type === 'scale' ? 'grid-cols-1' : step.type === 'gender' ? 'grid-cols-2' : 'grid-cols-1'
       return (
         <Stack>
           {'image' in step && step.image ? <Hero src={step.image} /> : null}
           <Title>{step.title}</Title>
           {'subtitle' in step && step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
-          <div className={`grid ${cols} gap-3 mt-6`}>
+          <div className="grid grid-cols-1 gap-3 mt-6">
             {step.options.map((o) => (
               <OptionCard
                 key={o.value}

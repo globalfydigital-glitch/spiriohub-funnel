@@ -10,7 +10,7 @@ export type Plan = {
 }
 
 export type Step =
-  | { id: string; type: 'gender'; title: string; subtitle?: string; options: Option[]; saveAs: string }
+  | { id: string; type: 'gender'; title: string; accent?: string; subtitle?: string; disclaimer?: string; options: Option[]; saveAs: string }
   | { id: string; type: 'single'; title: string; subtitle?: string; options: Option[]; image?: string; saveAs?: string }
   | { id: string; type: 'scale'; title: string; subtitle?: string; options: Option[]; image?: string; saveAs?: string }
   | { id: string; type: 'multi'; title: string; subtitle?: string; options: Option[]; max?: number; image?: string; saveAs?: string }

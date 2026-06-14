@@ -14,7 +14,10 @@ body,
 
 body {
   margin: 0;
-  background: rgb(20, 19, 25);
+  background:
+    radial-gradient(55% 45% at 10% 102%, rgba(168, 85, 247, 0.5) 0%, rgba(126, 58, 173, 0.18) 32%, transparent 62%),
+    rgb(20, 19, 25);
+  background-attachment: fixed;
   color: #ece9f5;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;

@@ -46,11 +46,13 @@ export const STEPS: Step[] = [
   // 1
   {
     id: 'gender', type: 'gender', saveAs: 'gender',
-    title: 'Become a high-vibration person & manifest your dreams into reality',
+    title: 'Become a high-vibration person ',
+    accent: '& manifest your dreams into reality',
     subtitle: 'Please pick the option to start',
+    disclaimer: 'By clicking "Male" or "Female", you agree to our Terms of Use, Privacy Policy and Cookie Policy',
     options: [
-      { value: 'male', label: 'Male', image: MEDIA.male, color: BROWN },
-      { value: 'female', label: 'Female', image: MEDIA.female, color: GREEN },
+      { value: 'male', label: 'male', image: MEDIA.male, color: BROWN },
+      { value: 'female', label: 'female', image: MEDIA.female, color: GREEN },
     ],
   },
   // 2
