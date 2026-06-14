@@ -225,9 +225,11 @@ export function StepView({
           {'subtitle' in step && step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
           {hasImages ? (
             <div className="grid grid-cols-2 gap-3 mt-6">
-              {step.options.map((o) => (
-                <PhotoCard key={o.value} option={o} aspect="aspect-[4/3]" onClick={() => choose(o.value)} />
-              ))}
+              {step.options.map((o) => {
+                const female = answers.gender === 'female' && o.imageFemale
+                const opt = female ? { ...o, image: o.imageFemale } : o
+                return <PhotoCard key={o.value} option={opt} aspect="aspect-[4/3]" onClick={() => choose(o.value)} />
+              })}
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-3 mt-6">

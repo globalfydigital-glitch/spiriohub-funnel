@@ -1,4 +1,4 @@
-export type Option = { value: string; label: string; emoji?: string; image?: string; color?: string }
+export type Option = { value: string; label: string; emoji?: string; image?: string; imageFemale?: string; color?: string }
 
 export type Plan = {
   id: string
