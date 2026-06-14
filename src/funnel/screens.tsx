@@ -97,7 +97,7 @@ function Hero({ src, fallbackEmoji }: { src?: string; fallbackEmoji?: string }) 
         src={src}
         alt=""
         loading="lazy"
-        className="mx-auto mb-5 max-h-56 w-full max-w-xs rounded-2xl object-cover"
+        className="mx-auto mb-5 max-h-60 w-auto max-w-xs rounded-2xl object-contain"
       />
     )
   }
@@ -126,6 +126,20 @@ function Disclaimer({ text }: { text: string }) {
           <span key={i}>{p}</span>
         ),
       )}
+    </p>
+  )
+}
+
+// Gold callout: whole line gold, or only the goldWords gold if given.
+function Callout({ text, goldWords }: { text: string; goldWords?: string[] }) {
+  if (!goldWords || !goldWords.length) {
+    return <p className="mt-3 text-sm font-semibold leading-relaxed text-gold">{text}</p>
+  }
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const parts = text.split(new RegExp('(' + goldWords.map(esc).join('|') + ')', 'g'))
+  return (
+    <p className="text-sm font-semibold leading-relaxed text-white">
+      {parts.map((p, i) => (goldWords.includes(p) ? <span key={i} className="text-gold">{p}</span> : <span key={i}>{p}</span>))}
     </p>
   )
 }
@@ -234,7 +248,22 @@ export function StepView({
       return <InputView step={step} onAnswer={onAnswer} onNext={onNext} />
 
     case 'info': {
-      const callout = step.callout ? <p className="mt-3 text-sm font-semibold text-gold">{step.callout}</p> : null
+      const callout = step.callout ? <Callout text={step.callout} goldWords={step.goldWords} /> : null
+      if (step.card && step.image) {
+        return (
+          <Stack center>
+            <Title>{step.title}</Title>
+            {step.body && <Subtitle>{step.body}</Subtitle>}
+            <div className="mx-auto mt-6 w-full max-w-[330px] rounded-2xl border border-cardborder bg-white/[0.04] p-4">
+              <img src={step.image} alt="" loading="lazy" className="mx-auto w-full rounded-xl object-contain" />
+              {step.callout && <div className="mt-4 text-left">{callout}</div>}
+            </div>
+            <div className="mt-8">
+              <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+            </div>
+          </Stack>
+        )
+      }
       if (step.fullBleed && step.image) {
         return (
           <>

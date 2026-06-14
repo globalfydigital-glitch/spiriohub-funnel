@@ -108,7 +108,7 @@ export const STEPS: Step[] = [
     ],
   },
   // 21
-  { id: 'frequency', type: 'info', image: MEDIA.frequency, title: 'Mind creates vibrations', body: 'The difference between them shapes what we attract into our lives', callout: 'High vibrations bring energy, harmony, and joy, while low vibrations can lead to feelings of fatigue, sadness, or stress', cta: 'Continue' },
+  { id: 'frequency', type: 'info', image: MEDIA.frequency, card: true, goldWords: ['High vibrations', 'low vibrations'], title: 'Mind creates vibrations', body: 'The difference between them shapes what we attract into our lives', callout: 'High vibrations bring energy, harmony, and joy, while low vibrations can lead to feelings of fatigue, sadness, or stress', cta: 'Continue' },
   // 22
   { id: 'summary', type: 'summary', image: MEDIA.summary, title: 'Your vibration is low', cta: 'Continue' },
   // 23
