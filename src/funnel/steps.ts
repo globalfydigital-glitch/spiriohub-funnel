@@ -169,8 +169,8 @@ export const STEPS: Step[] = [
     title: 'Manifestation isn’t magic', titleGold: 'Manifestation',
     subtitle: "It's a mindset shift aligned with action.",
     infoCards: [
-      { image: MEDIA.university, text: 'University of California study suggests that visualization improves neural connectivity and reduces anxiety', gold: ['University of California'] },
-      { image: MEDIA.harvard, text: 'Harvard Medical School research shows that spiritual habits can boost happiness, reduce health issues, and bring peace in life', gold: ['Harvard Medical School'] },
+      { image: MEDIA.university, text: 'University of California study suggests that visualization improves neural connectivity and reduces anxiety', gold: ['University of California'], glow: '#2563eb' },
+      { image: MEDIA.harvard, text: 'Harvard Medical School research shows that spiritual habits can boost happiness, reduce health issues, and bring peace in life', gold: ['Harvard Medical School'], glow: '#a51c30' },
     ],
     cta: 'Continue',
   },

@@ -23,7 +23,7 @@ export type LoaderStage = {
 export type SummaryRow = { title: string; description: string; emoji?: string; icon?: string }
 
 // Authority/credibility card (university logos screen).
-export type InfoCard = { image: string; text: string; gold?: string[] }
+export type InfoCard = { image: string; text: string; gold?: string[]; glow?: string }
 
 export type Step =
   | { id: string; type: 'gender'; title: string; accent?: string; subtitle?: string; disclaimer?: string; options: Option[]; saveAs: string }

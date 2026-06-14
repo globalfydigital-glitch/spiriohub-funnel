@@ -454,21 +454,25 @@ function InfoView({
   // Authority / credibility cards (university screen)
   if (step.infoCards && step.infoCards.length) {
     return (
-      <Stack center>
+      <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
         {titleNode}
         {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
         <div className="mt-6 space-y-3">
           {step.infoCards.map((c: InfoCard, i) => (
-            <div key={i} className="flex items-center gap-4 rounded-2xl border border-cardborder bg-white/[0.04] p-4">
-              <img src={c.image} alt="" loading="lazy" className="h-10 w-16 shrink-0 object-contain" />
+            <div
+              key={i}
+              className="flex items-center gap-4 overflow-hidden rounded-2xl border border-cardborder p-4"
+              style={{ background: c.glow ? `radial-gradient(120% 130% at 20% 40%, ${c.glow}3a 0%, ${c.glow}14 38%, rgba(255,255,255,0.03) 100%)` : 'rgba(255,255,255,0.04)' }}
+            >
+              <img src={c.image} alt="" loading="lazy" className="h-16 w-16 shrink-0 object-contain" />
               <p className="text-[13px] leading-snug text-white/90">{gold(c.text, c.gold)}</p>
             </div>
           ))}
         </div>
-        <div className="mt-8">
+        <div className="mt-auto pt-8">
           <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
         </div>
-      </Stack>
+      </div>
     )
   }
 
