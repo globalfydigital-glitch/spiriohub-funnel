@@ -160,19 +160,20 @@ function Stars({ rating }: { rating: number }) {
   )
 }
 
-// Animated sound-wave / equalizer shown on the full-bleed teaser screens.
-const WAVE_BARS = Array.from({ length: 56 }, (_, i) => {
-  const env = Math.sin((Math.PI * i) / 55) // symmetric envelope (taller in the middle)
-  const jitter = 0.55 + 0.45 * Math.abs(Math.sin(i * 1.7))
-  return { h: Math.round(12 + env * 52 * jitter), delay: ((i * 37) % 100) / 110, dur: 0.9 + ((i * 53) % 70) / 100 }
+// Small animated sound-wave / equalizer accent shown above the title on the
+// full-bleed teaser screens (compact, like the original).
+const WAVE_BARS = Array.from({ length: 24 }, (_, i) => {
+  const env = Math.sin((Math.PI * i) / 23) // symmetric envelope (taller in the middle)
+  const jitter = 0.5 + 0.5 * Math.abs(Math.sin(i * 1.9))
+  return { h: Math.round(4 + env * 16 * jitter), delay: ((i * 41) % 100) / 150, dur: 0.8 + ((i * 53) % 60) / 100 }
 })
 function Waveform() {
   return (
-    <div className="flex items-center justify-center gap-[3px]" aria-hidden style={{ height: 76 }}>
+    <div className="flex items-center justify-center gap-[1.5px]" aria-hidden style={{ height: 24 }}>
       {WAVE_BARS.map((b, i) => (
         <span
           key={i}
-          className="w-[3px] rounded-full bg-white/85"
+          className="w-[2px] rounded-full bg-white/80"
           style={{ height: `${b.h}px`, transformOrigin: 'center', animation: `wave ${b.dur}s ease-in-out ${b.delay}s infinite alternate` }}
         />
       ))}
@@ -381,17 +382,12 @@ function InfoView({
         />
         <div className="flex min-h-[78vh] flex-col animate-fadeUp">
           <div className="text-center" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.7)' }}>
+            {step.waveform && <div className="mb-5 flex justify-center"><Waveform /></div>}
             {titleNode}
             {step.body && <Subtitle>{step.body}</Subtitle>}
             {callout}
           </div>
-          {step.waveform ? (
-            <div className="flex flex-1 items-center justify-center py-6">
-              <Waveform />
-            </div>
-          ) : (
-            <div className="flex-1" />
-          )}
+          <div className="flex-1" />
           <div className="space-y-2 pt-6">
             <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
             {step.decline && <DeclineButton onClick={onNext}>{step.decline}</DeclineButton>}
