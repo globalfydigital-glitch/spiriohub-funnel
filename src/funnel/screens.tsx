@@ -20,6 +20,16 @@ function scaleColor(i: number, n: number): string {
   return `hsl(${Math.round(hue)}, 80%, 62%)`
 }
 
+// Build a single horizontal sine-wave path for one consciousness level.
+function wavePath(w: number, yc: number, amp: number, wl: number): string {
+  let d = `M0 ${yc.toFixed(2)}`
+  for (let x = 2; x <= w; x += 2) {
+    const y = yc + amp * Math.sin((2 * Math.PI * x) / wl)
+    d += ` L${x} ${y.toFixed(2)}`
+  }
+  return d
+}
+
 // Goal value -> display word (lowercase, used inside sentences).
 const GOAL_WORDS: Record<string, string> = {
   love: 'love', abundance: 'abundance', success: 'success', joy: 'joy', confidence: 'confidence', 'dream-life': 'dream life',
@@ -221,6 +231,60 @@ function Waveform() {
   )
 }
 
+// Consciousness scale: each text row is in the SAME grid row as its own wave line,
+// so labels and waves always align. Waves go flat/high-frequency at the top
+// (Expansive) to large/low-frequency at the bottom (Destructive).
+function ConsciousnessChart({ rows }: { rows: { label: string; value: string }[] }) {
+  const n = rows.length
+  const ROW = 15 // px per row
+  const W = 150 // wave viewBox width
+  return (
+    <div className="flex items-stretch gap-2" style={{ height: n * ROW }}>
+      <div className="flex flex-1 flex-col">
+        {rows.map((r, i) => {
+          const color = scaleColor(i, n)
+          const t = n > 1 ? i / (n - 1) : 0
+          const amp = Math.pow(t, 1.5) * 5.6
+          const wl = 7 + t * 28
+          return (
+            <div key={r.label} className="flex items-center" style={{ height: ROW }}>
+              <div
+                className="flex w-[108px] shrink-0 items-baseline justify-between pr-1.5 text-[9px] font-semibold leading-none"
+                style={{ color }}
+              >
+                <span className="truncate">{r.label}</span>
+                <span className="tabular-nums">{r.value}</span>
+              </div>
+              <svg viewBox={`0 0 ${W} ${ROW}`} preserveAspectRatio="none" className="h-full flex-1" aria-hidden>
+                <path d={wavePath(W, ROW / 2, amp, wl)} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+              </svg>
+            </div>
+          )
+        })}
+      </div>
+      {/* Expansive (top) / Destructive (bottom) with arrows */}
+      <div className="flex w-[58px] shrink-0 flex-col items-center justify-between py-0.5">
+        <span className="text-[9px] font-bold leading-none" style={{ color: scaleColor(0, n) }}>Expansive</span>
+        <svg viewBox="0 0 20 100" preserveAspectRatio="none" className="w-4 flex-1" aria-hidden>
+          <defs>
+            <linearGradient id="arrUp" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0" stopColor="#a3e635" /><stop offset="1" stopColor="#22d3ee" />
+            </linearGradient>
+            <linearGradient id="arrDn" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#f59e0b" /><stop offset="1" stopColor="#f87171" />
+            </linearGradient>
+          </defs>
+          <line x1="10" y1="46" x2="10" y2="9" stroke="url(#arrUp)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+          <path d="M5 16 L10 6 L15 16" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          <line x1="10" y1="54" x2="10" y2="91" stroke="url(#arrDn)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+          <path d="M5 84 L10 94 L15 84" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        </svg>
+        <span className="text-[9px] font-bold leading-none" style={{ color: scaleColor(n - 1, n) }}>Destructive</span>
+      </div>
+    </div>
+  )
+}
+
 // Photo card: image on top + colored bar with label + chevron (gender / age).
 function PhotoCard({
   option,
@@ -414,21 +478,7 @@ function InfoView({
         {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
         <div className="mx-auto mt-6 w-full max-w-[340px] rounded-2xl border border-cardborder bg-white/[0.04] p-3">
           {scaleRows && scaleRows.length ? (
-            <div className="flex h-[262px] items-stretch gap-2">
-              <div className="flex w-[42%] flex-col justify-between py-1">
-                {scaleRows.map((r, i) => (
-                  <div
-                    key={r.label}
-                    className="flex items-baseline justify-between gap-1 text-[9px] font-semibold leading-none"
-                    style={{ color: scaleColor(i, scaleRows.length) }}
-                  >
-                    <span className="truncate">{r.label}</span>
-                    <span className="tabular-nums">{r.value}</span>
-                  </div>
-                ))}
-              </div>
-              <img src={step.image} alt="" loading="lazy" className="h-full w-[58%] object-contain object-right" />
-            </div>
+            <ConsciousnessChart rows={scaleRows} />
           ) : (
             <img src={step.image} alt="" loading="lazy" className="mx-auto w-full rounded-xl object-contain" />
           )}
