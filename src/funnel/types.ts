@@ -1,4 +1,4 @@
-export type Option = { value: string; label: string; emoji?: string; image?: string }
+export type Option = { value: string; label: string; emoji?: string; image?: string; color?: string }
 
 export type Plan = {
   id: string
@@ -14,7 +14,7 @@ export type Step =
   | { id: string; type: 'single'; title: string; subtitle?: string; options: Option[]; image?: string; saveAs?: string }
   | { id: string; type: 'scale'; title: string; subtitle?: string; options: Option[]; image?: string; saveAs?: string }
   | { id: string; type: 'multi'; title: string; subtitle?: string; options: Option[]; max?: number; image?: string; saveAs?: string }
-  | { id: string; type: 'info'; title: string; body?: string; emoji?: string; image?: string; cta?: string }
+  | { id: string; type: 'info'; title: string; body?: string; emoji?: string; image?: string; fullBleed?: boolean; cta?: string }
   | { id: string; type: 'input'; field: 'name' | 'email'; title: string; subtitle?: string; placeholder: string; image?: string; cta?: string; saveAs: string }
   | { id: string; type: 'loader'; title: string; duration?: number }
   | { id: string; type: 'summary'; title: string; body?: string; image?: string; cta?: string }

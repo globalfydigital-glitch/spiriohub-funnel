@@ -68,32 +68,33 @@ function OptionCard({
   selected?: boolean
   onClick: () => void
 }) {
-  // Photo tile (e.g. gender select)
-  if (option.image) {
+  // Colored answer button (optionally with an avatar photo) — matches the original.
+  if (option.color) {
     return (
       <button
         onClick={onClick}
+        style={{ backgroundColor: option.color }}
         className={[
-          'relative overflow-hidden rounded-2xl border aspect-[3/4] transition-all active:scale-[0.99]',
-          selected ? 'border-gold' : 'border-cardborder hover:border-violet/60',
+          'w-full flex items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-all active:scale-[0.99]',
+          selected ? 'border-gold text-white' : 'border-transparent text-white hover:brightness-110',
         ].join(' ')}
       >
-        <img src={option.image} alt={option.label} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-4 pb-3 pt-8">
-          {option.emoji && <span className="text-lg">{option.emoji}</span>}
-          <span className="font-semibold text-white">{option.label}</span>
-        </div>
+        {option.image && (
+          <img src={option.image} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover ring-2 ring-white/20" />
+        )}
+        {option.emoji && <span className="text-xl">{option.emoji}</span>}
+        <span className="font-medium">{option.label}</span>
+        {selected && <span className="ml-auto text-white">✓</span>}
       </button>
     )
   }
+  // Plain dark card (no color)
   return (
     <button
       onClick={onClick}
       className={[
         'w-full flex items-center gap-3 rounded-2xl border px-4 py-4 text-left transition-all active:scale-[0.99]',
-        selected
-          ? 'border-gold bg-gold/10 text-white'
-          : 'border-cardborder bg-card text-white/90 hover:border-violet/60',
+        selected ? 'border-gold bg-gold/10 text-white' : 'border-cardborder bg-card text-white/90 hover:border-violet/60',
       ].join(' ')}
     >
       {option.emoji && <span className="text-xl">{option.emoji}</span>}
@@ -166,7 +167,14 @@ export function StepView({
     case 'info':
       return (
         <Stack center>
-          <Hero src={step.image} fallbackEmoji={step.emoji} />
+          {step.fullBleed && step.image ? (
+            <div
+              className="fixed inset-0 -z-10 bg-cover bg-center"
+              style={{ backgroundImage: `linear-gradient(rgba(20,19,25,0.72), rgba(20,19,25,0.72)), url(${step.image})` }}
+            />
+          ) : (
+            <Hero src={step.image} fallbackEmoji={step.emoji} />
+          )}
           <Title>{step.title}</Title>
           {step.body && <Subtitle>{step.body}</Subtitle>}
           <div className="mt-8">

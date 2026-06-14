@@ -12,7 +12,10 @@ export const MEDIA = {
   meditationBg: 'https://stage.signup.spiriohub.com/static/media/meditation-background.c3008d63de4b768bfea8.webp',
   male: 'https://cf-cdn.spiriohub.com/uploads/e7a68bfc-f13f-4e59-9bc2-b7748668a9b1-02b10a37-6383-417f-9d14-c47a9dee08a7-william-9fda23ae78701ebf00ed.webp',
   female: 'https://cf-cdn.spiriohub.com/uploads/6473c5c9-ce85-4e3a-91de-8cad98a53780-1987fcfa-0cf9-4a5f-b08e-b7b8ff1e867b-emma-5dd81664ffcf32d8bafe.webp',
-  age: 'https://cf-cdn.spiriohub.com/uploads/0c67319e-a2ae-4135-a6ec-cdf903ca050c-daniel-c0f9663861712e0b7834.webp',
+  ageA: 'https://cf-cdn.spiriohub.com/uploads/0c67319e-a2ae-4135-a6ec-cdf903ca050c-daniel-c0f9663861712e0b7834.webp',
+  ageB: 'https://cf-cdn.spiriohub.com/uploads/3755170b-2734-4290-a0d3-46190c165cfa-matthew-06e2af98dc789b82c8cc.webp',
+  ageC: 'https://cf-cdn.spiriohub.com/uploads/0b2f84df-e337-496b-a981-a669475fec41-henry-9de63d0ab802edbd7797.webp',
+  ageD: 'https://cf-cdn.spiriohub.com/uploads/3a1881c2-8965-483b-b9ab-c0018b6445c9-benjamin-658755a49bf5733989ea.webp',
   frequency: 'https://cf-cdn.spiriohub.com/uploads/3b2c2c2d-6e08-4ee2-804a-d77654a8993e-frequency-emotions.webp',
   summary: 'https://cf-cdn.spiriohub.com/uploads/77c78e00-2fc7-447f-93f9-a5ed5bbb0193-nathan-2-ed11d1db408414acf39e.webp',
   university: 'https://cf-cdn.spiriohub.com/uploads/3e9599d1-7a7b-4684-94b6-389eeeb51203-ucla-logo-1ddcfc1e1138bc576eb3.webp',
@@ -22,11 +25,16 @@ export const MEDIA = {
   bundle: 'https://cf-cdn.spiriohub.com/uploads/7a3b0d77-959a-4827-9194-c79c4bb21df9-image-136.png',
 }
 
+// Exact answer-button colors from the original funnel.
+const GREEN = '#227E64'
+const BROWN = '#59382A'
+const NEUTRAL = '#241f30'
+
 const SCALE: Option[] = [
-  { value: 'always', label: 'Always' },
-  { value: 'often', label: 'Often' },
-  { value: 'rarely', label: 'Rarely' },
-  { value: 'never', label: 'Never' },
+  { value: 'always', label: 'Always', color: GREEN },
+  { value: 'often', label: 'Often', color: BROWN },
+  { value: 'rarely', label: 'Rarely', color: GREEN },
+  { value: 'never', label: 'Never', color: GREEN },
 ]
 const SCALE_SUB = 'Select the word that best fits you'
 
@@ -41,23 +49,23 @@ export const STEPS: Step[] = [
     title: 'Become a high-vibration person & manifest your dreams into reality',
     subtitle: 'Please pick the option to start',
     options: [
-      { value: 'male', label: 'Male', emoji: '♂️', image: MEDIA.male },
-      { value: 'female', label: 'Female', emoji: '♀️', image: MEDIA.female },
+      { value: 'male', label: 'Male', image: MEDIA.male, color: BROWN },
+      { value: 'female', label: 'Female', image: MEDIA.female, color: GREEN },
     ],
   },
   // 2
   {
-    id: 'age', type: 'single', saveAs: 'age', image: MEDIA.age,
+    id: 'age', type: 'single', saveAs: 'age',
     title: "What's your age?", subtitle: 'We only use it for personalization',
     options: [
-      { value: '18-34', label: '18-34' },
-      { value: '35-49', label: '35-49' },
-      { value: '50-64', label: '50-64' },
-      { value: '65+', label: '65+' },
+      { value: '18-34', label: '18-34', image: MEDIA.ageA, color: GREEN },
+      { value: '35-49', label: '35-49', image: MEDIA.ageB, color: GREEN },
+      { value: '50-64', label: '50-64', image: MEDIA.ageC, color: GREEN },
+      { value: '65+', label: '65+', image: MEDIA.ageD, color: GREEN },
     ],
   },
   // 3
-  { id: 'signals', type: 'info', image: MEDIA.bg, title: 'What we attract is a reflection of the signals we send with our mind and spirit', cta: 'Continue' },
+  { id: 'signals', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'What we attract is a reflection of the signals we send with our mind and spirit', cta: 'Continue' },
   // 4-10 (mindset, batch 1)
   { id: 'm-energy', type: 'scale', title: 'I _ have enough energy to get everything done', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-succeed', type: 'scale', title: 'I _ expect to succeed when I start doing something', subtitle: SCALE_SUB, options: SCALE },
@@ -67,7 +75,7 @@ export const STEPS: Step[] = [
   { id: 'm-intentions', type: 'scale', title: 'I _ assume people’s intentions toward me are negative', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-worst', type: 'scale', title: 'I _ expect the worst outcome before giving things a chance', subtitle: SCALE_SUB, options: SCALE },
   // 11
-  { id: 'coping', type: 'info', image: MEDIA.bg, title: 'Expecting the worst is a coping mechanism', cta: 'Continue' },
+  { id: 'coping', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Expecting the worst is a coping mechanism', cta: 'Continue' },
   // 12-16 (mindset, batch 2)
   { id: 'm-criticize', type: 'scale', title: 'I _ criticize myself more than I encourage myself', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-overwhelmed', type: 'scale', title: 'I _ feel overwhelmed by emotions I can’t explain', subtitle: SCALE_SUB, options: SCALE },
@@ -75,22 +83,22 @@ export const STEPS: Step[] = [
   { id: 'm-attention', type: 'scale', title: 'I _ feel uncomfortable being the center of attention', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-avoid', type: 'scale', title: 'I _ avoid trying new things because I fear failure or judgment', subtitle: SCALE_SUB, options: SCALE },
   // 17
-  { id: 'self-conscious', type: 'info', image: MEDIA.bg, title: 'Self-conscious people tend to overthink everything', cta: 'Continue' },
+  { id: 'self-conscious', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Self-conscious people tend to overthink everything', cta: 'Continue' },
   // 18
   { id: 'name', type: 'input', field: 'name', saveAs: 'name', title: "What’s your name?", placeholder: 'Your name', cta: 'Continue' },
   // 19
-  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, title: 'Before we move on, I want you to ask yourself…', body: 'What do you really wish for at this moment?', cta: "I'm ready" },
+  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, fullBleed: true, title: 'Before we move on, I want you to ask yourself…', body: 'What do you really wish for at this moment?', cta: "I'm ready" },
   // 20
   {
     id: 'goal', type: 'multi', saveAs: 'goal', max: 3,
     title: 'In 2026, I want to manifest', subtitle: 'You can select multiple goals',
     options: [
-      { value: 'love', label: 'Love', emoji: '❤️' },
-      { value: 'abundance', label: 'Abundance', emoji: '💰' },
-      { value: 'success', label: 'Success', emoji: '🏆' },
-      { value: 'joy', label: 'Joy', emoji: '😊' },
-      { value: 'confidence', label: 'Confidence', emoji: '🔥' },
-      { value: 'dream-life', label: 'Dream life', emoji: '🌟' },
+      { value: 'love', label: 'Love', emoji: '❤️', color: GREEN },
+      { value: 'abundance', label: 'Abundance', emoji: '💸', color: BROWN },
+      { value: 'success', label: 'Success', emoji: '🌟', color: GREEN },
+      { value: 'joy', label: 'Joy', emoji: '😊', color: GREEN },
+      { value: 'confidence', label: 'Confidence', emoji: '💪', color: NEUTRAL },
+      { value: 'dream-life', label: 'Dream life', emoji: '🤔', color: NEUTRAL },
     ],
   },
   // 21
@@ -102,8 +110,8 @@ export const STEPS: Step[] = [
     id: 'familiar', type: 'single', saveAs: 'familiar',
     title: 'Are you familiar with manifestation techniques?', subtitle: 'Select the most relevant one',
     options: [
-      { value: 'no', label: 'No, not really' },
-      { value: 'yes', label: 'Yes, a bit' },
+      { value: 'no', label: 'No, not really', color: GREEN },
+      { value: 'yes', label: 'Yes, a bit', color: BROWN },
     ],
   },
   // 24
@@ -113,11 +121,11 @@ export const STEPS: Step[] = [
     id: 'leave-past', type: 'multi', saveAs: 'leave_past', max: 2,
     title: 'What do you want to leave in the past?', subtitle: 'Select up to 2',
     options: [
-      { value: 'financial-anxiety', label: 'Financial anxiety' },
-      { value: 'stress', label: 'Running on stress' },
-      { value: 'lonely', label: 'Feeling lonely' },
-      { value: 'autopilot', label: 'Living on autopilot' },
-      { value: 'other', label: 'Other' },
+      { value: 'financial-anxiety', label: 'Financial anxiety', color: GREEN },
+      { value: 'stress', label: 'Running on stress', color: BROWN },
+      { value: 'lonely', label: 'Feeling lonely', color: GREEN },
+      { value: 'autopilot', label: 'Living on autopilot', color: GREEN },
+      { value: 'other', label: 'Other', color: NEUTRAL },
     ],
   },
   // 26
@@ -125,10 +133,10 @@ export const STEPS: Step[] = [
     id: 'time', type: 'single', saveAs: 'time',
     title: 'How much time a day can you dedicate to yourself?', subtitle: 'Select the most relevant one',
     options: [
-      { value: '5-10', label: '5-10 min' },
-      { value: '10-15', label: '10-15 min' },
-      { value: '15-20', label: '15-20 min' },
-      { value: '20+', label: '20+ min' },
+      { value: '5-10', label: '5-10 min', color: GREEN },
+      { value: '10-15', label: '10-15 min', color: GREEN },
+      { value: '15-20', label: '15-20 min', color: GREEN },
+      { value: '20+', label: '20+ min', color: GREEN },
     ],
   },
   // 27
@@ -138,10 +146,10 @@ export const STEPS: Step[] = [
     id: 'feel-year', type: 'multi', saveAs: 'feel_year', max: 2,
     title: 'What do you want to feel like in a year from now?', subtitle: 'Select up to 2',
     options: [
-      { value: 'alive', label: 'Alive and excited' },
-      { value: 'proud', label: 'Proud of myself' },
-      { value: 'happy', label: 'Truly happy inside' },
-      { value: 'other', label: 'Other' },
+      { value: 'alive', label: 'Alive and excited', color: GREEN },
+      { value: 'proud', label: 'Proud of myself', color: BROWN },
+      { value: 'happy', label: 'Truly happy inside', color: GREEN },
+      { value: 'other', label: 'Other', color: NEUTRAL },
     ],
   },
   // 29
@@ -151,7 +159,7 @@ export const STEPS: Step[] = [
   // 31
   { id: 'email', type: 'input', field: 'email', saveAs: 'email', image: MEDIA.email, title: 'Enter your email to get your Personal Plan', placeholder: 'you@email.com', cta: 'Continue' },
   // 32
-  { id: 'consent', type: 'info', image: MEDIA.bg, title: 'Receive high‑vibration growth tips & product updates?', cta: 'Continue' },
+  { id: 'consent', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Receive high‑vibration growth tips & product updates?', cta: 'Continue' },
   // 33
   { id: 'plan-ready', type: 'summary', title: 'Your High‑Vibration Growth Plan is ready!', cta: 'Continue' },
   // 34

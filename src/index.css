@@ -14,8 +14,7 @@ body,
 
 body {
   margin: 0;
-  background:
-    radial-gradient(120% 80% at 50% -10%, #221a3a 0%, #0d0b14 55%, #08060f 100%);
+  background: rgb(20, 19, 25);
   color: #ece9f5;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
