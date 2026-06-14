@@ -1,7 +1,7 @@
 import type { Step, Option } from './types'
 
 // Brand — change this to your own brand name.
-export const BRAND = 'Spiriohub'
+export const BRAND = 'Spirio'
 
 // ---------------------------------------------------------------------------
 // TEMPORARY placeholder images (hot-linked from the original funnel CDN).
@@ -23,10 +23,11 @@ export const MEDIA = {
   frequency: 'https://cf-cdn.spiriohub.com/uploads/3b2c2c2d-6e08-4ee2-804a-d77654a8993e-frequency-emotions.webp',
   summary: 'https://cf-cdn.spiriohub.com/uploads/77c78e00-2fc7-447f-93f9-a5ed5bbb0193-nathan-2-ed11d1db408414acf39e.webp',
   university: 'https://cf-cdn.spiriohub.com/uploads/3e9599d1-7a7b-4684-94b6-389eeeb51203-ucla-logo-1ddcfc1e1138bc576eb3.webp',
+  harvard: 'https://cf-cdn.spiriohub.com/uploads/a6012bf6-6118-4c01-b9d5-92a74501e2ee-harvard-logo-a15818be4cf4eb25fde1.webp',
   usersMap: 'https://cf-cdn.spiriohub.com/uploads/b0dee114-a3fe-4fcb-92c7-f714c620c064-users-map-97eca703cf70d0a22820-1.webp',
   email: 'https://cf-cdn.spiriohub.com/uploads/88a15470-ea2a-4fd1-88f4-50ffd9fa9e2f-joined-us-men-1-2f286515b716b92ed422.webp',
   aiCompanion: 'https://cf-cdn.spiriohub.com/uploads/e0164756-9978-419a-a5fb-2cf1d6bba10d-image-136.png',
-  bundle: 'https://cf-cdn.spiriohub.com/uploads/7a3b0d77-959a-4827-9194-c79c4bb21df9-image-136.png',
+  bundle: 'https://cf-cdn.spiriohub.com/uploads/e39a3a60-f3fe-4074-b27c-bf31417218b5-v3.webp',
 }
 
 // Exact answer-button colors from the original funnel.
@@ -34,11 +35,12 @@ const GREEN = '#227E64'
 const BROWN = '#59382A'
 const NEUTRAL = '#241f30'
 
+// Original renders the scale answers lowercase.
 const SCALE: Option[] = [
-  { value: 'always', label: 'Always', color: GREEN },
-  { value: 'often', label: 'Often', color: BROWN },
-  { value: 'rarely', label: 'Rarely', color: GREEN },
-  { value: 'never', label: 'Never', color: GREEN },
+  { value: 'always', label: 'always', color: GREEN },
+  { value: 'often', label: 'often', color: BROWN },
+  { value: 'rarely', label: 'rarely', color: GREEN },
+  { value: 'never', label: 'never', color: GREEN },
 ]
 const SCALE_SUB = 'Select the word that best fits you'
 
@@ -53,10 +55,10 @@ export const STEPS: Step[] = [
     title: 'Become a high-vibration person ',
     accent: '& manifest your dreams into reality',
     subtitle: 'Please pick the option to start',
-    disclaimer: 'By clicking "Male" or "Female", you agree to our Terms of Use, Privacy Policy and Cookie Policy',
+    disclaimer: 'By clicking "Male" or "Female" you agree with the Terms of Use and Service, Privacy Policy and Cookie Policy',
     options: [
-      { value: 'male', label: 'male', image: MEDIA.male, color: BROWN },
-      { value: 'female', label: 'female', image: MEDIA.female, color: GREEN },
+      { value: 'male', label: 'Male', image: MEDIA.male, color: BROWN },
+      { value: 'female', label: 'Female', image: MEDIA.female, color: GREEN },
     ],
   },
   // 2
@@ -67,7 +69,7 @@ export const STEPS: Step[] = [
       { value: '18-34', label: '18-34', image: MEDIA.ageA, imageFemale: MEDIA.ageAf, color: GREEN },
       { value: '35-49', label: '35-49', image: MEDIA.ageB, imageFemale: MEDIA.ageBf, color: GREEN },
       { value: '50-64', label: '50-64', image: MEDIA.ageC, imageFemale: MEDIA.ageCf, color: GREEN },
-      { value: '65+', label: '65+', image: MEDIA.ageD, imageFemale: MEDIA.ageDf, color: GREEN },
+      { value: '65plus', label: '65+', image: MEDIA.ageD, imageFemale: MEDIA.ageDf, color: GREEN },
     ],
   },
   // 3
@@ -91,12 +93,12 @@ export const STEPS: Step[] = [
   // 17
   { id: 'self-conscious', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Self-conscious people tend to overthink everything', body: 'Smart people often spot imperfections in their own decisions, making them hesitate instead of taking the steps that matter', callout: 'We will help set yourself free from doubts and move towards your dream life', cta: 'Continue' },
   // 18
-  { id: 'name', type: 'input', field: 'name', saveAs: 'name', title: "What’s your name?", placeholder: 'Your name', cta: 'Continue' },
+  { id: 'name', type: 'input', field: 'name', saveAs: 'name', title: "What’s your name?", placeholder: 'Your name', cta: 'Continue', skip: 'Skip' },
   // 19
-  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, fullBleed: true, title: 'Before we move on, I want you to ask yourself…', body: 'What do you really wish for at this moment?', cta: "I'm ready" },
+  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, fullBleed: true, title: 'Before we move on, I want you to ask yourself…', callout: '{{name}}, what do you really wish for at this moment?', cta: 'Continue' },
   // 20
   {
-    id: 'goal', type: 'multi', saveAs: 'goal', max: 3,
+    id: 'goal', type: 'multi', saveAs: 'goal',
     title: 'In 2026, I want to manifest', subtitle: 'You can select multiple goals',
     options: [
       { value: 'love', label: 'Love', emoji: '❤️', color: GREEN },
@@ -108,12 +110,25 @@ export const STEPS: Step[] = [
     ],
   },
   // 21
-  { id: 'frequency', type: 'info', image: MEDIA.frequency, card: true, goldWords: ['High vibrations', 'low vibrations'], title: 'Mind creates vibrations', body: 'The difference between them shapes what we attract into our lives', callout: 'High vibrations bring energy, harmony, and joy, while low vibrations can lead to feelings of fatigue, sadness, or stress', cta: 'Continue' },
-  // 22
-  { id: 'summary', type: 'summary', image: MEDIA.summary, title: 'Your vibration is low', cta: 'Continue' },
+  { id: 'frequency', type: 'info', image: MEDIA.frequency, card: true, goldWords: ['High vibrations', 'low vibrations'], title: 'Mind creates vibrations', subtitle: 'The difference between them shapes what we attract into our lives', callout: 'High vibrations bring energy, harmony, and joy, while low vibrations can lead to feelings of fatigue, sadness, or stress.', cta: 'Continue' },
+  // 22 — result reveal
+  {
+    id: 'summary', type: 'summary', image: MEDIA.summary, goalFrom: 'goal',
+    title: 'Your vibration is low', titleAccent: 'low',
+    gaugeValue: 20, gaugeTarget: 'Normal - 325Hz',
+    alertTitle: 'SCARCITY MODE',
+    alertDescription: "Right now your energy is stuck in fear, stress and overthinking — blocking love, money and the flow you're trying to call in.",
+    rows: [
+      { emoji: '🧠', title: 'Current pattern', description: 'Fear, negative loops' },
+      { emoji: '🔁', title: 'How it shows up', description: 'Same cycles in money, work, relationships' },
+      { emoji: '🎯', title: 'What you want', description: '{{goal}}' },
+      { emoji: '⚡️', title: 'Your path out', description: 'Raising vibration' },
+    ],
+    cta: 'Continue',
+  },
   // 23
   {
-    id: 'familiar', type: 'single', saveAs: 'familiar',
+    id: 'familiar', type: 'single', saveAs: 'familiar', hideProgress: true,
     title: 'Are you familiar with manifestation techniques?', subtitle: 'Select the most relevant one',
     options: [
       { value: 'no', label: 'No, not really', color: GREEN },
@@ -121,16 +136,25 @@ export const STEPS: Step[] = [
     ],
   },
   // 24
-  { id: 'university', type: 'info', image: MEDIA.university, title: 'Manifestation isn’t magic', body: "It's a mindset shift aligned with action.", cta: 'Continue' },
+  {
+    id: 'university', type: 'info',
+    title: 'Manifestation isn’t magic', titleGold: 'Manifestation',
+    subtitle: "It's a mindset shift aligned with action.",
+    infoCards: [
+      { image: MEDIA.university, text: 'University of California study suggests that visualization improves neural connectivity and reduces anxiety', gold: ['University of California'] },
+      { image: MEDIA.harvard, text: 'Harvard Medical School research shows that spiritual habits can boost happiness, reduce health issues, and bring peace in life', gold: ['Harvard Medical School'] },
+    ],
+    cta: 'Continue',
+  },
   // 25
   {
-    id: 'leave-past', type: 'multi', saveAs: 'leave_past', max: 2,
+    id: 'leave-past', type: 'multi', saveAs: 'leave_past', hasOther: true,
     title: 'What do you want to leave in the past?', subtitle: 'Select up to 2',
     options: [
-      { value: 'financial-anxiety', label: 'Financial anxiety', color: GREEN },
-      { value: 'stress', label: 'Running on stress', color: BROWN },
-      { value: 'lonely', label: 'Feeling lonely', color: GREEN },
-      { value: 'autopilot', label: 'Living on autopilot', color: GREEN },
+      { value: 'financial-anxiety', label: 'Financial anxiety', emoji: '💳', color: GREEN },
+      { value: 'stress', label: 'Running on stress', emoji: '🤯', color: BROWN },
+      { value: 'lonely', label: 'Feeling lonely', emoji: '😢', color: GREEN },
+      { value: 'autopilot', label: 'Living on autopilot', emoji: '😵‍💫', color: GREEN },
       { value: 'other', label: 'Other', color: NEUTRAL },
     ],
   },
@@ -146,48 +170,154 @@ export const STEPS: Step[] = [
     ],
   },
   // 27
-  { id: 'not-alone', type: 'info', image: MEDIA.usersMap, title: "You're not manifesting alone.", body: 'Join millions of people creating their dream lives together.', cta: 'Continue' },
+  { id: 'not-alone', type: 'info', image: MEDIA.usersMap, title: "You're not manifesting alone.", callout: 'Join millions of people creating their dream lives together.', goldWords: ['creating their dream lives together.'], cta: 'Continue' },
   // 28
   {
-    id: 'feel-year', type: 'multi', saveAs: 'feel_year', max: 2,
+    id: 'feel-year', type: 'multi', saveAs: 'feel_year', hasOther: true,
     title: 'What do you want to feel like in a year from now?', subtitle: 'Select up to 2',
     options: [
-      { value: 'alive', label: 'Alive and excited', color: GREEN },
-      { value: 'proud', label: 'Proud of myself', color: BROWN },
-      { value: 'happy', label: 'Truly happy inside', color: GREEN },
+      { value: 'alive', label: 'Alive and excited', emoji: '🤩', color: GREEN },
+      { value: 'proud', label: 'Proud of myself', emoji: '🥹', color: BROWN },
+      { value: 'happy', label: 'Truly happy inside', emoji: '😌', color: GREEN },
       { value: 'other', label: 'Other', color: NEUTRAL },
     ],
   },
-  // 29
-  { id: 'event', type: 'info', emoji: '💞', title: 'The last plan you’ll ever need to attract love into your life', cta: 'Continue' },
-  // 30
-  { id: 'creating-plan', type: 'loader', title: 'Creating your High-Vibration Plan to Attract Love into Your Life', duration: 3500 },
+  // 29 — event chart (goal-aware)
+  {
+    id: 'event', type: 'eventchart', goalFrom: 'goal', defaultGoal: 'love',
+    title: 'The last plan you’ll ever need to attract {goal} into your life',
+    subtitle: 'We predict that you’ll attract {goal} by {date}',
+    milestones: ['Get rid of your blockers', 'Raise your frequency', 'Attract {goal} in your life'],
+    footnote: '*For illustration purposes only. Individual results may vary.',
+    cta: 'Continue',
+  },
+  // 30 — multi-stage loader
+  {
+    id: 'creating-plan', type: 'loader', duration: 12000,
+    title: 'Creating your High-Vibration Plan to Attract Love into Your Life',
+    titleGold: 'High-Vibration Plan',
+    stages: [
+      {
+        label: 'Goals',
+        modal: { question: "Do you often prioritize others' needs over your own?", prompt: 'To move forward, specify', no: 'No', yes: 'Yes' },
+        testimonial: { rating: 4.5, title: 'Life changing', name: 'Jennifer A.', quote: 'I asked Spirio to help clarify my life goals, and it truly delivered. Now, I have a clearer sense of direction and feel more focused and confident about the high-vibration path ahead.' },
+      },
+      {
+        label: 'Profile',
+        modal: { question: 'Do you often worry about money and the future?', prompt: 'To move forward, specify', no: 'No', yes: 'Yes' },
+        testimonial: { rating: 5, title: 'Absolutely brilliant', name: 'Susan K.', quote: "I often felt unseen and undervalued, like my presence didn't matter. But Spirio helped me regain confidence and reconnect with my inner strength. Now, I feel truly self-assured." },
+      },
+      {
+        label: 'Vibrations quality',
+        modal: { question: 'Do you ever feel like life is just passing by?', prompt: 'To move forward, specify', no: 'No', yes: 'Yes' },
+        testimonial: { rating: 5, title: 'Sense of freedom', name: 'Alex M.', quote: "I used to feel caught in a cycle of constant worry, find it difficult to make ends meet, and be unsure how to move forward. But after just a few sessions, I feel a sense of freedom and stability in my life that I hadn't experienced before." },
+      },
+      {
+        label: 'Personal plan',
+        testimonial: { rating: 5, title: '2nd chance', name: 'Oliver L.', quote: 'The past year has been tough for my wife and me. We were thinking about getting a divorce. But thanks to Spirio, we harmonized our relationship & became a high-vibration couple.' },
+      },
+    ],
+  },
   // 31
-  { id: 'email', type: 'input', field: 'email', saveAs: 'email', image: MEDIA.email, title: 'Enter your email to get your Personal Plan', placeholder: 'you@email.com', cta: 'Continue' },
-  // 32
-  { id: 'consent', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Receive high‑vibration growth tips & product updates?', cta: 'Continue' },
-  // 33
-  { id: 'plan-ready', type: 'summary', title: 'Your High‑Vibration Growth Plan is ready!', cta: 'Continue' },
-  // 34
-  { id: 'scratch', type: 'info', emoji: '🎟️', title: 'Tap & Save on Your Vibration Raise!', body: 'Positivity is the key to making progress! Get your gift from us 🎁', cta: 'Reveal my gift' },
-  // 35
+  {
+    id: 'email', type: 'input', field: 'email', saveAs: 'email', image: MEDIA.email,
+    title: 'Enter your email to get your Personal Plan', titleGold: 'Personal Plan',
+    placeholder: 'Your email', cta: 'Continue',
+    caption: '1.2 million men have', captionAccent: ' joined us!',
+    tip: "We respect your privacy and are committed to protecting your personal data. We'll email you a copy of your results for convenient access.",
+    error: "Hmm... something's wrong, try another email.",
+  },
+  // 32 — subscribe / consent
+  { id: 'consent', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Receive high-vibration growth tips & product updates?', titleGold: 'high-vibration growth tips', cta: "YES, I'M IN!", decline: 'I know everything about raising vibrations' },
+  // 33 — plan chart
+  {
+    id: 'plan-ready', type: 'plan-chart', goalFrom: 'name',
+    title: '{{name}}, your High-Vibration Growth Plan is ready!',
+    goldWords: ['High-Vibration Growth Plan'],
+    weeks: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+    goalLabel: 'Goal',
+    disclaimer: '*For illustration purposes only. Individual results may vary.',
+    cta: 'Continue',
+  },
+  // 34 — scratch card
+  {
+    id: 'scratch', type: 'scratch',
+    title: 'Tap & Save on Your Vibration Raise!', goldWords: ['Tap & Save'],
+    subtitle: 'Positivity is the key to making progress! Get your gift from us 🎁',
+    instruction: 'Tap your discount',
+    scratchValue: '50%', scratchValueLabel: 'off your personal plan',
+    revealEmoji: '🥳', revealTitle: 'Woo hoo!', revealSubtitle: 'You won a discount',
+    revealDiscount: '50% off', revealNote: '*This discount will be applied automatically',
+    cta: 'Continue',
+  },
+  // 35 — selling page / paywall
+  //  ⚠️ Plan tiers & prices below are PLACEHOLDERS — the original's real prices live in a
+  //  SaaS-hosted i18n template and are NOT in the export. Money-back text IS the real copy.
   {
     id: 'paywall', type: 'paywall',
-    title: 'Your study plan is ready',
-    subtitle: 'People using the plan for 4 weeks achieve twice as many results as for 1 week.',
+    title: 'Your High-Vibration Growth Plan is ready', titleGold: 'High-Vibration Growth Plan',
+    subtitle: 'People who follow the plan for 4 weeks reach twice the results of those who stop after 1 week.',
     cta: 'Get my plan',
     plans: [
       { id: 'week', name: '1-Week Plan', price: '$9.99', perDay: '$1.43 / day', old: '$19.99' },
       { id: 'month', name: '4-Week Plan', price: '$19.99', perDay: '$0.71 / day', old: '$39.99', popular: true },
       { id: 'quarter', name: '12-Week Plan', price: '$49.99', perDay: '$0.59 / day', old: '$89.99' },
     ],
+    moneyBackTitle: '30-days money-back guarantee',
+    moneyBackBody: 'We believe that our plan will work for you and you will get noticeable results in just 4 weeks! We are even ready to return your money back if this plan is not for you!',
+    moneyBackLinkPrefix: 'Find more about applicable limitations in our ',
+    moneyBackLinkText: 'money-back policy',
+    moneyBackLinkUrl: 'https://spiriohub.com/money-back',
   },
-  // 36
-  { id: 'create-account', type: 'summary', title: 'Create account', body: 'This email will be your account login. Edit if needed.', cta: 'Create account' },
-  // 37
-  { id: 'upsell-coach', type: 'upsell', image: MEDIA.aiCompanion, title: 'Add Personal Spiritual Coach to your High-Vibration Plan', body: 'A wise AI companion who walks this path with you — ask anything, anytime', price: '$19.99', accept: 'Yes, add it', decline: 'No, thanks' },
-  // 38
-  { id: 'upsell-bundle', type: 'upsell', image: MEDIA.bundle, title: 'Add 3-in-1 pack and accelerate your progress', body: 'A complete emotional healing bundle to quiet your mind, support your nervous system, and reconnect with yourself', price: '$19.99', accept: 'Add to my plan', decline: 'Skip for now' },
-  // 39
-  { id: 'success', type: 'success', title: 'Welcome to ' + BRAND + ' 🎉', body: 'Your account is ready. Open the app to access your personalized High-Vibration Plan.', cta: 'Go to the App' },
+  // 36 — create account
+  {
+    id: 'create-account', type: 'signup',
+    title: 'Create account', subtitle: 'This email will be your account login. Edit if needed.',
+    tipTitle: 'Almost there!',
+    tipBody: 'It’s important to complete the next steps to create your account and access your personal plan.',
+    emailPlaceholder: 'Your email', emailError: "Hmm... something's wrong, try another email.",
+    passwordPlaceholder: 'Create your password', passwordHelper: 'Must be 6 or more characters',
+    cta: 'Create account', saveEmailAs: 'email', savePasswordAs: 'password',
+  },
+  // 37 — upsell: AI coach
+  {
+    id: 'upsell-coach', type: 'upsell', image: MEDIA.aiCompanion,
+    title: 'Add Personal Spiritual Coach to your High-Vibration Plan', titleGold: 'Personal Spiritual Coach',
+    body: 'A wise AI companion who walks this path with you — ask anything, anytime',
+    price: '$49.99', oldPrice: '$99.98', badge: '🔥 Save 50%',
+    accept: 'Add to my plan', decline: 'Skip',
+    note: 'By clicking "Add to my plan" you agree to a one-time "$49.99" purchase. The payment is non-recurring and will be charged using the billing information you provided earlier.',
+  },
+  // 38 — upsell: 3-in-1 bundle
+  {
+    id: 'upsell-bundle', type: 'upsell', image: MEDIA.bundle,
+    title: 'Add 3-in-1 pack and accelerate your progress', titleGold: 'accelerate your progress',
+    body: 'A complete emotional healing bundle to quiet your mind, support your nervous system, and reconnect with yourself',
+    price: '$39.99', oldPrice: '$119.94', badge: '🔥 Offer available only on this page',
+    items: [
+      { name: 'Silence Your Inner Critic', desc: '5 audio affirmation practices designed to quiet overthinking, soften self-criticism, and help you feel grounded again.', oldPrice: '$49.98', priceLabel: '$39.99' },
+      { name: 'Never Alone Again', desc: 'A printable 28-day reflection workbook designed to help you move through loneliness, emotional distance, and self-disconnection.', oldPrice: '$39.99', priceLabel: 'Free', free: true },
+      { name: 'Heal What Hurts', desc: '5 guided mantra practices inspired by ancient sound, to release emotional tension and support your nervous system.', oldPrice: '$39.99', priceLabel: 'Free', free: true },
+    ],
+    accept: 'Add to my plan', decline: 'Skip',
+    note: 'By clicking "Add to my plan" you agree to a one-time "$39.99" purchase. The payment is non-recurring and will be charged using the billing information you provided earlier.',
+  },
+  // 39 — activation / success
+  {
+    id: 'success', type: 'success',
+    title: 'Activate your account!',
+    freeCourse: 'Log in to the app today and get the Deep Sleep course for FREE.', goldWords: ['FREE'],
+    steps: [
+      'Tap the button below to download the app, or access the web version at spiriohub.com',
+      'Open the app and tap Login.',
+      'Log in using your email and password.',
+    ],
+    cta: 'Download App',
+    webLinkLabel: 'Access web version', webLinkUrl: 'https://spiriohub.com/sign-in',
+    loginLinkText: 'spiriohub.com',
+    supportText: "If you have any questions or issues, please contact our support team at support@spiriohub.com. We're always here to help.",
+    supportEmail: 'support@spiriohub.com',
+    progressChips: ['Create account', 'Welcome offer', 'Log in'],
+    supportTag: '24/7 support',
+  },
 ]

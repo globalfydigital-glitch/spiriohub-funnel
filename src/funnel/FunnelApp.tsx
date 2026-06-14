@@ -22,8 +22,12 @@ export function FunnelApp() {
 
   const step = STEPS[index]
 
+  // Original counts exactly 17 progress screens: age + 12 scale statements + the
+  // 4 goal/multi screens. Name + email (input) and the Familiar-Step do not count.
   const { totalQuestions, currentQuestion } = useMemo(() => {
-    const counted = (s: (typeof STEPS)[number]) => isQuestion(s.type) && s.type !== 'gender' && s.id !== 'email'
+    const NO_PROGRESS_IDS = new Set(['familiar'])
+    const counted = (s: (typeof STEPS)[number]) =>
+      isQuestion(s.type) && s.type !== 'gender' && s.type !== 'input' && !NO_PROGRESS_IDS.has(s.id)
     const total = STEPS.filter(counted).length
     const current = STEPS.slice(0, index + 1).filter(counted).length
     return { totalQuestions: total, currentQuestion: current }
@@ -36,8 +40,11 @@ export function FunnelApp() {
   const onBack = () => setIndex((i) => Math.max(0, i - 1))
 
   const isFirst = index === 0
-  const showProgress = ['single', 'scale', 'multi', 'input'].includes(step.type)
-  const showBack = !isFirst && step.type !== 'loader' && step.type !== 'success'
+  // Progress bar/counter: only on the 17 counted quiz screens (hidden on name/email/familiar).
+  const showProgress = ['single', 'scale', 'multi'].includes(step.type) && step.id !== 'familiar'
+  // Back arrow hidden where the original hides it.
+  const NO_BACK_IDS = new Set(['name', 'plan-ready', 'email'])
+  const showBack = !isFirst && step.type !== 'loader' && step.type !== 'success' && !NO_BACK_IDS.has(step.id)
   const pct = Math.min(100, Math.round((currentQuestion / totalQuestions) * 100))
 
   return (
@@ -58,8 +65,8 @@ export function FunnelApp() {
           </div>
           {isFirst ? (
             <span className="flex items-center gap-1.5 text-sm">
-              <span className="text-emerald-400">★</span>
-              <span className="text-white/90">4,6</span>
+              <span className="text-gold">★</span>
+              <span className="text-white/90">4.6</span>
               <span className="text-muted">/ 5</span>
             </span>
           ) : showProgress ? (
@@ -70,7 +77,7 @@ export function FunnelApp() {
         </div>
         {showProgress && (
           <div className="h-[2px] w-full overflow-hidden rounded-full bg-cardborder">
-            <div className="h-full rounded-full bg-white transition-all duration-500" style={{ width: `${pct}%` }} />
+            <div className="h-full rounded-full bg-gold transition-all duration-500" style={{ width: `${pct}%` }} />
           </div>
         )}
       </header>
