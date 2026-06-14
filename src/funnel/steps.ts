@@ -143,7 +143,7 @@ export const STEPS: Step[] = [
   {
     id: 'summary', type: 'summary', image: MEDIA.summary, goalFrom: 'goal',
     title: 'Your vibration is low', titleAccent: 'low',
-    gaugeValue: 20, gaugeTarget: 'Normal - 325Hz',
+    gaugeValue: 20, gaugeTarget: 'Normal - 325Hz', gaugeYou: 'You -20',
     alertTitle: 'SCARCITY MODE',
     alertDescription: "Right now your energy is stuck in fear, stress and overthinking — blocking love, money and the flow you're trying to call in.",
     rows: [

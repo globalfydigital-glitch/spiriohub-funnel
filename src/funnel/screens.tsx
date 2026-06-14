@@ -552,49 +552,79 @@ function SummaryView({
     : <Title>{step.title}</Title>
   return (
     <Stack center>
-      <Hero src={step.image} className="mx-auto mb-5 h-28 w-28 rounded-full object-cover" />
       {titleNode}
       {step.body && <Subtitle>{step.body}</Subtitle>}
 
-      {step.gaugeValue != null && (
-        <div className="mt-7">
-          <div className="relative">
-            <div className="absolute -top-6 -translate-x-1/2" style={{ left: `${v}%` }}>
-              <span className="rounded-md bg-white px-1.5 py-0.5 text-[10px] font-bold text-ink">You</span>
+      <div className="mt-5 rounded-2xl border border-cardborder bg-white/[0.03] p-3">
+        {/* Gauge */}
+        {step.gaugeValue != null && (
+          <>
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-sm font-medium text-muted">Vibrations</span>
+              {step.gaugeTarget && (
+                <span className="rounded-lg border border-cardborder px-2.5 py-1 text-[11px] font-medium text-white/85">{step.gaugeTarget}</span>
+              )}
             </div>
-            <div className="h-2.5 overflow-hidden rounded-full bg-cardborder">
-              <div className="h-full rounded-full" style={{ width: `${v}%`, background: `linear-gradient(90deg, ${RED}, #f5c451)` }} />
+            <div className="relative mb-2 mt-7">
+              {step.gaugeYou && (
+                <div className="absolute -top-7 -translate-x-1/2 whitespace-nowrap" style={{ left: `${v}%` }}>
+                  <span className="rounded-md bg-white px-2 py-0.5 text-[11px] font-bold text-ink">{step.gaugeYou}</span>
+                </div>
+              )}
+              <div className="h-1.5 w-full rounded-full" style={{ background: 'linear-gradient(90deg, #ef4444 0%, #f59e0b 27%, #fde047 50%, #4ade80 73%, #22d3ee 100%)' }} />
+              <div className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white" style={{ left: `${v}%`, background: '#ef4444' }} />
+            </div>
+            <div className="flex justify-between text-[10px] font-medium uppercase tracking-wide text-muted">
+              <span>Low</span><span>Normal</span><span>Medium</span><span>High</span>
+            </div>
+          </>
+        )}
+
+        {/* Alert */}
+        {step.alertTitle && (
+          <div className="mt-4 flex gap-3 rounded-xl p-3" style={{ background: 'rgba(224,88,79,0.14)', border: '1px solid rgba(224,88,79,0.4)' }}>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ background: RED }}>
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-sm font-bold tracking-wide" style={{ color: '#ff6b61' }}>{step.alertTitle}</div>
+              {step.alertDescription && <p className="mt-1 text-[13px] leading-snug text-white/85">{step.alertDescription}</p>}
             </div>
           </div>
-          <div className="mt-2 flex justify-between text-[10px] uppercase tracking-wide text-muted">
-            <span>Low</span><span>Medium</span><span>Normal</span><span>High</span>
-          </div>
-          {step.gaugeTarget && <p className="mt-1 text-right text-[11px] text-muted">{step.gaugeTarget}</p>}
-        </div>
-      )}
+        )}
 
-      {step.alertTitle && (
-        <div className="mt-5 rounded-2xl border p-4" style={{ borderColor: 'rgba(224,88,79,0.4)', background: 'rgba(224,88,79,0.08)' }}>
-          <div className="text-sm font-bold tracking-wide" style={{ color: RED }}>⚠️ {step.alertTitle}</div>
-          {step.alertDescription && <p className="mt-1.5 text-[13px] leading-snug text-white/85">{step.alertDescription}</p>}
-        </div>
-      )}
-
-      {step.rows && step.rows.length > 0 && (
-        <div className="mt-5 space-y-2">
-          {step.rows.map((r: SummaryRow, i) => (
-            <div key={i} className="flex items-start gap-3 rounded-2xl border border-cardborder bg-white/[0.03] px-4 py-3">
-              {r.emoji && <span className="text-lg leading-none">{r.emoji}</span>}
-              <div>
-                <div className="text-[13px] font-semibold text-white">{r.title}</div>
-                <div className="text-[13px] text-muted">{fill(r.description, answers)}</div>
-              </div>
+        {/* Breakdown rows + person image */}
+        {step.rows && step.rows.length > 0 && (
+          <div className="relative mt-4 min-h-[168px]">
+            {step.image && (
+              <img
+                src={step.image}
+                alt=""
+                loading="lazy"
+                className="pointer-events-none absolute bottom-0 right-0 h-[172px] w-auto object-contain object-bottom"
+                style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, #000 40%)', maskImage: 'linear-gradient(to right, transparent, #000 40%)' }}
+              />
+            )}
+            <div className="relative z-10 max-w-[64%] space-y-3.5">
+              {step.rows.map((r: SummaryRow, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  {r.emoji && <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-sm">{r.emoji}</span>}
+                  <div className="leading-tight">
+                    <div className="text-[11px] text-muted">{r.title}</div>
+                    <div className="text-[13px] font-bold text-white">{fill(r.description, answers)}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
-      <div className="mt-8">
+      <div className="mt-6">
         <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
     </Stack>

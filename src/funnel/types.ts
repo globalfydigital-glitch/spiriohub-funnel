@@ -45,7 +45,7 @@ export type Step =
   | { id: string; type: 'ringloader'; title: string; image?: string; duration?: number }
   | {
       id: string; type: 'summary'; title: string; titleAccent?: string; body?: string; image?: string; cta?: string
-      alertTitle?: string; alertDescription?: string; gaugeValue?: number; gaugeTarget?: string
+      alertTitle?: string; alertDescription?: string; gaugeValue?: number; gaugeTarget?: string; gaugeYou?: string
       rows?: SummaryRow[]; goalFrom?: string
     }
   | { id: string; type: 'plan-chart'; title: string; goldWords?: string[]; weeks: string[]; goalLabel?: string; disclaimer?: string; cta?: string; goalFrom?: string }
