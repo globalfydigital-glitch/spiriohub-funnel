@@ -104,6 +104,39 @@ function OptionCard({
   )
 }
 
+// Multi-select option: dark card + right-side check circle (empty -> checked).
+function MultiOptionCard({
+  option,
+  selected,
+  onClick,
+}: {
+  option: Option
+  selected?: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={[
+        'w-full flex items-center gap-3 rounded-2xl border px-5 py-4 text-left transition-all active:scale-[0.99]',
+        selected
+          ? 'border-white/45 bg-white/[0.07] text-white'
+          : 'border-white/12 bg-white/[0.03] text-white/90 hover:border-white/30 hover:bg-white/[0.05]',
+      ].join(' ')}
+    >
+      {option.emoji && <span className="text-xl">{option.emoji}</span>}
+      <span className="font-medium">{option.label}</span>
+      <span
+        aria-hidden
+        className="ml-auto flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border-2 transition-colors"
+        style={selected ? { borderColor: 'rgba(255,255,255,0.7)', backgroundColor: 'rgba(255,255,255,0.12)' } : { borderColor: 'rgba(255,255,255,0.28)' }}
+      >
+        {selected && <span className="text-[13px] font-bold leading-none text-white">✓</span>}
+      </span>
+    </button>
+  )
+}
+
 // Hero image shown on info / summary screens.
 function Hero({ src, fallbackEmoji, className }: { src?: string; fallbackEmoji?: string; className?: string }) {
   if (src) {
@@ -649,7 +682,7 @@ function MultiView({
       {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
       <div className="grid grid-cols-1 gap-3 mt-6">
         {step.options.map((o) => (
-          <OptionCard key={o.value} option={o} selected={selected.includes(o.value)} onClick={() => toggle(o.value)} />
+          <MultiOptionCard key={o.value} option={o} selected={selected.includes(o.value)} onClick={() => toggle(o.value)} />
         ))}
       </div>
       {showOther && (
