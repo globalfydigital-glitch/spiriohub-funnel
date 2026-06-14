@@ -13,6 +13,13 @@ function gold(text: string, words?: string[]) {
   return parts.map((p, i) => (words.includes(p) ? <span key={i} className="text-gold">{p}</span> : <span key={i}>{p}</span>))
 }
 
+// Consciousness-scale row color: cyan (top / high vibration) -> red (bottom / low).
+function scaleColor(i: number, n: number): string {
+  const t = n > 1 ? i / (n - 1) : 0
+  const hue = 190 * Math.pow(1 - t, 1.6)
+  return `hsl(${Math.round(hue)}, 80%, 62%)`
+}
+
 // Goal value -> display word (lowercase, used inside sentences).
 const GOAL_WORDS: Record<string, string> = {
   love: 'love', abundance: 'abundance', success: 'success', joy: 'joy', confidence: 'confidence', 'dream-life': 'dream life',
@@ -398,14 +405,33 @@ function InfoView({
     )
   }
 
-  // Image card (frequency chart)
+  // Image card (frequency chart). With `scale`, show the consciousness scale beside the waves.
   if (step.card && step.image) {
+    const scaleRows = step.scale
     return (
       <Stack center>
         {titleNode}
         {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
-        <div className="mx-auto mt-6 w-full max-w-[330px] rounded-2xl border border-cardborder bg-white/[0.04] p-4">
-          <img src={step.image} alt="" loading="lazy" className="mx-auto w-full rounded-xl object-contain" />
+        <div className="mx-auto mt-6 w-full max-w-[340px] rounded-2xl border border-cardborder bg-white/[0.04] p-3">
+          {scaleRows && scaleRows.length ? (
+            <div className="flex h-[262px] items-stretch gap-2">
+              <div className="flex w-[42%] flex-col justify-between py-1">
+                {scaleRows.map((r, i) => (
+                  <div
+                    key={r.label}
+                    className="flex items-baseline justify-between gap-1 text-[9px] font-semibold leading-none"
+                    style={{ color: scaleColor(i, scaleRows.length) }}
+                  >
+                    <span className="truncate">{r.label}</span>
+                    <span className="tabular-nums">{r.value}</span>
+                  </div>
+                ))}
+              </div>
+              <img src={step.image} alt="" loading="lazy" className="h-full w-[58%] object-contain object-right" />
+            </div>
+          ) : (
+            <img src={step.image} alt="" loading="lazy" className="mx-auto w-full rounded-xl object-contain" />
+          )}
           {step.callout && <div className="mt-4 text-left">{callout}</div>}
         </div>
         <div className="mt-8">

@@ -34,6 +34,7 @@ export type Step =
       id: string; type: 'info'; title: string; titleGold?: string; subtitle?: string; body?: string
       callout?: string; goldWords?: string[]; card?: boolean; emoji?: string; image?: string
       fullBleed?: boolean; waveform?: boolean; sequential?: boolean; cta?: string; decline?: string; infoCards?: InfoCard[]
+      scale?: { label: string; value: string }[]
     }
   | {
       id: string; type: 'input'; field: 'name' | 'email'; title: string; titleGold?: string; subtitle?: string
