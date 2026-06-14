@@ -68,38 +68,23 @@ function OptionCard({
   selected?: boolean
   onClick: () => void
 }) {
-  // Colored answer button (optionally with an avatar photo) — matches the original.
-  if (option.color) {
-    return (
-      <button
-        onClick={onClick}
-        style={{ backgroundColor: option.color }}
-        className={[
-          'w-full flex items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-all active:scale-[0.99]',
-          selected ? 'border-gold text-white' : 'border-transparent text-white hover:brightness-110',
-        ].join(' ')}
-      >
-        {option.image && (
-          <img src={option.image} alt="" loading="lazy" className="h-10 w-10 rounded-full object-cover ring-2 ring-white/20" />
-        )}
-        {option.emoji && <span className="text-xl">{option.emoji}</span>}
-        <span className="font-medium">{option.label}</span>
-        {selected && <span className="ml-auto text-white">✓</span>}
-      </button>
-    )
-  }
-  // Plain dark card (no color)
+  // Answer button: dark with a thin border by default; fills with its color only when selected.
   return (
     <button
       onClick={onClick}
+      style={selected && option.color ? { backgroundColor: option.color } : undefined}
       className={[
-        'w-full flex items-center gap-3 rounded-2xl border px-4 py-4 text-left transition-all active:scale-[0.99]',
-        selected ? 'border-gold bg-gold/10 text-white' : 'border-cardborder bg-card text-white/90 hover:border-violet/60',
+        'w-full flex items-center gap-3 rounded-2xl border px-5 py-4 text-left transition-all active:scale-[0.99]',
+        selected
+          ? option.color
+            ? 'border-transparent text-white'
+            : 'border-gold bg-gold/10 text-white'
+          : 'border-white/15 bg-white/[0.03] text-white/90 hover:border-white/40 hover:bg-white/[0.06]',
       ].join(' ')}
     >
       {option.emoji && <span className="text-xl">{option.emoji}</span>}
       <span className="font-medium">{option.label}</span>
-      {selected && <span className="ml-auto text-gold">✓</span>}
+      {selected && !option.color && <span className="ml-auto text-gold">✓</span>}
     </button>
   )
 }
