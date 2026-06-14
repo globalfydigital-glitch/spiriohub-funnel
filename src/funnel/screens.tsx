@@ -565,10 +565,10 @@ function SummaryView({
                 <span className="rounded-lg border border-cardborder px-2.5 py-1 text-[11px] font-medium text-white/85">{step.gaugeTarget}</span>
               )}
             </div>
-            <div className="relative mb-2 mt-7">
+            <div className="relative mb-2 mt-9">
               {step.gaugeYou && (
-                <div className="absolute -top-7 -translate-x-1/2 whitespace-nowrap" style={{ left: `${v}%` }}>
-                  <span className="rounded-md bg-white px-2 py-0.5 text-[11px] font-bold text-ink">{step.gaugeYou}</span>
+                <div className="absolute -top-8 -translate-x-1/2 whitespace-nowrap" style={{ left: `${v}%` }}>
+                  <span className="rounded-lg bg-white px-3 py-1 text-sm font-bold text-ink">{step.gaugeYou}</span>
                 </div>
               )}
               <div className="h-1.5 w-full rounded-full" style={{ background: 'linear-gradient(90deg, #ef4444 0%, #f59e0b 27%, #fde047 50%, #4ade80 73%, #22d3ee 100%)' }} />
