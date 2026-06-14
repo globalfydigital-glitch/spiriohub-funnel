@@ -160,6 +160,26 @@ function Stars({ rating }: { rating: number }) {
   )
 }
 
+// Animated sound-wave / equalizer shown on the full-bleed teaser screens.
+const WAVE_BARS = Array.from({ length: 56 }, (_, i) => {
+  const env = Math.sin((Math.PI * i) / 55) // symmetric envelope (taller in the middle)
+  const jitter = 0.55 + 0.45 * Math.abs(Math.sin(i * 1.7))
+  return { h: Math.round(12 + env * 52 * jitter), delay: ((i * 37) % 100) / 110, dur: 0.9 + ((i * 53) % 70) / 100 }
+})
+function Waveform() {
+  return (
+    <div className="flex items-center justify-center gap-[3px]" aria-hidden style={{ height: 76 }}>
+      {WAVE_BARS.map((b, i) => (
+        <span
+          key={i}
+          className="w-[3px] rounded-full bg-white/85"
+          style={{ height: `${b.h}px`, transformOrigin: 'center', animation: `wave ${b.dur}s ease-in-out ${b.delay}s infinite alternate` }}
+        />
+      ))}
+    </div>
+  )
+}
+
 // Photo card: image on top + colored bar with label + chevron (gender / age).
 function PhotoCard({
   option,
@@ -365,7 +385,14 @@ function InfoView({
             {step.body && <Subtitle>{step.body}</Subtitle>}
             {callout}
           </div>
-          <div className="mt-auto space-y-2 pt-10">
+          {step.waveform ? (
+            <div className="flex flex-1 items-center justify-center py-6">
+              <Waveform />
+            </div>
+          ) : (
+            <div className="flex-1" />
+          )}
+          <div className="space-y-2 pt-6">
             <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
             {step.decline && <DeclineButton onClick={onNext}>{step.decline}</DeclineButton>}
           </div>

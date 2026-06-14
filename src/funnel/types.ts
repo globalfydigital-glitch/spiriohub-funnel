@@ -33,7 +33,7 @@ export type Step =
   | {
       id: string; type: 'info'; title: string; titleGold?: string; subtitle?: string; body?: string
       callout?: string; goldWords?: string[]; card?: boolean; emoji?: string; image?: string
-      fullBleed?: boolean; cta?: string; decline?: string; infoCards?: InfoCard[]
+      fullBleed?: boolean; waveform?: boolean; cta?: string; decline?: string; infoCards?: InfoCard[]
     }
   | {
       id: string; type: 'input'; field: 'name' | 'email'; title: string; titleGold?: string; subtitle?: string

@@ -73,7 +73,7 @@ export const STEPS: Step[] = [
     ],
   },
   // 3
-  { id: 'signals', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'What we attract is a reflection of the signals we send with our mind and spirit', body: 'We would like you to complete some statements for us to understand the vibration of your signal. Next we will help you tune it', callout: 'Be honest to get most accurate result', cta: 'Continue' },
+  { id: 'signals', type: 'info', image: MEDIA.bg, fullBleed: true, waveform: true, title: 'What we attract is a reflection of the signals we send with our mind and spirit', body: 'We would like you to complete some statements for us to understand the vibration of your signal. Next we will help you tune it', callout: 'Be honest to get most accurate result', cta: 'Continue' },
   // 4-10 (mindset, batch 1)
   { id: 'm-energy', type: 'scale', title: 'I _ have enough energy to get everything done', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-succeed', type: 'scale', title: 'I _ expect to succeed when I start doing something', subtitle: SCALE_SUB, options: SCALE },
@@ -83,7 +83,7 @@ export const STEPS: Step[] = [
   { id: 'm-intentions', type: 'scale', title: 'I _ assume people’s intentions toward me are negative', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-worst', type: 'scale', title: 'I _ expect the worst outcome before giving things a chance', subtitle: SCALE_SUB, options: SCALE },
   // 11
-  { id: 'coping', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Expecting the worst is a coping mechanism', body: 'Our mind is trying to protect us. It imagines negative outcome to mitigate the stress of possible failure', callout: 'The problem is, the more we focus on a failure, the more likely we will attract it ⚡️', cta: 'Continue' },
+  { id: 'coping', type: 'info', image: MEDIA.bg, fullBleed: true, waveform: true, title: 'Expecting the worst is a coping mechanism', body: 'Our mind is trying to protect us. It imagines negative outcome to mitigate the stress of possible failure', callout: 'The problem is, the more we focus on a failure, the more likely we will attract it ⚡️', cta: 'Continue' },
   // 12-16 (mindset, batch 2)
   { id: 'm-criticize', type: 'scale', title: 'I _ criticize myself more than I encourage myself', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-overwhelmed', type: 'scale', title: 'I _ feel overwhelmed by emotions I can’t explain', subtitle: SCALE_SUB, options: SCALE },
@@ -91,11 +91,11 @@ export const STEPS: Step[] = [
   { id: 'm-attention', type: 'scale', title: 'I _ feel uncomfortable being the center of attention', subtitle: SCALE_SUB, options: SCALE },
   { id: 'm-avoid', type: 'scale', title: 'I _ avoid trying new things because I fear failure or judgment', subtitle: SCALE_SUB, options: SCALE },
   // 17
-  { id: 'self-conscious', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Self-conscious people tend to overthink everything', body: 'Smart people often spot imperfections in their own decisions, making them hesitate instead of taking the steps that matter', callout: 'We will help set yourself free from doubts and move towards your dream life', cta: 'Continue' },
+  { id: 'self-conscious', type: 'info', image: MEDIA.bg, fullBleed: true, waveform: true, title: 'Self-conscious people tend to overthink everything', body: 'Smart people often spot imperfections in their own decisions, making them hesitate instead of taking the steps that matter', callout: 'We will help set yourself free from doubts and move towards your dream life', cta: 'Continue' },
   // 18
   { id: 'name', type: 'input', field: 'name', saveAs: 'name', title: "What’s your name?", placeholder: 'Your name', cta: 'Continue', skip: 'Skip' },
   // 19
-  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, fullBleed: true, title: 'Before we move on, I want you to ask yourself…', callout: '{{name}}, what do you really wish for at this moment?', cta: 'Continue' },
+  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, fullBleed: true, waveform: true, title: 'Before we move on, I want you to ask yourself…', callout: '{{name}}, what do you really wish for at this moment?', cta: 'Continue' },
   // 20
   {
     id: 'goal', type: 'multi', saveAs: 'goal',
@@ -228,7 +228,7 @@ export const STEPS: Step[] = [
     error: "Hmm... something's wrong, try another email.",
   },
   // 32 — subscribe / consent
-  { id: 'consent', type: 'info', image: MEDIA.bg, fullBleed: true, title: 'Receive high-vibration growth tips & product updates?', titleGold: 'high-vibration growth tips', cta: "YES, I'M IN!", decline: 'I know everything about raising vibrations' },
+  { id: 'consent', type: 'info', image: MEDIA.bg, fullBleed: true, waveform: true, title: 'Receive high-vibration growth tips & product updates?', titleGold: 'high-vibration growth tips', cta: "YES, I'M IN!", decline: 'I know everything about raising vibrations' },
   // 33 — plan chart
   {
     id: 'plan-ready', type: 'plan-chart', goalFrom: 'name',

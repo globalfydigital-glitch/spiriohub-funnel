@@ -28,3 +28,9 @@ body {
   width: 0;
   background: transparent;
 }
+
+/* sound-wave / equalizer animation used on the full-bleed teaser screens */
+@keyframes wave {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
