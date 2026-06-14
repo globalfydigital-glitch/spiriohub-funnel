@@ -535,6 +535,47 @@ function InfoView({
   )
 }
 
+// Line icons for the result breakdown rows (brain / cycle / target / trending).
+function RowIcon({ name }: { name?: string }) {
+  const p = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, className: 'h-4 w-4' }
+  switch (name) {
+    case 'brain':
+      return (
+        <svg {...p}>
+          <path d="M12 5.5a2.5 2.5 0 0 0-4.9-.7A2.6 2.6 0 0 0 4 7.3c0 .6.2 1.1.5 1.5A2.6 2.6 0 0 0 4 12a2.6 2.6 0 0 0 1.4 2.3A2.5 2.5 0 0 0 8 17a2.5 2.5 0 0 0 4 .8z" />
+          <path d="M12 5.5a2.5 2.5 0 0 1 4.9-.7A2.6 2.6 0 0 1 20 7.3c0 .6-.2 1.1-.5 1.5A2.6 2.6 0 0 1 20 12a2.6 2.6 0 0 1-1.4 2.3A2.5 2.5 0 0 1 16 17a2.5 2.5 0 0 1-4 .8z" />
+          <path d="M12 5.5v12.3" />
+        </svg>
+      )
+    case 'cycle':
+      return (
+        <svg {...p}>
+          <path d="M3 12a9 9 0 0 1 9-9 9.7 9.7 0 0 1 6.7 2.7L21 8" />
+          <path d="M21 3v5h-5" />
+          <path d="M21 12a9 9 0 0 1-9 9 9.7 9.7 0 0 1-6.7-2.7L3 16" />
+          <path d="M3 21v-5h5" />
+        </svg>
+      )
+    case 'target':
+      return (
+        <svg {...p}>
+          <circle cx="12" cy="12" r="9" />
+          <circle cx="12" cy="12" r="5" />
+          <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+        </svg>
+      )
+    case 'trending':
+      return (
+        <svg {...p}>
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
 /* ---- Summary (result reveal: gauge + alert + breakdown) ---- */
 function SummaryView({
   step,
@@ -612,7 +653,11 @@ function SummaryView({
             <div className="relative z-10 max-w-[58%] space-y-5">
               {step.rows.map((r: SummaryRow, i) => (
                 <div key={i} className="flex items-start gap-2.5">
-                  {r.emoji && <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-sm">{r.emoji}</span>}
+                  {(r.icon || r.emoji) && (
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75">
+                      {r.icon ? <RowIcon name={r.icon} /> : <span className="text-sm">{r.emoji}</span>}
+                    </span>
+                  )}
                   <div className="leading-tight">
                     <div className="text-[11px] text-muted">{r.title}</div>
                     <div className="mt-0.5 text-[13px] font-bold text-white">{fill(r.description, answers)}</div>

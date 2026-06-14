@@ -20,7 +20,7 @@ export type LoaderStage = {
 }
 
 // One row in the result/summary breakdown.
-export type SummaryRow = { title: string; description: string; emoji?: string }
+export type SummaryRow = { title: string; description: string; emoji?: string; icon?: string }
 
 // Authority/credibility card (university logos screen).
 export type InfoCard = { image: string; text: string; gold?: string[] }
