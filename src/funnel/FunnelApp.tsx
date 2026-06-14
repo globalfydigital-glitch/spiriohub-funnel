@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { STEPS } from './steps'
 import { QUESTION_TYPES, type Answers } from './types'
-import { ProgressBar, StepView } from './screens'
+import { StepView } from './screens'
 
 const isQuestion = (t: string) => (QUESTION_TYPES as readonly string[]).includes(t)
 
@@ -23,8 +23,9 @@ export function FunnelApp() {
   const step = STEPS[index]
 
   const { totalQuestions, currentQuestion } = useMemo(() => {
-    const total = STEPS.filter((s) => isQuestion(s.type)).length
-    const current = STEPS.slice(0, index + 1).filter((s) => isQuestion(s.type)).length
+    const counted = (s: (typeof STEPS)[number]) => isQuestion(s.type) && s.type !== 'gender' && s.id !== 'email'
+    const total = STEPS.filter(counted).length
+    const current = STEPS.slice(0, index + 1).filter(counted).length
     return { totalQuestions: total, currentQuestion: current }
   }, [index])
 
@@ -34,28 +35,47 @@ export function FunnelApp() {
   const onNext = () => setIndex((i) => (i < STEPS.length - 1 ? i + 1 : 0))
   const onBack = () => setIndex((i) => Math.max(0, i - 1))
 
-  const showProgress = step.type !== 'loader' && step.type !== 'success' && step.type !== 'gender'
+  const isFirst = index === 0
+  const showProgress = !['gender', 'loader', 'success', 'paywall', 'upsell'].includes(step.type)
+  const pct = Math.min(100, Math.round((currentQuestion / totalQuestions) * 100))
 
   return (
     <div className="min-h-screen w-full flex flex-col">
-      {/* Full-width header: logo left, rating right */}
-      <header className="w-full flex items-center justify-between px-5 sm:px-8 pt-4 pb-2">
-        <span className="font-serif text-xl tracking-wide text-white">
-          Spirio
-          <span className="ml-2 align-middle font-sans text-xs font-normal tracking-[0.2em] text-muted">| QUIZ</span>
-        </span>
-        <span className="flex items-center gap-1.5 text-sm">
-          <span className="text-emerald-400">★</span>
-          <span className="text-white/90">4,6</span>
-          <span className="text-muted">/ 5</span>
-        </span>
+      {/* Full-width header */}
+      <header className="w-full px-5 sm:px-8 pt-4">
+        <div className="flex items-center justify-between pb-2.5">
+          <div className="flex items-center gap-3">
+            {showProgress && (
+              <button onClick={onBack} aria-label="Back" className="text-xl leading-none text-white hover:opacity-70">
+                ←
+              </button>
+            )}
+            <span className="font-serif text-xl tracking-wide text-white">
+              Spirio
+              <span className="ml-2 align-middle font-sans text-xs font-normal tracking-[0.2em] text-muted">| QUIZ</span>
+            </span>
+          </div>
+          {isFirst ? (
+            <span className="flex items-center gap-1.5 text-sm">
+              <span className="text-emerald-400">★</span>
+              <span className="text-white/90">4,6</span>
+              <span className="text-muted">/ 5</span>
+            </span>
+          ) : showProgress ? (
+            <span className="text-sm tabular-nums text-muted">
+              {currentQuestion}/{totalQuestions}
+            </span>
+          ) : null}
+        </div>
+        {showProgress && (
+          <div className="h-[2px] w-full overflow-hidden rounded-full bg-cardborder">
+            <div className="h-full rounded-full bg-white transition-all duration-500" style={{ width: `${pct}%` }} />
+          </div>
+        )}
       </header>
 
       {/* Centered content column */}
-      <div className="mx-auto flex w-full max-w-[460px] flex-1 flex-col px-5 pb-10">
-        {showProgress && (
-          <ProgressBar current={currentQuestion} total={totalQuestions} onBack={onBack} />
-        )}
+      <div className="mx-auto flex w-full max-w-[460px] flex-1 flex-col px-5 pb-10 pt-2">
         <div className="flex flex-1 flex-col justify-center">
           <StepView key={step.id} step={step} answers={answers} onAnswer={onAnswer} onNext={onNext} />
         </div>

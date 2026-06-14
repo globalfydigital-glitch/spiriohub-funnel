@@ -145,7 +145,33 @@ function Disclaimer({ text }: { text: string }) {
   )
 }
 
-// Gender select — photo cards with a colored label bar + chevron.
+// Photo card: image on top + colored bar with label + chevron (gender / age).
+function PhotoCard({
+  option,
+  aspect = 'aspect-[4/5]',
+  onClick,
+}: {
+  option: Option
+  aspect?: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="group overflow-hidden rounded-2xl border border-cardborder transition-all hover:border-violet/60 active:scale-[0.99]"
+    >
+      {option.image && (
+        <img src={option.image} alt="" loading="lazy" className={`w-full ${aspect} object-cover`} />
+      )}
+      <div className="flex items-center justify-between px-4 py-3 font-medium text-white" style={{ backgroundColor: option.color }}>
+        <span>{option.label}</span>
+        <span aria-hidden className="text-lg leading-none text-white/90">›</span>
+      </div>
+    </button>
+  )
+}
+
+// Gender select — photo cards + 1-minute-quiz + disclaimer.
 function GenderScreen({
   step,
   onAnswer,
@@ -161,17 +187,7 @@ function GenderScreen({
       {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
       <div className="grid grid-cols-2 gap-3 mt-6">
         {step.options.map((o) => (
-          <button
-            key={o.value}
-            onClick={() => { onAnswer(step.saveAs, o.value); onNext() }}
-            className="group overflow-hidden rounded-2xl border border-cardborder transition-all hover:border-violet/60 active:scale-[0.99]"
-          >
-            {o.image && <img src={o.image} alt="" loading="lazy" className="w-full aspect-[4/5] object-cover" />}
-            <div className="flex items-center justify-between px-4 py-3 font-medium text-white" style={{ backgroundColor: o.color }}>
-              <span>{o.label}</span>
-              <span aria-hidden className="text-lg leading-none text-white/90">›</span>
-            </div>
-          </button>
+          <PhotoCard key={o.value} option={o} onClick={() => { onAnswer(step.saveAs, o.value); onNext() }} />
         ))}
       </div>
       <div className="mt-7 text-center">
@@ -200,23 +216,26 @@ export function StepView({
 
     case 'single':
     case 'scale': {
+      const hasImages = step.options.some((o) => o.image)
+      const choose = (v: string) => { if (step.saveAs) onAnswer(step.saveAs, v); onNext() }
       return (
         <Stack>
           {'image' in step && step.image ? <Hero src={step.image} /> : null}
           <Title>{step.title}</Title>
           {'subtitle' in step && step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
-          <div className="grid grid-cols-1 gap-3 mt-6">
-            {step.options.map((o) => (
-              <OptionCard
-                key={o.value}
-                option={o}
-                onClick={() => {
-                  if (step.saveAs) onAnswer(step.saveAs, o.value)
-                  onNext()
-                }}
-              />
-            ))}
-          </div>
+          {hasImages ? (
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              {step.options.map((o) => (
+                <PhotoCard key={o.value} option={o} aspect="aspect-[4/3]" onClick={() => choose(o.value)} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 mt-6">
+              {step.options.map((o) => (
+                <OptionCard key={o.value} option={o} onClick={() => choose(o.value)} />
+              ))}
+            </div>
+          )}
         </Stack>
       )
     }
