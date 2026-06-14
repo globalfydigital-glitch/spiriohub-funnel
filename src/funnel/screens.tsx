@@ -331,7 +331,17 @@ function InfoView({
 }) {
   const title = fill(step.title, answers)
   const calloutText = fill(step.callout, answers)
-  const callout = step.callout ? <Callout text={calloutText} goldWords={step.goldWords} /> : null
+  // Sequential reveal: show the title first, then fade in the callout a few seconds later.
+  const [revealed, setRevealed] = useState(!step.sequential)
+  useEffect(() => {
+    if (!step.sequential) return
+    const t = setTimeout(() => setRevealed(true), 2200)
+    return () => clearTimeout(t)
+  }, [step.sequential])
+  const calloutInner = step.callout ? <Callout text={calloutText} goldWords={step.goldWords} /> : null
+  const callout = calloutInner && step.sequential
+    ? <div className={`transition-opacity duration-700 ${revealed ? 'opacity-100' : 'opacity-0'}`}>{calloutInner}</div>
+    : calloutInner
   const titleNode = step.titleGold ? <Title>{gold(title, [step.titleGold])}</Title> : <Title>{title}</Title>
 
   // Authority / credibility cards (university screen)

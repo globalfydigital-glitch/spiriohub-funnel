@@ -95,7 +95,7 @@ export const STEPS: Step[] = [
   // 18
   { id: 'name', type: 'input', field: 'name', saveAs: 'name', title: "What’s your name?", placeholder: 'Your name', cta: 'Continue', skip: 'Skip' },
   // 19
-  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, fullBleed: true, waveform: true, title: 'Before we move on, I want you to ask yourself…', callout: '{{name}}, what do you really wish for at this moment?', cta: 'Continue' },
+  { id: 'really-wish', type: 'info', image: MEDIA.meditationBg, fullBleed: true, waveform: true, sequential: true, title: 'Before we move on, I want you to ask yourself…', callout: '{{name}}, what do you really wish for at this moment?', cta: 'Continue' },
   // 20
   {
     id: 'goal', type: 'multi', saveAs: 'goal',
