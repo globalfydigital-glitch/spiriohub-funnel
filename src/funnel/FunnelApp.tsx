@@ -36,7 +36,8 @@ export function FunnelApp() {
   const onBack = () => setIndex((i) => Math.max(0, i - 1))
 
   const isFirst = index === 0
-  const showProgress = !['gender', 'loader', 'success', 'paywall', 'upsell'].includes(step.type)
+  const showProgress = ['single', 'scale', 'multi', 'input'].includes(step.type)
+  const showBack = !isFirst && step.type !== 'loader' && step.type !== 'success'
   const pct = Math.min(100, Math.round((currentQuestion / totalQuestions) * 100))
 
   return (
@@ -45,7 +46,7 @@ export function FunnelApp() {
       <header className="w-full px-5 sm:px-8 pt-4">
         <div className="flex items-center justify-between pb-2.5">
           <div className="flex items-center gap-3">
-            {showProgress && (
+            {showBack && (
               <button onClick={onBack} aria-label="Back" className="text-xl leading-none text-white hover:opacity-70">
                 ←
               </button>

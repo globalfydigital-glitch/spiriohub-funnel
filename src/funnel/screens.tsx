@@ -52,7 +52,7 @@ function PrimaryButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="w-full rounded-2xl bg-gold text-ink font-semibold py-4 text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-105 active:scale-[0.99]"
+      className="w-full rounded-2xl bg-[#1f9d6b] text-white font-semibold py-4 text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
     >
       {children}
     </button>
@@ -248,24 +248,40 @@ export function StepView({
     case 'input':
       return <InputView step={step} onAnswer={onAnswer} onNext={onNext} />
 
-    case 'info':
-      return (
-        <Stack center>
-          {step.fullBleed && step.image ? (
+    case 'info': {
+      const callout = step.callout ? <p className="mt-3 text-sm font-semibold text-gold">{step.callout}</p> : null
+      if (step.fullBleed && step.image) {
+        return (
+          <>
             <div
               className="fixed inset-0 -z-10 bg-cover bg-center"
-              style={{ backgroundImage: `linear-gradient(rgba(20,19,25,0.72), rgba(20,19,25,0.72)), url(${step.image})` }}
+              style={{ backgroundImage: `linear-gradient(to bottom, rgba(20,19,25,0.92) 0%, rgba(20,19,25,0.7) 24%, rgba(20,19,25,0.2) 46%, rgba(20,19,25,0.2) 60%, rgba(20,19,25,0.88) 100%), url(${step.image})` }}
             />
-          ) : (
-            <Hero src={step.image} fallbackEmoji={step.emoji} />
-          )}
+            <div className="flex min-h-[78vh] flex-col animate-fadeUp">
+              <div className="text-center" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.7)' }}>
+                <Title>{step.title}</Title>
+                {step.body && <Subtitle>{step.body}</Subtitle>}
+                {callout}
+              </div>
+              <div className="mt-auto pt-10">
+                <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+              </div>
+            </div>
+          </>
+        )
+      }
+      return (
+        <Stack center>
+          <Hero src={step.image} fallbackEmoji={step.emoji} />
           <Title>{step.title}</Title>
           {step.body && <Subtitle>{step.body}</Subtitle>}
+          {callout}
           <div className="mt-8">
             <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
           </div>
         </Stack>
       )
+    }
 
     case 'summary':
       return (
