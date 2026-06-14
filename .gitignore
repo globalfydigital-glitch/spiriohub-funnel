@@ -10,3 +10,7 @@ dist-ssr
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+
+# local QA scratch (reference /tmp data)
+qa.mjs
+qa2.mjs

@@ -138,6 +138,7 @@ export function StepView({
       const cols = step.type === 'scale' ? 'grid-cols-1' : step.type === 'gender' ? 'grid-cols-2' : 'grid-cols-1'
       return (
         <Stack>
+          {'image' in step && step.image ? <Hero src={step.image} /> : null}
           <Title>{step.title}</Title>
           {'subtitle' in step && step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
           <div className={`grid ${cols} gap-3 mt-6`}>
@@ -195,7 +196,7 @@ export function StepView({
     case 'upsell':
       return (
         <Stack center>
-          <div className="text-6xl text-center mb-2">🎁</div>
+          <Hero src={step.image} fallbackEmoji="🎁" />
           <Title>{step.title}</Title>
           {step.body && <Subtitle>{step.body}</Subtitle>}
           <div className="text-center text-gold text-2xl font-bold mt-4">{step.price}</div>
@@ -251,6 +252,7 @@ function MultiView({
   }
   return (
     <Stack>
+      {step.image ? <Hero src={step.image} /> : null}
       <Title>{step.title}</Title>
       {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
       <div className="grid grid-cols-1 gap-3 mt-6">
@@ -286,6 +288,7 @@ function InputView({
   }
   return (
     <Stack center>
+      {step.image ? <Hero src={step.image} /> : null}
       <Title>{step.title}</Title>
       {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
       <input
