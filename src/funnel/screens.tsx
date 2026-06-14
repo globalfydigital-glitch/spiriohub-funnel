@@ -401,6 +401,9 @@ export function StepView({
     case 'loader':
       return <LoaderView step={step} onNext={onNext} />
 
+    case 'ringloader':
+      return <RingLoaderView step={step} onNext={onNext} />
+
     case 'scratch':
       return <ScratchView step={step} onNext={onNext} />
 
@@ -917,6 +920,53 @@ function LoaderView({ step, onNext }: { step: Extract<Step, { type: 'loader' }>;
         </div>
       )}
     </Stack>
+  )
+}
+
+/* ---- Circular "analyzing your answers" loader ---- */
+function RingLoaderView({ step, onNext }: { step: Extract<Step, { type: 'ringloader' }>; onNext: () => void }) {
+  const [pct, setPct] = useState(0)
+  useEffect(() => {
+    const dur = step.duration ?? 3800
+    const start = performance.now()
+    let raf = 0
+    const tick = (t: number) => {
+      const p = Math.min(100, Math.round(((t - start) / dur) * 100))
+      setPct(p)
+      if (p < 100) raf = requestAnimationFrame(tick)
+      else setTimeout(onNext, 450)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [step.duration, onNext])
+
+  const R = 54
+  const C = 2 * Math.PI * R
+  const off = C * (1 - pct / 100)
+  return (
+    <>
+      {step.image && (
+        <div
+          className="fixed inset-0 -z-10 bg-cover bg-center"
+          style={{ backgroundImage: `linear-gradient(rgba(20,19,25,0.78), rgba(20,19,25,0.78)), url(${step.image})` }}
+        />
+      )}
+      <div className="flex min-h-[78vh] flex-col items-center justify-center animate-fadeUp">
+        <div className="relative h-[140px] w-[140px]">
+          <svg viewBox="0 0 140 140" className="h-full w-full -rotate-90">
+            <circle cx="70" cy="70" r={R} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="8" />
+            <circle
+              cx="70" cy="70" r={R} fill="none" stroke="#f5c451" strokeWidth="8" strokeLinecap="round"
+              strokeDasharray={C} strokeDashoffset={off} style={{ transition: 'stroke-dashoffset 0.1s linear' }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold tabular-nums text-white">{pct}%</div>
+        </div>
+        <p className="mt-6 text-center text-base font-semibold text-white" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.7)' }}>
+          {step.title}
+        </p>
+      </div>
+    </>
   )
 }
 

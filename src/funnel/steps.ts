@@ -137,6 +137,8 @@ export const STEPS: Step[] = [
     callout: 'High vibrations bring energy, harmony, and joy, while low vibrations can lead to feelings of fatigue, sadness, or stress.',
     cta: 'Continue',
   },
+  // analyzing — circular loader before the result reveal
+  { id: 'analyzing', type: 'ringloader', image: MEDIA.bg, title: 'Analyzing your answers…', duration: 3800 },
   // 22 — result reveal
   {
     id: 'summary', type: 'summary', image: MEDIA.summary, goalFrom: 'goal',

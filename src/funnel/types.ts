@@ -42,6 +42,7 @@ export type Step =
       error?: string; skip?: string; cta?: string; saveAs: string
     }
   | { id: string; type: 'loader'; title: string; titleGold?: string; duration?: number; stages?: LoaderStage[] }
+  | { id: string; type: 'ringloader'; title: string; image?: string; duration?: number }
   | {
       id: string; type: 'summary'; title: string; titleAccent?: string; body?: string; image?: string; cta?: string
       alertTitle?: string; alertDescription?: string; gaugeValue?: number; gaugeTarget?: string
