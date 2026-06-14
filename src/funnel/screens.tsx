@@ -68,6 +68,24 @@ function OptionCard({
   selected?: boolean
   onClick: () => void
 }) {
+  // Photo tile (e.g. gender select)
+  if (option.image) {
+    return (
+      <button
+        onClick={onClick}
+        className={[
+          'relative overflow-hidden rounded-2xl border aspect-[3/4] transition-all active:scale-[0.99]',
+          selected ? 'border-gold' : 'border-cardborder hover:border-violet/60',
+        ].join(' ')}
+      >
+        <img src={option.image} alt={option.label} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-4 pb-3 pt-8">
+          {option.emoji && <span className="text-lg">{option.emoji}</span>}
+          <span className="font-semibold text-white">{option.label}</span>
+        </div>
+      </button>
+    )
+  }
   return (
     <button
       onClick={onClick}
@@ -83,6 +101,22 @@ function OptionCard({
       {selected && <span className="ml-auto text-gold">✓</span>}
     </button>
   )
+}
+
+// Hero image shown on info / summary screens.
+function Hero({ src, fallbackEmoji }: { src?: string; fallbackEmoji?: string }) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        className="mx-auto mb-5 max-h-56 w-full max-w-xs rounded-2xl object-cover"
+      />
+    )
+  }
+  if (fallbackEmoji) return <div className="mb-2 text-center text-6xl">{fallbackEmoji}</div>
+  return null
 }
 
 /* ------------------------------- Step view -------------------------------- */
@@ -131,7 +165,7 @@ export function StepView({
     case 'info':
       return (
         <Stack center>
-          {step.emoji && <div className="text-6xl text-center mb-2">{step.emoji}</div>}
+          <Hero src={step.image} fallbackEmoji={step.emoji} />
           <Title>{step.title}</Title>
           {step.body && <Subtitle>{step.body}</Subtitle>}
           <div className="mt-8">
@@ -143,7 +177,7 @@ export function StepView({
     case 'summary':
       return (
         <Stack center>
-          <div className="text-6xl text-center mb-2">🔮</div>
+          <Hero src={step.image} fallbackEmoji="🔮" />
           <Title>{step.title}</Title>
           {step.body && <Subtitle>{step.body}</Subtitle>}
           <div className="mt-8">

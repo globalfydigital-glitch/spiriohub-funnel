@@ -3,6 +3,23 @@ import type { Step, Option } from './types'
 // Brand — change this to your own brand name.
 export const BRAND = 'Spiriohub'
 
+// ---------------------------------------------------------------------------
+// TEMPORARY placeholder images (hot-linked from the original funnel CDN).
+// ⚠️ REPLACE these with your own assets before going live.
+// ---------------------------------------------------------------------------
+export const MEDIA = {
+  // global cosmic background
+  bg: 'https://signup.spiriohub.com/static/media/energy-background-2.681673176640ecc39d62.webp',
+  meditationBg: 'https://stage.signup.spiriohub.com/static/media/meditation-background.c3008d63de4b768bfea8.webp',
+  // gender hero photos
+  male: 'https://cf-cdn.spiriohub.com/uploads/e7a68bfc-f13f-4e59-9bc2-b7748668a9b1-02b10a37-6383-417f-9d14-c47a9dee08a7-william-9fda23ae78701ebf00ed.webp',
+  female: 'https://cf-cdn.spiriohub.com/uploads/6473c5c9-ce85-4e3a-91de-8cad98a53780-1987fcfa-0cf9-4a5f-b08e-b7b8ff1e867b-emma-5dd81664ffcf32d8bafe.webp',
+  // illustrations
+  frequency: 'https://cf-cdn.spiriohub.com/uploads/3b2c2c2d-6e08-4ee2-804a-d77654a8993e-frequency-emotions.webp',
+  usersMap: 'https://cf-cdn.spiriohub.com/uploads/b0dee114-a3fe-4fcb-92c7-f714c620c064-users-map-97eca703cf70d0a22820-1.webp',
+  testimonial: 'https://cf-cdn.spiriohub.com/uploads/fa78c2a8-0cec-4d64-a5a4-a2014b64825e-lisa-2-c8e76b250138fc791167-1.webp',
+}
+
 // Reused answer scale for the mindset statements.
 const SCALE: Option[] = [
   { value: 'always', label: 'Always' },
@@ -23,8 +40,8 @@ export const STEPS: Step[] = [
     title: 'Become a high-vibration person & manifest your dreams into reality',
     saveAs: 'gender',
     options: [
-      { value: 'male', label: 'Male', emoji: '♂️' },
-      { value: 'female', label: 'Female', emoji: '♀️' },
+      { value: 'male', label: 'Male', emoji: '♂️', image: MEDIA.male },
+      { value: 'female', label: 'Female', emoji: '♀️', image: MEDIA.female },
     ],
   },
 
@@ -91,6 +108,7 @@ export const STEPS: Step[] = [
     id: 'really-wish',
     type: 'info',
     emoji: '🌙',
+    image: MEDIA.meditationBg,
     title: 'Before we move on, ask yourself…',
     body: 'What do you really wish for at this moment?',
     cta: "I'm ready",
@@ -115,12 +133,13 @@ export const STEPS: Step[] = [
   },
 
   // 19 — Teaser
-  { id: 't-mind', type: 'info', emoji: '🌀', title: 'Mind creates vibrations', body: 'Your thoughts set the frequency you broadcast to the world.', cta: 'Continue' },
+  { id: 't-mind', type: 'info', emoji: '🌀', image: MEDIA.frequency, title: 'Mind creates vibrations', body: 'Your thoughts set the frequency you broadcast to the world.', cta: 'Continue' },
 
   // 20 — Summary
   {
     id: 'summary',
     type: 'summary',
+    image: MEDIA.testimonial,
     title: 'Your vibration is low',
     body: "Based on your answers, your current frequency is holding you back — but it can be raised with a short daily practice.",
     cta: 'Show me how',
@@ -173,7 +192,7 @@ export const STEPS: Step[] = [
   },
 
   // 25 — Teaser
-  { id: 't-not-alone', type: 'info', emoji: '🤝', title: "You're not manifesting alone", body: 'Join a community of half a million people on the same journey.', cta: 'Continue' },
+  { id: 't-not-alone', type: 'info', emoji: '🤝', image: MEDIA.usersMap, title: "You're not manifesting alone", body: 'Join a community of half a million people on the same journey.', cta: 'Continue' },
 
   // 26 — Feel in a year
   {

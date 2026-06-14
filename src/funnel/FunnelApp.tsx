@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { STEPS, BRAND } from './steps'
+import { STEPS, BRAND, MEDIA } from './steps'
 import { QUESTION_TYPES, type Answers } from './types'
 import { ProgressBar, StepView } from './screens'
 
@@ -38,6 +38,12 @@ export function FunnelApp() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center">
+      {/* Atmospheric cosmic background (temporary placeholder image) */}
+      <div
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{ backgroundImage: `url(${MEDIA.bg})` }}
+      />
+      <div className="fixed inset-0 -z-10 bg-ink/60" />
       <div className="w-full max-w-[460px] flex flex-col px-5 pb-10 min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-center pt-4 pb-1">
