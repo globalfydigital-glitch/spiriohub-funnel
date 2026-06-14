@@ -357,7 +357,7 @@ export function StepView({
       const hasImages = step.options.some((o) => o.image)
       const choose = (v: string) => { if (step.saveAs) onAnswer(step.saveAs, v); onNext() }
       return (
-        <Stack>
+        <Stack top>
           {'image' in step && step.image ? <Hero src={step.image} /> : null}
           <Title>{step.title}</Title>
           {'subtitle' in step && step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
@@ -422,8 +422,8 @@ export function StepView({
 }
 
 /* ------------------------------- Sub-views -------------------------------- */
-function Stack({ children, center }: { children: React.ReactNode; center?: boolean }) {
-  return <div className={`flex flex-col ${center ? 'justify-center min-h-[60vh]' : ''} animate-fadeUp`}>{children}</div>
+function Stack({ children, center, top }: { children: React.ReactNode; center?: boolean; top?: boolean }) {
+  return <div className={`flex flex-col ${center ? 'justify-center min-h-[60vh]' : top ? 'min-h-[76vh]' : ''} animate-fadeUp`}>{children}</div>
 }
 
 /* ---- Info (teasers, cards, authority cards, full-bleed, subscribe) ---- */
@@ -830,7 +830,7 @@ function MultiView({
   const toggle = (v: string) => onAnswer(key, selected.includes(v) ? selected.filter((x) => x !== v) : [...selected, v])
   const showOther = step.hasOther && selected.includes('other')
   return (
-    <Stack>
+    <Stack top>
       {step.image ? <Hero src={step.image} /> : null}
       <Title>{step.title}</Title>
       {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}

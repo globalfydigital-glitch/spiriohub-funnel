@@ -159,8 +159,8 @@ export const STEPS: Step[] = [
     id: 'familiar', type: 'single', saveAs: 'familiar', hideProgress: true,
     title: 'Are you familiar with manifestation techniques?', subtitle: 'Select the most relevant one',
     options: [
-      { value: 'no', label: 'No, not really', color: GREEN },
-      { value: 'yes', label: 'Yes, a bit', color: BROWN },
+      { value: 'no', label: 'No, not really', emoji: '❌', color: GREEN },
+      { value: 'yes', label: 'Yes, a bit', emoji: '✅', color: BROWN },
     ],
   },
   // 24
