@@ -823,17 +823,26 @@ function EventChartView({
           {milestones.map((m, i) => {
             const leftPct = (dots[i].x / 320) * 100
             const topPct = (dots[i].y / 200) * 100
-            const pillShift = i === milestones.length - 1 ? 'translateX(-38%)' : undefined
+            const isTop = i === milestones.length - 1
             return (
               <div
                 key={i}
-                className="absolute z-10 flex flex-col items-center"
-                style={{ left: `${leftPct}%`, top: `${topPct}%`, transform: 'translate(-50%, calc(-100% - 7px))', opacity: 0, animation: `chartfade 0.4s ease ${0.7 + i * 0.55}s forwards` }}
+                className={`absolute z-10 flex flex-col ${isTop ? 'items-end' : 'items-center'}`}
+                style={{
+                  left: `${leftPct}%`,
+                  top: `${topPct}%`,
+                  transform: `translate(${isTop ? '-100%' : '-50%'}, calc(-100% - 7px))`,
+                  opacity: 0,
+                  animation: `chartfade 0.4s ease ${0.7 + i * 0.55}s forwards`,
+                }}
               >
-                <div className="max-w-[130px] rounded-lg px-2 py-1 text-[10px] font-bold leading-tight text-white shadow-md" style={{ background: '#178a50', transform: pillShift }}>
+                <div
+                  className={`w-max rounded-lg px-2.5 py-1 text-[10px] font-bold leading-tight text-white shadow-md ${isTop ? 'whitespace-nowrap' : 'max-w-[100px]'}`}
+                  style={{ background: '#178a50' }}
+                >
                   {m}
                 </div>
-                <span className="-mt-1 h-2 w-2 rotate-45" style={{ background: '#178a50' }} />
+                <span className={`-mt-1 h-2 w-2 rotate-45 ${isTop ? 'mr-3' : ''}`} style={{ background: '#178a50' }} />
               </div>
             )
           })}
