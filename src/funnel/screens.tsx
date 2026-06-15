@@ -681,31 +681,6 @@ function SummaryView({
 }
 
 /* ---- Rising-curve SVG used by plan-chart + event-chart ---- */
-function RisingCurve({ dots }: { dots?: { x: number; y: number; label?: string }[] }) {
-  // viewBox 0..300 x, 0..160 y. Single smooth rising path bottom-left -> top-right.
-  const path = 'M4,150 C70,140 110,96 150,74 S232,26 296,12'
-  const area = path + ' L296,158 L4,158 Z'
-  return (
-    <svg viewBox="0 0 300 160" className="w-full" role="img" aria-label="growth curve">
-      <defs>
-        <linearGradient id="curveArea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#f5c451" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#f5c451" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id="curveStroke" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0%" stopColor="#8b5cf6" />
-          <stop offset="100%" stopColor="#f5c451" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#curveArea)" />
-      <path d={path} fill="none" stroke="url(#curveStroke)" strokeWidth="3" strokeLinecap="round" />
-      {dots?.map((d, i) => (
-        <circle key={i} cx={d.x} cy={d.y} r="5" fill="#f5c451" stroke="#141319" strokeWidth="2" />
-      ))}
-    </svg>
-  )
-}
-
 function PlanChartView({
   step,
   answers,
@@ -716,27 +691,66 @@ function PlanChartView({
   onNext: () => void
 }) {
   const title = fill(step.title, answers)
+  // Bars grow week over week: gray -> orange -> yellow/green -> green/cyan (the highest = the goal).
+  const bars = [
+    { h: 16, grad: 'linear-gradient(to top, #4b5563, #9ca3af)' },
+    { h: 42, grad: 'linear-gradient(to top, #ef4444, #f59e0b)' },
+    { h: 70, grad: 'linear-gradient(to top, #eab308, #4ade80)' },
+    { h: 96, grad: 'linear-gradient(to top, #22c55e, #a5f3fc)' },
+  ]
+  const yLabels = ['38', '34.2', '28.4', '24.2', '20', '4']
+  const CHART_H = 200
   return (
-    <Stack center>
+    <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
       <Title>{gold(title, step.goldWords)}</Title>
-      <div className="mt-6 rounded-2xl border border-cardborder bg-white/[0.04] p-4">
-        <div className="relative">
-          <RisingCurve dots={[{ x: 296, y: 12 }]} />
-          {step.goalLabel && (
-            <span className="absolute right-1 top-0 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-ink">
-              {step.goalLabel}
-            </span>
-          )}
-        </div>
-        <div className="mt-1 flex justify-between px-1 text-[10px] text-muted">
-          {step.weeks.map((w) => <span key={w}>{w}</span>)}
+      <div className="mt-6 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+        <div className="flex gap-2">
+          {/* Y axis */}
+          <div className="flex flex-col justify-between py-0.5 text-right text-[9px] tabular-nums text-muted" style={{ height: CHART_H }}>
+            {yLabels.map((l) => <span key={l}>{l}</span>)}
+          </div>
+          {/* chart area */}
+          <div className="flex-1">
+            <div className="relative" style={{ height: CHART_H }}>
+              {/* gridlines */}
+              <div className="absolute inset-0 flex flex-col justify-between">
+                {yLabels.map((_, i) => <div key={i} className="border-t border-white/[0.06]" />)}
+              </div>
+              {/* bars */}
+              <div className="absolute inset-0 flex items-end justify-around gap-2.5">
+                {bars.map((b, i) => {
+                  const isGoal = i === bars.length - 1
+                  return (
+                    <div key={i} className="relative h-full w-full max-w-[46px]">
+                      {isGoal && step.goalLabel && (
+                        <span
+                          className="absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md bg-gold px-2 py-0.5 text-[10px] font-bold text-ink"
+                          style={{ bottom: `${b.h}%`, marginBottom: 6, opacity: 0, animation: 'chartfade 0.4s ease 1.3s forwards' }}
+                        >
+                          {step.goalLabel}
+                        </span>
+                      )}
+                      <div
+                        className="absolute bottom-0 w-full rounded-t-lg"
+                        style={{ height: `${b.h}%`, background: b.grad, transformOrigin: 'bottom', animation: `grow 0.7s ease-out ${0.2 + i * 0.25}s both` }}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            {/* X axis */}
+            <div className="mt-2 flex justify-around gap-2.5 text-[10px] text-muted">
+              {step.weeks.map((w) => <span key={w} className="w-full max-w-[46px] text-center">{w}</span>)}
+            </div>
+          </div>
         </div>
       </div>
       {step.disclaimer && <p className="mt-3 text-center text-[11px] text-muted">{step.disclaimer}</p>}
-      <div className="mt-8">
+      <div className="mt-auto pt-8">
         <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
-    </Stack>
+    </div>
   )
 }
 
