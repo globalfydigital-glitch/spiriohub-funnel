@@ -30,6 +30,12 @@ export const MEDIA = {
   emailFemale: 'https://cf-cdn.spiriohub.com/uploads/6a711530-5f4d-46fa-a78e-af96d5d231a1-joined-us-women.webp',
   aiCompanion: 'https://cf-cdn.spiriohub.com/uploads/e0164756-9978-419a-a5fb-2cf1d6bba10d-image-136.png',
   bundle: 'https://cf-cdn.spiriohub.com/uploads/e39a3a60-f3fe-4074-b27c-bf31417218b5-v3.webp',
+  // Local assets (in public/) for the social-proof hero composite: petals + meditating figure.
+  socialPetals: '/social-petals.webp',
+  socialMan: '/social-man.webp',
+  // Award badge (gold shield) + male blueprint composite (grid + praying figure baked in).
+  awardBadge: '/award-badge.webp',
+  blueprintMale: '/blueprint-male.webp',
 }
 
 // Exact answer-button colors from the original funnel.
@@ -286,9 +292,9 @@ export const STEPS: Step[] = [
     title: 'your personal High-Vibration Plan to attract {goal} in your life', titleGold: 'High-Vibration Plan',
     cta: 'GET MY PLAN',
     plans: [
-      { id: 'm1', name: '1-Month Plan', old: '€49.99', price: '€19.99', perDay: '€0.66 / day', discount: '-60%' },
-      { id: 'm3', name: '3-Month Plan', old: '€99.99', price: '€44.99', perDay: '€0.49 / day', discount: '-55%', popular: true },
-      { id: 'm6', name: '6-Month Plan', old: '€129.99', price: '€59.99', perDay: '€0.33 / day', discount: '-54%' },
+      { id: 'm1', name: '1-Month Plan', price: '€49.99', perDay: '€1.66 / day' },
+      { id: 'm3', name: '3-Month Plan', price: '€99.99', perDay: '€1.11 / day', popular: true },
+      { id: 'm6', name: '6-Month Plan', price: '€129.99', perDay: '€0.72 / day' },
     ],
     moneyBackTitle: '30-day money-back guarantee',
     moneyBackBody: 'We believe that our plan will work for you and you will get noticeable results in just 4 weeks! We are even ready to return your money back if this plan is not for you!',

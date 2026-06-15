@@ -1392,7 +1392,37 @@ function PinkCheck() {
     </span>
   )
 }
-const PAY = ['PayPal', 'Pay', 'VISA', 'MC', 'Maestro', 'Disc', 'Amex']
+// Lifted to module scope so the per-second countdown re-render doesn't remount the whole subtree.
+function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <div className={`rounded-2xl border border-cardborder bg-white/[0.03] p-4 ${className}`}>{children}</div>
+}
+// Real payment-brand marks (inline SVG / styled wordmarks on white chips), no external CDN dependency.
+function PaymentLogos() {
+  const chip = 'flex h-6 items-center justify-center rounded bg-white px-1.5'
+  return (
+    <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+      {/* PayPal */}
+      <span className={chip}><span className="text-[11px] font-bold italic leading-none"><span style={{ color: '#003087' }}>Pay</span><span style={{ color: '#009CDE' }}>Pal</span></span></span>
+      {/* Apple Pay */}
+      <span className={chip}>
+        <span className="flex items-center gap-0.5 text-[11px] font-semibold leading-none text-black">
+          <svg viewBox="0 0 14 17" className="h-3 w-3" fill="currentColor" aria-hidden="true"><path d="M11.05 9.02c-.02-1.7 1.39-2.51 1.45-2.55-.79-1.16-2.02-1.32-2.46-1.34-1.05-.11-2.04.61-2.57.61-.53 0-1.34-.6-2.21-.58-1.14.02-2.19.66-2.77 1.68-1.18 2.05-.3 5.08.85 6.74.56.81 1.23 1.72 2.1 1.69.84-.03 1.16-.54 2.18-.54 1.02 0 1.3.54 2.19.52.9-.01 1.48-.83 2.03-1.64.64-.94.9-1.85.92-1.9-.02-.01-1.77-.68-1.79-2.69zM9.34 3.7c.47-.57.78-1.36.69-2.15-.67.03-1.49.45-1.97 1.01-.43.5-.81 1.31-.71 2.08.75.06 1.51-.38 1.99-.94z"/></svg>
+          Pay
+        </span>
+      </span>
+      {/* Visa */}
+      <span className={chip}><span className="text-[12px] font-bold italic leading-none tracking-tight" style={{ color: '#1434CB' }}>VISA</span></span>
+      {/* Mastercard */}
+      <span className={chip}><svg viewBox="0 0 38 24" className="h-4" aria-hidden="true"><circle cx="15" cy="12" r="9" fill="#EB001B"/><circle cx="23" cy="12" r="9" fill="#F79E1B"/><path d="M19 5.4a9 9 0 010 13.2 9 9 0 010-13.2z" fill="#FF5F00"/></svg></span>
+      {/* Maestro */}
+      <span className={chip}><svg viewBox="0 0 38 24" className="h-4" aria-hidden="true"><circle cx="15" cy="12" r="9" fill="#0099DF"/><circle cx="23" cy="12" r="9" fill="#ED0006"/><path d="M19 5.4a9 9 0 010 13.2 9 9 0 010-13.2z" fill="#6C6BBD"/></svg></span>
+      {/* Discover */}
+      <span className={chip}><span className="flex items-center text-[8px] font-bold leading-none tracking-tight text-[#231F20]">DISC<span className="mx-px inline-block h-1.5 w-1.5 rounded-full" style={{ background: '#F76E11' }} />VER</span></span>
+      {/* Amex */}
+      <span className="flex h-6 items-center justify-center rounded bg-[#2E77BB] px-1.5"><span className="text-[8px] font-bold leading-none tracking-tight text-white">AMEX</span></span>
+    </div>
+  )
+}
 const WHAT_YOU_GET = [
   'See why your energy feels blocked', 'Get a clear plan to shift daily', 'Release blocks in love and money',
   'Shift from scarcity into abundance', 'Reprogram your subconscious', 'Live as the “lucky” version of you',
@@ -1401,20 +1431,19 @@ const WHAT_YOU_GET = [
 const WITHOUT = ['Stuck in scarcity', 'Forced positivity', 'Clinging, chasing', 'Thinking one way, acting against it', 'Feeling “not one of the lucky ones”', 'Same old cycles']
 const WITH = ['Abundance flows', 'Grounded mind', 'Choosing from worth', 'Your thoughts & actions are aligned', 'Money, support & chances flow more', 'Your entire life shifts']
 const STATS = [
-  { n: '82%', t: 'raised their vibrations after just 4 weeks' },
-  { n: '78%', t: 'reached their peak in abundance & life quality' },
-  { n: '45%', t: 'started in the same low-vibration state as you' },
+  { n: '82', pre: 'of users ', bold: 'raised their vibrations', post: ' after just 4 weeks' },
+  { n: '78', pre: 'of users reached their ', bold: 'peak in abundance & life quality', post: '' },
+  { n: '45', pre: 'of users started in the same ', bold: 'low-vibration state as you', post: '' },
 ]
-const FEATURED = ['USA TODAY', 'Forbes', 'WSJ', "Women's Health", 'healthline', 'Mashable']
 const REVIEWS = [
   { name: 'Laura S.', rating: '5.0', when: '1 day ago', img: MEDIA.ageAf, text: "I didn’t realize how much inner trauma was blocking my manifestations. With Spirio, I finally healed the energy I’d been holding for years. As soon as I released it, everything started flowing—clarity, confidence, and the things I’d been trying to attract showed up effortlessly." },
   { name: 'Ann R.', rating: '5.0', when: '1 week ago', img: MEDIA.ageDf, text: 'Since using Spirio, my entire energy around abundance has shifted. I stopped chasing and started receiving. Opportunities, money, and support began flowing in once I aligned with the frequency of having—not lacking.' },
   { name: 'Scott G.', rating: '4.8', when: '2 months ago', initials: 'SG', bg: '#f0a87e', text: "I didn’t believe in manifestation until I felt completely stuck. Spirio gave me the tools to clear old energy and reprogram my mindset. Now, I feel aligned, magnetic, and finally attracting love—in every sense." },
 ]
 const FAQS = [
-  "What if I’ve used other things before and they didn’t help me?",
-  "What if I don’t have enough willpower to stick to my plan?",
-  'What if I feel worry about starting this plan?',
+  { q: "What if I’ve used other things before and they didn’t help me?", a: "Most approaches only touch the surface. Spirio works on the subconscious patterns that block your energy, with a short guided practice each day so the shift actually sticks. And if it isn’t for you, you’re covered by the 30-day money-back guarantee." },
+  { q: "What if I don’t have enough willpower to stick to my plan?", a: "You don’t need willpower. Your plan is just 3–20 minutes a day, guided step by step, and it’s built around how you answered the quiz — so it fits your real life, not an ideal one." },
+  { q: 'What if I feel worry about starting this plan?', a: "That’s completely normal — and there’s zero risk. Start today, follow the daily sessions at your own pace, and if you don’t feel a difference you can request a full refund within 30 days." },
 ]
 const BP_DAYS = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7']
 const BP_ICONS = ['❤️', '🎯', '💤', '🧘', '🔥', '🌙', '✨']
@@ -1422,6 +1451,13 @@ const BP_MINS = [
   [5, 4, 6, 7, 7, 8, 5],
   [3, 5, 6, 6, 7, 6, 8],
   [4, 6, 5, 7, 8, 9, 10],
+]
+// Free bonus modules shown in the "Additional discount" modal after GET MY PLAN.
+const BONUSES = [
+  { name: 'Tantric Guide To Boost Intimacy', old: '€39' },
+  { name: 'Abundance Manifesto', old: '€19' },
+  { name: 'Karma Cleansing Hacks', old: '€19' },
+  { name: 'Energy Balance Program', old: '€59' },
 ]
 
 function PaywallView({
@@ -1435,14 +1471,27 @@ function PaywallView({
   onAnswer: (key: string, value: string) => void
   onNext: () => void
 }) {
-  const [plan, setPlan] = useState<string>(step.plans[0].id) // 1-Month selected by default (per the original)
-  const [secs, setSecs] = useState(600)
+  const COUNTDOWN_SECS = 600
+  const [plan, setPlan] = useState<string>(step.plans[0]?.id ?? '') // 1-Month selected by default (per the original)
+  const [secs, setSecs] = useState(COUNTDOWN_SECS)
   const [faq, setFaq] = useState<number | null>(null)
   useEffect(() => {
-    const t = setInterval(() => setSecs((s) => (s > 0 ? s - 1 : 0)), 1000)
+    // Loop back instead of freezing at 00:00 next to a still-active discount.
+    const t = setInterval(() => setSecs((s) => (s <= 1 ? COUNTDOWN_SECS : s - 1)), 1000)
     return () => clearInterval(t)
   }, [])
   const mmss = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`
+
+  // "Additional discount" modal shown after GET MY PLAN, with its own reserved-discount countdown.
+  const [showModal, setShowModal] = useState(false)
+  const [modalSecs, setModalSecs] = useState(120)
+  useEffect(() => {
+    if (!showModal) return
+    setModalSecs(120)
+    const t = setInterval(() => setModalSecs((s) => (s > 0 ? s - 1 : 0)), 1000)
+    return () => clearInterval(t)
+  }, [showModal])
+  const mmssModal = `${String(Math.floor(modalSecs / 60)).padStart(2, '0')}:${String(modalSecs % 60).padStart(2, '0')}`
 
   const G = answers.gender === 'female'
   const name = (answers.name as string) || ''
@@ -1451,37 +1500,42 @@ function PaywallView({
   const nowImg = G ? MEDIA.summaryFemale : MEDIA.summary
   const goalImg = G ? MEDIA.female : MEDIA.male
   const selected = step.plans.find((p) => p.id === plan) ?? step.plans[0]
-  const buy = () => { onAnswer('plan', plan); onNext() }
+  const buy = () => { onAnswer('plan', selected.id); onNext() }
 
   const GET = (cls = '') => (
-    <button onClick={buy} className={`rounded-full bg-[#1f9d6b] font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] ${cls}`}>GET MY PLAN</button>
-  )
-  const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-    <div className={`rounded-2xl border border-cardborder bg-white/[0.03] p-4 ${className}`}>{children}</div>
+    <button onClick={() => setShowModal(true)} aria-label={`Get my plan — ${selected.name}, ${selected.price}`} className={`rounded-2xl bg-[#227e64] font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] ${cls}`}>GET MY PLAN</button>
   )
 
   return (
     <div className="-mx-5 animate-fadeUp">
       {/* Sticky timer header */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/5 px-5 py-3" style={{ background: '#141319' }}>
-        <span className="text-xl font-extrabold tabular-nums text-gold">{mmss}</span>
+        <span role="timer" aria-label={`Offer ends in ${mmss}`} className="text-xl font-extrabold tabular-nums text-gold">{mmss}</span>
         {GET('px-5 py-2.5 text-sm')}
       </div>
 
       <div className="px-5 pb-12 pt-5">
         {/* Discount + title */}
         <p className="text-center text-sm font-semibold text-muted">🎁 Special discount: <span style={{ color: '#ef4444' }}>{selected.discount ?? '-54%'}</span></p>
-        <h1 className="mt-3 text-center text-[1.7rem] font-bold leading-tight text-white">
-          {name ? `${name}, ` : ''}your personal {gold('High-Vibration Plan', ['High-Vibration Plan'])} to attract {gold(goal, [goal])} in your life
+        <h1 className="mt-3 break-words text-center text-[1.7rem] font-bold leading-tight text-white">
+          {name ? `${name}, ` : ''}your personal {gold('High-Vibration Plan', ['High-Vibration Plan'])} to attract {goal} in your life
         </h1>
         <p className="mt-2 text-center text-sm text-muted">Become a high-vibration person</p>
 
         {/* Now vs goal */}
-        <div className="mt-6 grid grid-cols-2 gap-3 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+        <div className="relative mt-6 grid grid-cols-2 gap-3 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+          {/* centered divider, split to leave a clean gap around the (transparent) chevron */}
+          <div className="pointer-events-none absolute left-1/2 top-4 h-[3.25rem] w-px -translate-x-1/2 bg-white/10" />
+          <div className="pointer-events-none absolute bottom-4 left-1/2 top-[7.75rem] w-px -translate-x-1/2 bg-white/10" />
+          {/* animated chevron › → ›› pointing from Now to the goal (transparent bg) */}
+          <div className="pointer-events-none absolute left-1/2 top-24 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center text-[2.6rem] font-bold leading-none text-gold">
+            <span>›</span>
+            <span className="-ml-3 animate-[chev2_1.3s_ease-in-out_infinite]">›</span>
+          </div>
           {[{ goalCol: false, img: nowImg, pill: 'Now', vib: 'Low', love: 'Blocked', opp: 'Stalled' }, { goalCol: true, img: goalImg, pill: 'Your goal', vib: 'High', love: 'Flowing', opp: 'Showing up' }].map((c, i) => {
             const col = c.goalCol ? '#22c55e' : '#ef4444'
             return (
-              <div key={i} className={i === 0 ? 'border-r border-white/10 pr-3' : 'pl-3'}>
+              <div key={i} className={i === 0 ? 'pr-3' : 'pl-3'}>
                 <div className="mb-2 flex justify-center">
                   <span className="rounded-lg px-3 py-1 text-xs font-bold text-white" style={{ background: c.goalCol ? '#1f8a5c' : '#2a2535' }}>{c.pill}</span>
                 </div>
@@ -1490,7 +1544,10 @@ function PaywallView({
                 <div className="text-sm font-bold" style={{ color: col }}>{c.goalCol ? '↑' : '↓'} {c.vib}</div>
                 <div className="mt-2 text-[11px] text-muted">Love</div>
                 <div className="text-sm font-bold text-white">{c.love}</div>
-                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-cardborder"><div className="h-full rounded-full" style={{ width: c.goalCol ? '88%' : '24%', background: col }} /></div>
+                <div className="relative mt-1 h-1.5 w-full rounded-full bg-cardborder">
+                  <div className="h-full rounded-full" style={{ width: c.goalCol ? '70%' : '30%', background: col }} />
+                  <span className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/10 bg-white shadow-sm" style={{ left: c.goalCol ? '70%' : '30%' }} />
+                </div>
                 <div className="mt-2 text-[11px] text-muted">Opportunities</div>
                 <div className="text-sm font-bold text-white">{c.opp}</div>
                 <div className="mt-1 flex gap-1">{[0, 1, 2].map((s) => <div key={s} className="h-1.5 flex-1 rounded-full" style={{ background: c.goalCol ? col : s === 0 ? col : '#3a3545' }} />)}</div>
@@ -1500,7 +1557,7 @@ function PaywallView({
         </div>
 
         {/* Plan recap */}
-        <h2 className="mt-8 text-center text-xl font-bold text-white">{name ? `${name}, ` : ''}your personalized plan is ready!</h2>
+        <h2 className="mt-8 break-words text-center text-xl font-bold text-white">{name ? `${name}, ` : ''}your personalized plan is ready!</h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div className="flex items-start gap-2.5 border-r border-white/10 pr-3">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="brain" /></span>
@@ -1516,25 +1573,25 @@ function PaywallView({
         <div className="mt-5 rounded-2xl p-4" style={{ background: '#1f8a5c' }}>
           <div className="flex items-center gap-2 font-bold text-white">🏷️ Your promo code applied!</div>
           <div className="mt-3 flex items-stretch gap-2">
-            <div className="flex flex-1 items-center gap-2 rounded-xl bg-black/25 px-3 py-2.5 text-sm text-white"><span className="text-gold">✓</span> {(name || 'you').toLowerCase()}_haz26</div>
-            <div className="flex items-center rounded-xl bg-black/25 px-3 text-lg font-extrabold tabular-nums text-gold">{mmss}</div>
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-black/25 px-3 py-2.5 text-sm text-white"><span className="text-gold">✓</span> <span className="truncate">{(name || 'you').toLowerCase()}_haz26</span></div>
+            <div aria-hidden="true" className="flex shrink-0 items-center rounded-xl bg-black/25 px-3 text-lg font-extrabold tabular-nums text-gold">{mmss}</div>
           </div>
         </div>
 
         {/* Plans */}
-        <div className="mt-5 space-y-3">
+        <div role="radiogroup" aria-label="Choose your plan" className="mt-5 space-y-3">
           {step.plans.map((p: Plan) => {
             const sel = plan === p.id
             const m = p.perDay.match(/(\d+)[.,](\d+)/)
             return (
-              <button key={p.id} onClick={() => setPlan(p.id)} className={`relative block w-full overflow-hidden rounded-2xl border-2 text-left transition-all ${sel ? 'border-gold' : 'border-cardborder'}`} style={{ background: sel ? 'rgba(245,196,81,0.07)' : 'rgba(255,255,255,0.03)' }}>
+              <button key={p.id} type="button" role="radio" aria-checked={sel} aria-label={`${p.name}, ${p.price}${p.discount ? `, ${p.discount}` : ''}`} onClick={() => setPlan(p.id)} className={`relative block w-full overflow-hidden rounded-2xl border-2 text-left transition-all ${sel ? 'border-gold' : 'border-cardborder'}`} style={{ background: sel ? 'linear-gradient(160deg, rgba(99,64,150,0.45), rgba(58,40,86,0.4))' : 'rgba(255,255,255,0.03)' }}>
                 {p.popular && <div className="bg-gold py-1 text-center text-[10px] font-bold uppercase tracking-wider text-ink">Most Popular</div>}
                 <div className="flex items-center gap-3 p-4 pt-5">
                   {p.discount && <span className="absolute left-0 top-0 rounded-br-xl px-2 py-0.5 text-[11px] font-bold text-white" style={{ background: '#ef4444' }}>{p.discount}</span>}
                   <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${sel ? 'border-gold' : 'border-muted'}`}>{sel && <span className="h-2.5 w-2.5 rounded-full bg-gold" />}</span>
                   <div className="flex-1">
-                    <div className="font-bold text-white">{p.name}</div>
-                    <div className="text-sm"><span className="text-muted line-through">{p.old}</span> <span className="text-white">{p.price}</span></div>
+                    <div className="font-bold uppercase text-white">{p.name}</div>
+                    <div className="text-sm text-muted">{p.price}</div>
                   </div>
                   <div className="relative flex items-center rounded-lg px-3 py-1.5" style={{ background: sel ? '#fff' : '#b6b0c0', color: '#1a1626' }}>
                     <span className="absolute -left-1 h-2.5 w-2.5 rounded-full" style={{ background: '#141319' }} />
@@ -1550,12 +1607,10 @@ function PaywallView({
 
         <div className="mt-4 flex items-center justify-center gap-2 text-[13px] font-semibold text-white"><span style={{ color: '#22c55e' }}>🛡️</span> 30-day money-back guarantee</div>
         <div className="mt-4">{GET('w-full py-4 text-base')}</div>
-        <div className="mt-3 flex justify-center"><span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ borderColor: '#1f9d6b', color: '#1f9d6b' }}>🛡️ Pay safe & secure</span></div>
-        <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-          {PAY.map((b) => <span key={b} className="rounded bg-white px-1.5 py-1 text-[9px] font-bold text-gray-700">{b}</span>)}
-        </div>
+        <div className="mt-3 flex justify-center"><span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ borderColor: '#227e64', color: '#227e64' }}>🛡️ Pay safe & secure</span></div>
+        <PaymentLogos />
         <p className="mt-3 text-center text-[11px] leading-relaxed text-muted">
-          By completing your purchase you agree to automatic renewal of the subscription. You’ll be charged {selected.price} now, then €39.99 every month. Cancel anytime in the app or by emailing support@spiriohub.com.
+          By completing your purchase you agree to automatic renewal of the subscription. First month for {selected.price}, then €39.99 every month. Cancel anytime in the mobile application or by emailing support@spiriohub.com. See Terms of Use.
         </p>
 
         {/* Money-back card */}
@@ -1564,7 +1619,7 @@ function PaywallView({
             <div className="text-2xl">🛡️</div>
             <div className="mt-1 text-lg font-bold text-white">{step.moneyBackTitle}</div>
             {step.moneyBackBody && <p className="mt-2 text-[13px] leading-snug text-white/80">{step.moneyBackBody}</p>}
-            {step.moneyBackLinkText && <p className="mt-3 text-[12px] text-muted">{step.moneyBackLinkPrefix}<a href={step.moneyBackLinkUrl} target="_blank" rel="noreferrer" className="text-gold underline">{step.moneyBackLinkText}</a></p>}
+            {step.moneyBackLinkText && <p className="mt-3 text-[12px] text-muted">{step.moneyBackLinkPrefix}<a href={step.moneyBackLinkUrl} target="_blank" rel="noreferrer" className="text-gold underline">{step.moneyBackLinkText}<span className="sr-only"> (opens in a new tab)</span></a></p>}
           </Card>
         )}
 
@@ -1582,48 +1637,83 @@ function PaywallView({
           {WHAT_YOU_GET.map((w) => <div key={w} className="flex items-start gap-3"><PinkCheck /><span className="text-[14px] text-white/90">{w}</span></div>)}
         </div>
 
-        {/* Without / With */}
-        <div className="mt-8 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-cardborder bg-white/[0.02] p-4">
-            <div className="mb-3 text-sm font-bold text-white">Without Spirio</div>
-            {WITHOUT.map((w) => <div key={w} className="mb-2.5 flex items-start gap-2 text-[12px] text-muted"><span style={{ color: '#9aa0ab' }}>✕</span> {w}</div>)}
-          </div>
-          <div className="rounded-2xl p-4" style={{ background: 'linear-gradient(160deg, #3a2456, #2a1c3e)' }}>
+        {/* Without / With — the "With" card is raised and overlaps the "Without" card, drawing the eye (matches the original) */}
+        <div className="relative mt-8 pb-2">
+          {/* With Spirio — elevated, on top, right */}
+          <div className="absolute right-0 top-0 z-10 w-[53%] rounded-2xl p-4 shadow-[0_14px_34px_rgba(0,0,0,0.5)]" style={{ background: 'linear-gradient(160deg, #45295f, #2c1d42)' }}>
             <div className="mb-3 text-sm font-bold text-white">With Spirio</div>
-            {WITH.map((w) => <div key={w} className="mb-2.5 flex items-start gap-2 text-[12px] text-white/90"><span className="text-gold">✓</span> {w}</div>)}
+            {WITH.map((w) => (
+              <div key={w} className="mb-2.5 flex items-start gap-2 text-[12px] leading-snug text-white/90">
+                <span className="mt-0.5 flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full" style={{ background: '#22c55e' }}>
+                  <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+                </span>
+                {w}
+              </div>
+            ))}
+          </div>
+          {/* Without Spirio — lower, behind (extra right padding so text wraps clear of the overlapping card) */}
+          <div className="mt-9 w-[53%] rounded-2xl border border-cardborder bg-white/[0.02] p-4 pr-7">
+            <div className="mb-3 text-sm font-bold text-white">Without Spirio</div>
+            {WITHOUT.map((w) => (
+              <div key={w} className="mb-2.5 flex items-start gap-2 text-[12px] leading-snug text-muted">
+                <span className="mt-0.5 flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full border" style={{ borderColor: '#5b5566', color: '#8a8494' }}>
+                  <svg viewBox="0 0 24 24" className="h-2 w-2" fill="none" stroke="currentColor" strokeWidth="3.6" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                </span>
+                {w}
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Harvard */}
         <Card className="mt-4 flex items-center gap-4">
-          <img src={MEDIA.harvard} alt="" loading="lazy" className="h-12 w-12 shrink-0 object-contain" />
+          <img src={MEDIA.harvard} alt="Harvard Medical School" loading="lazy" className="h-12 w-12 shrink-0 object-contain" />
           <p className="text-[13px] leading-snug text-white/90">{gold('Harvard Medical School research shows spiritual people are happier & healthier', ['Harvard Medical School'])}</p>
         </Card>
 
         {/* Social proof + stats */}
         <h2 className="mt-8 text-center text-[1.4rem] font-bold leading-tight text-white">{gold(`284,620 ${G ? 'women' : 'men'} just like you`, [`284,620 ${G ? 'women' : 'men'}`])} achieved great results</h2>
-        <Card className="mt-4">
-          <div className="mb-4 h-40 w-full rounded-xl" style={{ background: `linear-gradient(160deg, rgba(168,85,247,0.35), rgba(20,19,25,0.6)), url(${MEDIA.meditationBg}) center/cover` }} />
-          {STATS.map((s) => <div key={s.n} className="mb-3 flex items-start gap-3"><span className="text-2xl font-extrabold text-gold">{s.n}</span><span className="mt-1 text-[13px] text-white/85">of users {s.t}</span></div>)}
+        <Card className="mt-4 overflow-hidden p-0">
+          <div className="relative h-52 w-full overflow-hidden" style={{ background: 'radial-gradient(115% 80% at 50% 40%, #5b4677 0%, #3b2d54 44%, #241b32 74%, #17131e 100%)' }}>
+            <img src={MEDIA.socialPetals} alt="" loading="lazy" className="pointer-events-none absolute inset-x-0 top-0 w-full select-none" />
+            <img src={MEDIA.socialMan} alt="" loading="lazy" className="pointer-events-none absolute bottom-0 left-1/2 h-[84%] w-auto -translate-x-1/2 select-none" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#15141b] to-transparent" />
+          </div>
+          <div className="px-4 pb-3 pt-1">
+            {STATS.map((s, i) => (
+              <div key={s.n} className={`flex items-start gap-3 py-3 ${i > 0 ? 'border-t border-white/10' : ''}`}>
+                <span className="shrink-0 leading-none text-gold"><span className="text-[2rem] font-extrabold">{s.n}</span><span className="align-top text-sm font-extrabold">%</span></span>
+                <span className="mt-1 text-[13px] leading-snug text-white/80">{s.pre}<span className="font-bold text-white">{s.bold}</span>{s.post}</span>
+              </div>
+            ))}
+          </div>
         </Card>
 
         {/* As featured */}
-        <p className="mt-8 text-center text-sm text-muted">Our program is based on methodology</p>
-        <h3 className="text-center text-xl font-bold text-gold">As featured in</h3>
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-          {FEATURED.map((f) => <span key={f} className="font-serif text-lg font-semibold text-white/45">{f}</span>)}
-        </div>
+        <Card className="mt-8 text-center">
+          <p className="text-sm text-muted">Our program is based on methodology</p>
+          <h3 className="mt-1 text-xl font-bold text-gold">As featured in</h3>
+          <div className="mx-auto mt-5 flex max-w-[300px] flex-wrap items-center justify-center gap-x-7 gap-y-4 text-white/55">
+            <span className="flex items-center gap-1.5 text-[13px] font-bold tracking-tight"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/55 text-[6px] font-black leading-none text-[#15141b]">USA</span>USA TODAY</span>
+            <span className="font-serif text-2xl font-bold italic leading-none">Forbes</span>
+            <span className="font-serif text-xl font-bold leading-none tracking-tight">WSJ</span>
+            <span className="font-serif text-lg font-semibold italic leading-none">Women’s Health</span>
+            <span className="text-lg font-bold lowercase leading-none tracking-tight">healthline</span>
+            <span className="text-xl font-extrabold leading-none tracking-tight">Mashable</span>
+          </div>
+        </Card>
         <Card className="mt-6 flex items-center gap-4">
-          <div className="text-3xl">🏆</div>
+          <img src={MEDIA.awardBadge} alt="Best Well-being Product Innovation Award 2023" loading="lazy" className="h-16 w-auto shrink-0" />
           <p className="text-[13px] leading-snug text-white/90"><span className="font-bold text-gold">Spirio</span> is proudly nominated for an: <span className="font-bold">Best Well-being Product Innovation Award – 2023</span></p>
         </Card>
 
         {/* Blueprint */}
         <h2 className="mt-8 text-center text-xl font-bold text-white">A better version of you. Everyday.</h2>
         <p className="mt-1 text-center text-sm text-muted">Your tailored high-vibration growth blueprint</p>
+        {G ? (
         <div className="relative mt-4 overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03] p-3">
           {/* Day header */}
-          <div className="flex gap-1 pl-10">
+          <div className="flex gap-1 pl-9">
             {BP_DAYS.map((d) => (
               <span key={d} className="flex-1 text-center text-[9px] font-medium text-muted">{d}</span>
             ))}
@@ -1633,14 +1723,14 @@ function PaywallView({
             {BP_MINS.map((mins, w) => (
               <div key={w} className="flex items-stretch gap-1">
                 <span
-                  className="flex w-8 shrink-0 items-center justify-center rounded-md text-[9px] font-bold tracking-wider text-white"
+                  className="flex w-8 shrink-0 items-center justify-center whitespace-nowrap rounded-md text-[9px] font-bold text-white"
                   style={{ background: '#1f8a5c', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                 >
                   WEEK {w + 1}
                 </span>
                 <div className="flex flex-1 gap-1">
                   {BP_ICONS.map((ic, d) => (
-                    <div key={d} className="flex flex-1 flex-col items-center justify-center gap-0.5 rounded-lg bg-white/[0.06] py-1.5">
+                    <div key={d} className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg bg-white/[0.06] py-1.5">
                       <span className="text-base leading-none">{ic}</span>
                       <span className="text-[7px] leading-none text-muted">{mins[d]} min</span>
                     </div>
@@ -1659,6 +1749,9 @@ function PaywallView({
           {/* Bottom fade so the lower rows dissolve into the panel */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#15141b] to-transparent" />
         </div>
+        ) : (
+          <img src={MEDIA.blueprintMale} alt="Your tailored weekly plan" loading="lazy" className="mt-4 w-full rounded-2xl border border-cardborder" />
+        )}
 
         {/* Testimonials */}
         <h2 className="mt-8 text-center text-xl font-bold text-white">People love Spirio</h2>
@@ -1676,7 +1769,7 @@ function PaywallView({
                     <span className="text-sm font-bold text-white">{r.name}</span>
                     <span className="whitespace-nowrap text-[11px] text-muted">{r.when}</span>
                   </div>
-                  <div className="mt-0.5 text-sm leading-none text-gold">★★★★★ <span className="text-xs text-white/70">{r.rating}</span></div>
+                  <div role="img" aria-label={`Rated ${r.rating} out of 5`} className="mt-0.5 text-sm leading-none text-gold"><span aria-hidden="true">★★★★★</span> <span aria-hidden="true" className="text-xs text-white/70">{r.rating}</span></div>
                 </div>
               </div>
               <p className="mt-3 text-[13px] leading-snug text-white/80">{r.text}</p>
@@ -1687,18 +1780,119 @@ function PaywallView({
         {/* FAQ */}
         <h2 className="mt-8 text-center text-xl font-bold text-white">People often ask</h2>
         <div className="mt-4 space-y-3">
-          {FAQS.map((q, i) => (
-            <button key={i} onClick={() => setFaq(faq === i ? null : i)} className="flex w-full items-start gap-3 rounded-2xl border border-cardborder bg-white/[0.03] p-4 text-left">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold text-sm font-bold text-ink">?</span>
-              <span className="flex-1 text-[14px] font-medium text-white">{q}</span>
-              <span className="text-muted">{faq === i ? '▾' : '▸'}</span>
-            </button>
-          ))}
+          {FAQS.map((f, i) => {
+            const open = faq === i
+            return (
+              <div key={f.q} className="overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03]">
+                <button type="button" aria-expanded={open} aria-controls={`faq-panel-${i}`} onClick={() => setFaq(open ? null : i)} className="flex w-full items-start gap-3 p-4 text-left">
+                  <span aria-hidden="true" className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold text-sm font-bold text-ink">?</span>
+                  <span className="flex-1 text-[14px] font-medium text-white">{f.q}</span>
+                  <span aria-hidden="true" className="text-muted">{open ? '▾' : '▸'}</span>
+                </button>
+                {open && <div id={`faq-panel-${i}`} className="px-4 pb-4 pl-[3.25rem] text-[13px] leading-snug text-white/80">{f.a}</div>}
+              </div>
+            )
+          })}
         </div>
 
-        {/* Final CTA */}
-        <div className="mt-8">{GET('w-full py-4 text-base')}</div>
+        {/* Offer repeated after the FAQ (price + guarantee), matching the original */}
+        <h2 className="mt-10 break-words text-center text-xl font-bold text-white">{name ? `${name}, ` : ''}your personalized plan is ready!</h2>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="flex items-start gap-2.5 border-r border-white/10 pr-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="brain" /></span>
+            <div className="leading-tight"><div className="text-[11px] text-muted">Current pattern</div><div className="text-[13px] font-bold text-white">Fear, negative loops</div></div>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="target" /></span>
+            <div className="leading-tight"><div className="text-[11px] text-muted">What you want</div><div className="text-[13px] font-bold text-white">{goalCap}</div></div>
+          </div>
+        </div>
+
+        <div role="radiogroup" aria-label="Choose your plan" className="mt-5 space-y-3">
+          {step.plans.map((p: Plan) => {
+            const sel = plan === p.id
+            const m = p.perDay.match(/(\d+)[.,](\d+)/)
+            return (
+              <button key={p.id} type="button" role="radio" aria-checked={sel} aria-label={`${p.name}, ${p.price}${p.discount ? `, ${p.discount}` : ''}`} onClick={() => setPlan(p.id)} className={`relative block w-full overflow-hidden rounded-2xl border-2 text-left transition-all ${sel ? 'border-gold' : 'border-cardborder'}`} style={{ background: sel ? 'linear-gradient(160deg, rgba(99,64,150,0.45), rgba(58,40,86,0.4))' : 'rgba(255,255,255,0.03)' }}>
+                {p.popular && <div className="bg-gold py-1 text-center text-[10px] font-bold uppercase tracking-wider text-ink">Most Popular</div>}
+                <div className="flex items-center gap-3 p-4 pt-5">
+                  {p.discount && <span className="absolute left-0 top-0 rounded-br-xl px-2 py-0.5 text-[11px] font-bold text-white" style={{ background: '#ef4444' }}>{p.discount}</span>}
+                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${sel ? 'border-gold' : 'border-muted'}`}>{sel && <span className="h-2.5 w-2.5 rounded-full bg-gold" />}</span>
+                  <div className="flex-1">
+                    <div className="font-bold uppercase text-white">{p.name}</div>
+                    <div className="text-sm text-muted">{p.price}</div>
+                  </div>
+                  <div className="relative flex items-center rounded-lg px-3 py-1.5" style={{ background: sel ? '#fff' : '#b6b0c0', color: '#1a1626' }}>
+                    <span className="absolute -left-1 h-2.5 w-2.5 rounded-full" style={{ background: '#141319' }} />
+                    <span className="mr-0.5 text-sm font-semibold">€</span>
+                    <span className="text-3xl font-extrabold leading-none">{m ? m[1] : '0'}</span>
+                    <span className="ml-0.5 flex flex-col text-[10px] font-bold leading-tight"><span>{m ? m[2] : ''}</span><span className="text-gray-500">day</span></span>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="mt-4 flex items-center justify-center gap-2 text-[13px] font-semibold text-white"><span style={{ color: '#22c55e' }}>🛡️</span> 30-day money-back guarantee</div>
+        <div className="mt-4">{GET('w-full py-4 text-base')}</div>
+        <div className="mt-3 flex justify-center"><span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ borderColor: '#227e64', color: '#227e64' }}>🛡️ Pay safe & secure</span></div>
+        <PaymentLogos />
+        <p className="mt-3 text-center text-[11px] leading-relaxed text-muted">
+          By completing your purchase you agree to automatic renewal of the subscription. First month for {selected.price}, then €39.99 every month. Cancel anytime in the mobile application or by emailing support@spiriohub.com. See Terms of Use.
+        </p>
+
+        {step.moneyBackTitle && (
+          <Card className="mt-6 text-center">
+            <div className="text-2xl">🛡️</div>
+            <div className="mt-1 text-lg font-bold text-white">{step.moneyBackTitle}</div>
+            {step.moneyBackBody && <p className="mt-2 text-[13px] leading-snug text-white/80">{step.moneyBackBody}</p>}
+            {step.moneyBackLinkText && <p className="mt-3 text-[12px] text-muted">{step.moneyBackLinkPrefix}<a href={step.moneyBackLinkUrl} target="_blank" rel="noreferrer" className="text-gold underline">{step.moneyBackLinkText}<span className="sr-only"> (opens in a new tab)</span></a></p>}
+          </Card>
+        )}
+
+        <Card className="mt-4">
+          <div className="text-sm font-bold text-white">🔒 Your information is safe</div>
+          <p className="mt-1 text-[12px] text-muted">We won’t sell or rent your personal contact information for any marketing purposes whatsoever.</p>
+          <div className="mt-3 text-sm font-bold text-white">💳 Secure checkout</div>
+          <p className="mt-1 text-[12px] text-muted">All information is encrypted and transmitted without risk using a Secure Socket Layer protocol.</p>
+        </Card>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60" onClick={() => setShowModal(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="max-h-[92vh] w-full max-w-[460px] overflow-y-auto rounded-t-3xl p-5 pb-8" style={{ background: '#1b1a22', animation: 'sheetUp 0.3s ease-out' }}>
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+            <h3 className="text-center text-lg font-bold text-white">🎊 Additional discount</h3>
+
+            <div className="mt-4 overflow-hidden rounded-xl">
+              <div className="py-2 text-center text-[13px] font-extrabold uppercase tracking-wide text-white" style={{ background: '#f0453e' }}>Discount reserved for {mmssModal}</div>
+              <div className="flex items-center justify-between gap-3 p-3" style={{ background: 'linear-gradient(160deg, #45295f, #2c1d42)' }}>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: '#4a3a6e' }}>🌟</span>
+                  <span className="text-[13px] font-bold leading-tight text-white">Your personal High-Vibration<br />Growth Plan</span>
+                </div>
+                <span className="shrink-0 text-[12px] text-white/70">Full access</span>
+              </div>
+            </div>
+
+            <div className="my-5 h-px bg-white/10" />
+
+            <p className="text-center text-[15px] font-bold leading-snug text-white">We added <span style={{ color: '#3ad29f' }}>FREE</span> personalised modules to speed up your <span style={{ color: '#f0453e' }}>Vibrations Growth</span>:</p>
+
+            <div className="mt-4 rounded-xl p-4" style={{ background: 'linear-gradient(160deg, #45295f, #2c1d42)' }}>
+              {BONUSES.map((b) => (
+                <div key={b.name} className="flex items-center justify-between py-1.5 text-[14px]">
+                  <span className="text-white">{b.name}</span>
+                  <span className="shrink-0"><span className="text-white/40 line-through">{b.old}</span> <span className="font-bold" style={{ color: '#3ad29f' }}>€0</span></span>
+                </div>
+              ))}
+            </div>
+
+            <button onClick={buy} className="mt-5 w-full rounded-2xl bg-[#227e64] py-4 text-base font-bold text-white transition-all hover:brightness-110 active:scale-[0.99]">CONTINUE</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

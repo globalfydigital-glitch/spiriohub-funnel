@@ -29,6 +29,19 @@ body {
   background: transparent;
 }
 
+/* visible keyboard-focus ring (interactive elements only had the faint native outline on the dark bg) */
+:focus-visible {
+  outline: 2px solid #f5c451;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* paywall Now→goal: second chevron pulses in/out so it reads › then ›› */
+@keyframes chev2 {
+  0%, 100% { opacity: 0; transform: translateX(-3px); }
+  50% { opacity: 1; transform: translateX(0); }
+}
+
 /* sound-wave / equalizer animation used on the full-bleed teaser screens */
 @keyframes wave {
   0% { transform: scaleY(0.3); }
