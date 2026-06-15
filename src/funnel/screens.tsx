@@ -924,21 +924,71 @@ function InputView({
     onAnswer(step.saveAs, value.trim())
     onNext()
   }
+  const isEmail = step.field === 'email'
   const caption = step.caption && answers.gender === 'female' ? step.caption.replace('men', 'women') : step.caption
-  const showError = touched && !valid && step.field === 'email' && value.length > 0 && step.error
+  const showError = touched && !valid && isEmail && value.length > 0 && step.error
+  const titleNode = <Title>{step.titleGold ? gold(step.title, [step.titleGold]) : step.title}</Title>
+
+  // Email screen — title at top, social proof + privacy below the field, CTA pinned to the bottom.
+  if (isEmail) {
+    return (
+      <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
+        {titleNode}
+        {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
+        <div className="relative mt-6">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+          </span>
+          <input
+            autoFocus
+            type="email"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onBlur={() => setTouched(true)}
+            onKeyDown={(e) => e.key === 'Enter' && submit()}
+            placeholder={step.placeholder}
+            className="w-full rounded-2xl border border-cardborder bg-card py-4 pl-11 pr-4 text-white placeholder:text-muted outline-none focus:border-gold"
+          />
+        </div>
+        {showError && <p className="mt-2 text-[12px]" style={{ color: RED }}>{step.error}</p>}
+        {(step.image || caption) && (
+          <div className="mt-5 flex items-center gap-3">
+            {step.image && <img src={step.image} alt="" loading="lazy" className="h-7 w-auto shrink-0" />}
+            {caption && (
+              <p className="text-[13px] font-semibold leading-tight text-white">
+                {caption}<span className="text-gold">{step.captionAccent}</span>
+              </p>
+            )}
+          </div>
+        )}
+        {step.tip && (
+          <p className="mt-4 flex gap-2 text-[11px] leading-relaxed text-muted">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 h-3.5 w-3.5 shrink-0">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            <span>{step.tip}</span>
+          </p>
+        )}
+        <div className="mt-auto pt-6">
+          <PrimaryButton disabled={!valid} onClick={submit}>{step.cta ?? 'Continue'}</PrimaryButton>
+        </div>
+      </div>
+    )
+  }
+
+  // Name (and other simple inputs) — centered.
   return (
     <Stack center>
       {step.image ? <Hero src={step.image} /> : null}
-      {caption && (
-        <p className="mb-2 text-center text-sm font-semibold text-white">
-          {caption}<span className="text-gold">{step.captionAccent}</span>
-        </p>
-      )}
-      <Title>{step.titleGold ? gold(step.title, [step.titleGold]) : step.title}</Title>
+      {titleNode}
       {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
       <input
         autoFocus
-        type={step.field === 'email' ? 'email' : 'text'}
+        type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={() => setTouched(true)}
@@ -946,8 +996,6 @@ function InputView({
         placeholder={step.placeholder}
         className="mt-6 w-full rounded-2xl border border-cardborder bg-card px-4 py-4 text-white placeholder:text-muted outline-none focus:border-gold"
       />
-      {showError && <p className="mt-2 text-[12px]" style={{ color: RED }}>{step.error}</p>}
-      {step.tip && <p className="mt-3 text-[11px] leading-relaxed text-muted">{step.tip}</p>}
       <div className="mt-6 space-y-2">
         <PrimaryButton disabled={!valid} onClick={submit}>{step.cta ?? 'Continue'}</PrimaryButton>
         {step.skip && <DeclineButton onClick={() => { onAnswer(step.saveAs, ''); onNext() }}>{step.skip}</DeclineButton>}
