@@ -1157,48 +1157,93 @@ function RingLoaderView({ step, onNext }: { step: Extract<Step, { type: 'ringloa
 }
 
 /* ---- Scratch-and-reveal coupon ---- */
+const CONFETTI = [
+  { l: '6%', t: '10%', c: '#ef4444', r: 18, round: false },
+  { l: '18%', t: '20%', c: '#3b82f6', r: -20, round: true },
+  { l: '30%', t: '8%', c: '#eab308', r: 40, round: false },
+  { l: '44%', t: '18%', c: '#22c55e', r: -10, round: true },
+  { l: '58%', t: '9%', c: '#ec4899', r: 25, round: false },
+  { l: '70%', t: '19%', c: '#8b5cf6', r: -30, round: true },
+  { l: '82%', t: '8%', c: '#f59e0b', r: 12, round: false },
+  { l: '92%', t: '17%', c: '#06b6d4', r: -22, round: true },
+]
+
 function ScratchView({ step, onNext }: { step: Extract<Step, { type: 'scratch' }>; onNext: () => void }) {
   const [revealed, setRevealed] = useState(false)
   const [modal, setModal] = useState(false)
   const reveal = () => { if (!revealed) { setRevealed(true); setModal(true) } }
   return (
-    <Stack center>
-      <Title>{gold(step.title, step.goldWords)}</Title>
-      {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
+    <>
+      {/* purple glow at the top, like the original */}
+      <div
+        className="fixed inset-0 -z-10"
+        style={{ background: 'linear-gradient(to bottom, rgba(124,58,173,0.5) 0%, rgba(60,30,90,0.18) 30%, transparent 52%), #141319' }}
+      />
+      <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
+        <Title>{gold(step.title, step.goldWords)}</Title>
+        {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
 
-      <button
-        onClick={reveal}
-        className="relative mx-auto mt-7 flex aspect-[16/9] w-full max-w-[330px] items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gold/60 bg-gradient-to-br from-violet/20 to-gold/10"
-      >
-        {revealed ? (
-          <div className="text-center">
-            <div className="text-4xl font-extrabold text-gold">{step.scratchValue}</div>
-            <div className="text-sm text-white/90">{step.scratchValueLabel}</div>
+        {/* Gold ticket */}
+        <button
+          onClick={reveal}
+          disabled={revealed}
+          className="relative mx-auto mt-8 aspect-square w-full max-w-[260px]"
+          aria-label={step.instruction}
+        >
+          <div className="absolute inset-0 rounded-3xl shadow-lg" style={{ background: 'linear-gradient(150deg, #f9df87 0%, #e7b53c 55%, #d99f28 100%)' }} />
+          <div className="absolute inset-[10px] rounded-2xl border-2 border-dashed border-white/55" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center">
+            {revealed ? (
+              <>
+                <div className="text-5xl font-extrabold" style={{ color: '#8a4b12' }}>{step.scratchValue}</div>
+                <div className="text-sm font-semibold" style={{ color: '#8a4b12' }}>{step.scratchValueLabel}</div>
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 64 48" className="h-12 w-16" aria-hidden>
+                  <path d="M6 14 C 12 6, 18 20, 24 12 S 36 20, 42 12" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.9" />
+                  <path d="M10 22 C 16 15, 22 27, 28 19 S 40 27, 46 19" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
+                  <g fill="#fff" transform="translate(34 18)">
+                    <path d="M6 4 a2 2 0 0 1 4 0 v6 l2-.6 a2 2 0 0 1 2.6 1.2 l1 2.6 a3.6 3.6 0 0 1-2.2 4.6 l-3 1 a4.4 4.4 0 0 1-5.4-2.4 L2 13 a1.5 1.5 0 0 1 2.6-1.4 L6 13 Z" />
+                  </g>
+                </svg>
+                <span className="text-sm font-bold" style={{ color: '#7a4410' }}>{step.instruction}</span>
+              </>
+            )}
           </div>
-        ) : (
-          <span className="text-sm font-bold uppercase tracking-wider text-white/90">🪙 {step.instruction}</span>
-        )}
-      </button>
+        </button>
 
-      <div className="mt-8">
-        <PrimaryButton disabled={!revealed} onClick={onNext}>{step.cta}</PrimaryButton>
+        <div className="mt-auto pt-8">
+          <PrimaryButton disabled={!revealed} onClick={onNext}>{step.cta}</PrimaryButton>
+        </div>
       </div>
 
+      {/* Reveal: white confetti bottom-sheet */}
       {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-[420px] rounded-2xl border border-cardborder p-6 text-center animate-fadeUp" style={{ background: '#1a1626' }}>
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60">
+          <div className="relative w-full max-w-[460px] overflow-hidden rounded-t-3xl bg-white px-6 pb-7 pt-8 text-center" style={{ animation: 'sheetUp 0.35s ease-out' }}>
+            {CONFETTI.map((c, i) => (
+              <span
+                key={i}
+                className="pointer-events-none absolute"
+                style={{ left: c.l, top: c.t, width: c.round ? 7 : 5, height: c.round ? 7 : 10, background: c.c, borderRadius: c.round ? '9999px' : '1px', transform: `rotate(${c.r}deg)` }}
+              />
+            ))}
             <div className="text-5xl">{step.revealEmoji}</div>
-            <div className="mt-2 text-xl font-bold text-white">{step.revealTitle}</div>
-            {step.revealSubtitle && <div className="mt-1 text-sm text-muted">{step.revealSubtitle}</div>}
-            <div className="mx-auto mt-4 w-fit rounded-full bg-gold px-4 py-1.5 text-lg font-extrabold text-ink">{step.revealDiscount}</div>
-            {step.revealNote && <div className="mt-3 text-[11px] text-muted">{step.revealNote}</div>}
-            <div className="mt-5">
-              <PrimaryButton onClick={onNext}>{step.cta}</PrimaryButton>
-            </div>
+            <div className="mt-2 text-2xl font-extrabold text-gray-900">{step.revealTitle}</div>
+            {step.revealSubtitle && <div className="mt-1 text-sm font-medium text-gray-500">{step.revealSubtitle}</div>}
+            <div className="mt-1 text-3xl font-extrabold" style={{ color: '#ef4444' }}>{step.revealDiscount}</div>
+            {step.revealNote && <div className="mx-auto mt-4 max-w-[260px] border-t border-gray-200 pt-3 text-[11px] text-gray-400">{step.revealNote}</div>}
+            <button
+              onClick={onNext}
+              className="mt-4 w-full rounded-2xl bg-[#1f9d6b] py-4 text-base font-semibold text-white transition-all hover:brightness-110 active:scale-[0.99]"
+            >
+              {step.cta}
+            </button>
           </div>
         </div>
       )}
-    </Stack>
+    </>
   )
 }
 

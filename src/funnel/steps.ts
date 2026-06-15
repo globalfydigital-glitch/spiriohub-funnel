@@ -273,9 +273,9 @@ export const STEPS: Step[] = [
     title: 'Tap & Save on Your Vibration Raise!', goldWords: ['Tap & Save'],
     subtitle: 'Positivity is the key to making progress! Get your gift from us 🎁',
     instruction: 'Tap your discount',
-    scratchValue: '50%', scratchValueLabel: 'off your personal plan',
+    scratchValue: '54%', scratchValueLabel: 'off your personal plan',
     revealEmoji: '🥳', revealTitle: 'Woo hoo!', revealSubtitle: 'You won a discount',
-    revealDiscount: '50% off', revealNote: '*This discount will be applied automatically',
+    revealDiscount: '54% off', revealNote: '*This discount will be applied automatically',
     cta: 'Continue',
   },
   // 35 — selling page / paywall

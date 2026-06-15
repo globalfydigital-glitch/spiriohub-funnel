@@ -49,3 +49,8 @@ body {
   from { transform: scaleY(0); }
   to { transform: scaleY(1); }
 }
+/* reveal modal slides up from the bottom */
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
