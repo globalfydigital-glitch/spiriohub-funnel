@@ -22,12 +22,10 @@ export function FunnelApp() {
 
   const step = STEPS[index]
 
-  // Original counts exactly 17 progress screens: age + 12 scale statements + the
-  // 4 goal/multi screens. Name + email (input) and the Familiar-Step do not count.
+  // Original counts 19 question screens (matches the live funnel's "x/19"):
+  // age + 12 scale + name + goal + familiar + leave-past + time + feel-year. Gender & email excluded.
   const { totalQuestions, currentQuestion } = useMemo(() => {
-    const NO_PROGRESS_IDS = new Set(['familiar'])
-    const counted = (s: (typeof STEPS)[number]) =>
-      isQuestion(s.type) && s.type !== 'gender' && s.type !== 'input' && !NO_PROGRESS_IDS.has(s.id)
+    const counted = (s: (typeof STEPS)[number]) => isQuestion(s.type) && s.type !== 'gender' && s.id !== 'email'
     const total = STEPS.filter(counted).length
     const current = STEPS.slice(0, index + 1).filter(counted).length
     return { totalQuestions: total, currentQuestion: current }
@@ -40,8 +38,8 @@ export function FunnelApp() {
   const onBack = () => setIndex((i) => Math.max(0, i - 1))
 
   const isFirst = index === 0
-  // Progress bar/counter: only on the 17 counted quiz screens (hidden on name/email/familiar).
-  const showProgress = ['single', 'scale', 'multi'].includes(step.type) && step.id !== 'familiar'
+  // Progress bar/counter: on every counted question (name included), hidden only on email.
+  const showProgress = ['single', 'scale', 'multi', 'input'].includes(step.type) && step.id !== 'email'
   // Back arrow hidden where the original hides it.
   const NO_BACK_IDS = new Set(['name', 'plan-ready', 'email'])
   const showBack = !isFirst && step.type !== 'loader' && step.type !== 'success' && !NO_BACK_IDS.has(step.id)

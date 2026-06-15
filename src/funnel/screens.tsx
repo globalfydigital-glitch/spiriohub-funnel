@@ -289,10 +289,12 @@ function ConsciousnessChart({ rows }: { rows: { label: string; value: string }[]
 function PhotoCard({
   option,
   aspect = 'aspect-[4/5]',
+  objectTop,
   onClick,
 }: {
   option: Option
   aspect?: string
+  objectTop?: boolean
   onClick: () => void
 }) {
   return (
@@ -300,7 +302,7 @@ function PhotoCard({
       onClick={onClick}
       className="group overflow-hidden rounded-2xl border border-cardborder transition-all hover:border-violet/60 active:scale-[0.99]"
     >
-      {option.image && <img src={option.image} alt="" loading="lazy" className={`w-full ${aspect} object-cover`} />}
+      {option.image && <img src={option.image} alt="" loading="lazy" className={`w-full ${aspect} object-cover ${objectTop ? 'object-top' : ''}`} />}
       <div className="flex items-center justify-between px-4 py-3 font-medium text-white" style={{ backgroundColor: option.color }}>
         <span>{option.label}</span>
         <span aria-hidden className="text-lg leading-none font-semibold text-white">›</span>
@@ -366,7 +368,7 @@ export function StepView({
               {step.options.map((o) => {
                 const female = answers.gender === 'female' && o.imageFemale
                 const opt = female ? { ...o, image: o.imageFemale } : o
-                return <PhotoCard key={o.value} option={opt} aspect="aspect-[4/3]" onClick={() => choose(o.value)} />
+                return <PhotoCard key={o.value} option={opt} aspect="aspect-[7/6]" objectTop onClick={() => choose(o.value)} />
               })}
             </div>
           ) : (
