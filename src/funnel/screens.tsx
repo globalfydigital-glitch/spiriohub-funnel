@@ -808,15 +808,15 @@ function EventChartView({
               d={LINE}
               fill="none"
               stroke="url(#evStroke)"
-              strokeWidth="4"
+              strokeWidth="5"
               strokeLinecap="round"
               pathLength={100}
               style={{ strokeDasharray: 100, strokeDashoffset: 100, animation: 'draw 1.8s ease-out forwards' }}
             />
             {dots.map((d, i) => (
               <g key={i} style={{ opacity: 0, animation: `chartfade 0.4s ease ${0.6 + i * 0.55}s forwards` }}>
-                <circle cx={d.x} cy={d.y} r={i === 2 ? 8 : 6} fill="#fff" />
-                <circle cx={d.x} cy={d.y} r={i === 2 ? 8 : 6} fill="none" stroke="#22c55e" strokeWidth="3" />
+                <circle cx={d.x} cy={d.y} r={i === 2 ? 11 : 9} fill="#16a34a" opacity="0.25" />
+                <circle cx={d.x} cy={d.y} r={i === 2 ? 8 : 7} fill="#fff" stroke="#16a34a" strokeWidth="3" />
               </g>
             ))}
           </svg>
@@ -828,12 +828,12 @@ function EventChartView({
               <div
                 key={i}
                 className="absolute z-10 flex flex-col items-center"
-                style={{ left: `${leftPct}%`, top: `${topPct}%`, transform: 'translate(-50%, calc(-100% - 3px))', opacity: 0, animation: `chartfade 0.4s ease ${0.7 + i * 0.55}s forwards` }}
+                style={{ left: `${leftPct}%`, top: `${topPct}%`, transform: 'translate(-50%, calc(-100% - 7px))', opacity: 0, animation: `chartfade 0.4s ease ${0.7 + i * 0.55}s forwards` }}
               >
-                <div className="max-w-[130px] rounded-lg px-2 py-1 text-[10px] font-bold leading-tight text-white shadow-md" style={{ background: '#16774e', transform: pillShift }}>
+                <div className="max-w-[130px] rounded-lg px-2 py-1 text-[10px] font-bold leading-tight text-white shadow-md" style={{ background: '#178a50', transform: pillShift }}>
                   {m}
                 </div>
-                <span className="-mt-1 h-2 w-2 rotate-45" style={{ background: '#16774e' }} />
+                <span className="-mt-1 h-2 w-2 rotate-45" style={{ background: '#178a50' }} />
               </div>
             )
           })}
