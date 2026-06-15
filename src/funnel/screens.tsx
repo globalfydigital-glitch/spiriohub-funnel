@@ -779,11 +779,6 @@ function EventChartView({
     { x: 180, y: 74 },
     { x: 305, y: 31 },
   ]
-  const labelPos: React.CSSProperties[] = [
-    { left: '24%', top: '76%', transform: 'translate(-28%, -112%)' },
-    { left: '56%', top: '35%', transform: 'translate(-50%, -112%)' },
-    { right: '1%', top: '0%' },
-  ]
 
   return (
     <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
@@ -825,18 +820,23 @@ function EventChartView({
               </g>
             ))}
           </svg>
-          {milestones.map((m, i) => (
-            <div
-              key={i}
-              className="absolute z-10"
-              style={{ ...labelPos[i], opacity: 0, animation: `chartfade 0.4s ease ${0.7 + i * 0.55}s forwards` }}
-            >
-              <div className="relative inline-block max-w-[120px] rounded-lg px-2 py-1 text-[10px] font-bold leading-tight text-white shadow-md" style={{ background: '#16774e' }}>
-                {m}
-                <span className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 -translate-y-1/2 rotate-45" style={{ background: '#16774e' }} />
+          {milestones.map((m, i) => {
+            const leftPct = (dots[i].x / 320) * 100
+            const topPct = (dots[i].y / 200) * 100
+            const pillShift = i === milestones.length - 1 ? 'translateX(-38%)' : undefined
+            return (
+              <div
+                key={i}
+                className="absolute z-10 flex flex-col items-center"
+                style={{ left: `${leftPct}%`, top: `${topPct}%`, transform: 'translate(-50%, calc(-100% - 3px))', opacity: 0, animation: `chartfade 0.4s ease ${0.7 + i * 0.55}s forwards` }}
+              >
+                <div className="max-w-[130px] rounded-lg px-2 py-1 text-[10px] font-bold leading-tight text-white shadow-md" style={{ background: '#16774e', transform: pillShift }}>
+                  {m}
+                </div>
+                <span className="-mt-1 h-2 w-2 rotate-45" style={{ background: '#16774e' }} />
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
         <div className="mt-2 flex justify-between px-1 text-[10px] text-muted">
           <span>{span?.start ?? ''}</span>
