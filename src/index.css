@@ -34,3 +34,13 @@ body {
   0% { transform: scaleY(0.3); }
   100% { transform: scaleY(1); }
 }
+
+/* event-chart: line draws itself + milestones fade in */
+@keyframes draw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes chartfade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

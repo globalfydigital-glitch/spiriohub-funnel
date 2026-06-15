@@ -751,12 +751,11 @@ function EventChartView({
 }) {
   const isDream = firstGoal(answers) === 'dream-life'
   const word = goalWord(answers, step.defaultGoal ?? 'love')
-  // Compute month/date span client-side to avoid SSR hydration mismatch.
+  // Left axis = current month, right axis = next month (computed client-side).
   const [span, setSpan] = useState<{ start: string; end: string; date: string } | null>(null)
   useEffect(() => {
     const now = new Date()
-    const end = new Date()
-    end.setDate(now.getDate() + 28)
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, Math.min(now.getDate(), 28))
     setSpan({
       start: now.toLocaleDateString('en-US', { month: 'long' }),
       end: end.toLocaleDateString('en-US', { month: 'long' }),
@@ -772,47 +771,84 @@ function EventChartView({
     ? 'We predict that you’ll attract dream life by '
     : `We predict that you’ll attract ${word} by `) + (span?.date ?? '…')
   const milestones = step.milestones.map((m) => m.replace('{goal}', word))
+
+  const LINE = 'M10 168 C 60 170, 96 145, 138 110 C 180 75, 215 50, 312 30'
+  const AREA = `${LINE} L312 200 L10 200 Z`
   const dots = [
-    { x: 32, y: 137 },
-    { x: 150, y: 74 },
-    { x: 286, y: 16 },
+    { x: 74, y: 156 },
+    { x: 180, y: 74 },
+    { x: 305, y: 31 },
   ]
+  const labelPos: React.CSSProperties[] = [
+    { left: '24%', top: '76%', transform: 'translate(-28%, -112%)' },
+    { left: '56%', top: '35%', transform: 'translate(-50%, -112%)' },
+    { right: '1%', top: '0%' },
+  ]
+
   return (
-    <Stack center>
+    <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
       <Title>{gold(title, [titleGold])}</Title>
       <p className="mt-2 text-center text-sm text-muted">{gold(subtitle, [word])}</p>
-      <div className="mt-6 rounded-2xl border border-cardborder bg-white/[0.04] p-4">
+
+      <div className="mt-6 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
         <div className="relative">
-          <RisingCurve dots={dots} />
-          {milestones.map((m, i) => {
-            const last = i === milestones.length - 1
-            const topPct = Math.max(2, (dots[i].y / 160) * 100 - 16)
-            const pos: React.CSSProperties = i === 0
-              ? { left: '2%' }
-              : last
-                ? { right: '2%' }
-                : { left: `${(dots[i].x / 300) * 100}%`, transform: 'translateX(-50%)' }
-            return (
-              <span
-                key={i}
-                className="absolute max-w-[40%] rounded-md bg-ink/80 px-1.5 py-0.5 text-[9px] font-medium leading-tight text-white"
-                style={{ ...pos, top: `${topPct}%` }}
-              >
+          <svg viewBox="0 0 320 200" className="block w-full">
+            <defs>
+              <linearGradient id="evStroke" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#ef4444" />
+                <stop offset="34%" stopColor="#f59e0b" />
+                <stop offset="64%" stopColor="#fbbf24" />
+                <stop offset="100%" stopColor="#22c55e" />
+              </linearGradient>
+              <linearGradient id="evArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22c55e" stopOpacity="0.22" />
+                <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {[44, 83, 122, 161].map((y) => (
+              <line key={y} x1="0" y1={y} x2="320" y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+            ))}
+            <path d={AREA} fill="url(#evArea)" style={{ opacity: 0, animation: 'chartfade 1.6s ease 0.3s forwards' }} />
+            <path
+              d={LINE}
+              fill="none"
+              stroke="url(#evStroke)"
+              strokeWidth="4"
+              strokeLinecap="round"
+              pathLength={100}
+              style={{ strokeDasharray: 100, strokeDashoffset: 100, animation: 'draw 1.8s ease-out forwards' }}
+            />
+            {dots.map((d, i) => (
+              <g key={i} style={{ opacity: 0, animation: `chartfade 0.4s ease ${0.6 + i * 0.55}s forwards` }}>
+                <circle cx={d.x} cy={d.y} r={i === 2 ? 8 : 6} fill="#fff" />
+                <circle cx={d.x} cy={d.y} r={i === 2 ? 8 : 6} fill="none" stroke="#22c55e" strokeWidth="3" />
+              </g>
+            ))}
+          </svg>
+          {milestones.map((m, i) => (
+            <div
+              key={i}
+              className="absolute z-10"
+              style={{ ...labelPos[i], opacity: 0, animation: `chartfade 0.4s ease ${0.7 + i * 0.55}s forwards` }}
+            >
+              <div className="relative inline-block max-w-[120px] rounded-lg px-2 py-1 text-[10px] font-bold leading-tight text-white shadow-md" style={{ background: '#16774e' }}>
                 {m}
-              </span>
-            )
-          })}
+                <span className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 -translate-y-1/2 rotate-45" style={{ background: '#16774e' }} />
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="mt-1 flex justify-between px-1 text-[10px] text-muted">
+        <div className="mt-2 flex justify-between px-1 text-[10px] text-muted">
           <span>{span?.start ?? ''}</span>
           <span>{span?.end ?? ''}</span>
         </div>
       </div>
+
       {step.footnote && <p className="mt-3 text-center text-[11px] text-muted">{step.footnote}</p>}
-      <div className="mt-8">
+      <div className="mt-auto pt-8">
         <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
-    </Stack>
+    </div>
   )
 }
 
