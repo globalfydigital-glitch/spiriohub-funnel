@@ -22,10 +22,12 @@ export const MEDIA = {
   ageDf: 'https://cf-cdn.spiriohub.com/uploads/c77a13bc-ff36-44de-b1d3-a8be18da9021-charlotte-41bdf51a441579138d1c.webp',
   frequency: 'https://cf-cdn.spiriohub.com/uploads/3b2c2c2d-6e08-4ee2-804a-d77654a8993e-frequency-emotions.webp',
   summary: 'https://cf-cdn.spiriohub.com/uploads/77c78e00-2fc7-447f-93f9-a5ed5bbb0193-nathan-2-ed11d1db408414acf39e.webp',
+  summaryFemale: 'https://cf-cdn.spiriohub.com/uploads/ff4076f9-fbc4-484f-acb2-ed539090496b-woman.webp',
   university: 'https://cf-cdn.spiriohub.com/uploads/3e9599d1-7a7b-4684-94b6-389eeeb51203-ucla-logo-1ddcfc1e1138bc576eb3.webp',
   harvard: 'https://cf-cdn.spiriohub.com/uploads/a6012bf6-6118-4c01-b9d5-92a74501e2ee-harvard-logo-a15818be4cf4eb25fde1.webp',
   usersMap: 'https://cf-cdn.spiriohub.com/uploads/b0dee114-a3fe-4fcb-92c7-f714c620c064-users-map-97eca703cf70d0a22820-1.webp',
   email: 'https://cf-cdn.spiriohub.com/uploads/88a15470-ea2a-4fd1-88f4-50ffd9fa9e2f-joined-us-men-1-2f286515b716b92ed422.webp',
+  emailFemale: 'https://cf-cdn.spiriohub.com/uploads/6a711530-5f4d-46fa-a78e-af96d5d231a1-joined-us-women.webp',
   aiCompanion: 'https://cf-cdn.spiriohub.com/uploads/e0164756-9978-419a-a5fb-2cf1d6bba10d-image-136.png',
   bundle: 'https://cf-cdn.spiriohub.com/uploads/e39a3a60-f3fe-4074-b27c-bf31417218b5-v3.webp',
 }
@@ -141,7 +143,7 @@ export const STEPS: Step[] = [
   { id: 'analyzing', type: 'ringloader', image: MEDIA.bg, title: 'Analyzing your answers…', duration: 3800 },
   // 22 — result reveal
   {
-    id: 'summary', type: 'summary', image: MEDIA.summary, goalFrom: 'goal',
+    id: 'summary', type: 'summary', image: MEDIA.summary, imageFemale: MEDIA.summaryFemale, goalFrom: 'goal',
     title: 'Your vibration is low', titleAccent: 'low',
     gaugeValue: 20, gaugeTarget: 'Normal - 325Hz', gaugeYou: 'You -20',
     alertTitle: 'SCARCITY MODE',
@@ -169,8 +171,8 @@ export const STEPS: Step[] = [
     title: 'Manifestation isn’t magic', titleGold: 'Manifestation',
     subtitle: "It's a mindset shift aligned with action.",
     infoCards: [
-      { image: MEDIA.university, text: 'University of California study suggests that visualization improves neural connectivity and reduces anxiety', gold: ['University of California'], glow: '#2563eb' },
-      { image: MEDIA.harvard, text: 'Harvard Medical School research shows that spiritual habits can boost happiness, reduce health issues, and bring peace in life', gold: ['Harvard Medical School'], glow: '#a51c30' },
+      { image: MEDIA.university, text: 'University of California study suggests that visualization improves neural connectivity and reduces anxiety', gold: ['University of California'], glow: '#3f6fb5' },
+      { image: MEDIA.harvard, text: 'Harvard Medical School research shows that spiritual habits can boost happiness, reduce health issues, and bring peace in life', gold: ['Harvard Medical School'], glow: '#7c2f52' },
     ],
     cta: 'Continue',
   },
@@ -198,7 +200,7 @@ export const STEPS: Step[] = [
     ],
   },
   // 27
-  { id: 'not-alone', type: 'info', image: MEDIA.usersMap, title: "You're not manifesting alone.", callout: 'Join millions of people creating their dream lives together.', goldWords: ['creating their dream lives together.'], cta: 'Continue' },
+  { id: 'not-alone', type: 'info', image: MEDIA.usersMap, imageBelow: true, title: "You're not manifesting alone.", callout: 'Join millions of people creating their dream lives together.', goldWords: ['creating their dream lives together.'], cta: 'Continue' },
   // 28
   {
     id: 'feel-year', type: 'multi', saveAs: 'feel_year', hasOther: true,
@@ -248,7 +250,7 @@ export const STEPS: Step[] = [
   },
   // 31
   {
-    id: 'email', type: 'input', field: 'email', saveAs: 'email', image: MEDIA.email,
+    id: 'email', type: 'input', field: 'email', saveAs: 'email', image: MEDIA.email, imageFemale: MEDIA.emailFemale,
     title: 'Enter your email to get your Personal Plan', titleGold: 'Personal Plan',
     placeholder: 'Your email', cta: 'Continue',
     caption: '1.2 million men have', captionAccent: ' joined us!',
@@ -278,20 +280,17 @@ export const STEPS: Step[] = [
     revealDiscount: '54% off', revealNote: '*This discount will be applied automatically',
     cta: 'Continue',
   },
-  // 35 — selling page / paywall
-  //  ⚠️ Plan tiers & prices below are PLACEHOLDERS — the original's real prices live in a
-  //  SaaS-hosted i18n template and are NOT in the export. Money-back text IS the real copy.
+  // 35 — selling page / paywall (real € prices recovered from the live funnel)
   {
-    id: 'paywall', type: 'paywall',
-    title: 'Your High-Vibration Growth Plan is ready', titleGold: 'High-Vibration Growth Plan',
-    subtitle: 'People who follow the plan for 4 weeks reach twice the results of those who stop after 1 week.',
-    cta: 'Get my plan',
+    id: 'paywall', type: 'paywall', goalFrom: 'goal',
+    title: 'your personal High-Vibration Plan to attract {goal} in your life', titleGold: 'High-Vibration Plan',
+    cta: 'GET MY PLAN',
     plans: [
-      { id: 'week', name: '1-Week Plan', price: '$9.99', perDay: '$1.43 / day', old: '$19.99' },
-      { id: 'month', name: '4-Week Plan', price: '$19.99', perDay: '$0.71 / day', old: '$39.99', popular: true },
-      { id: 'quarter', name: '12-Week Plan', price: '$49.99', perDay: '$0.59 / day', old: '$89.99' },
+      { id: 'm1', name: '1-Month Plan', old: '€49.99', price: '€19.99', perDay: '€0.66 / day', discount: '-60%' },
+      { id: 'm3', name: '3-Month Plan', old: '€99.99', price: '€44.99', perDay: '€0.49 / day', discount: '-55%', popular: true },
+      { id: 'm6', name: '6-Month Plan', old: '€129.99', price: '€59.99', perDay: '€0.33 / day', discount: '-54%' },
     ],
-    moneyBackTitle: '30-days money-back guarantee',
+    moneyBackTitle: '30-day money-back guarantee',
     moneyBackBody: 'We believe that our plan will work for you and you will get noticeable results in just 4 weeks! We are even ready to return your money back if this plan is not for you!',
     moneyBackLinkPrefix: 'Find more about applicable limitations in our ',
     moneyBackLinkText: 'money-back policy',

@@ -45,9 +45,13 @@ export function FunnelApp() {
   const showBack = !isFirst && step.type !== 'loader' && step.type !== 'success' && !NO_BACK_IDS.has(step.id)
   const pct = Math.min(100, Math.round((currentQuestion / totalQuestions) * 100))
 
+  // The selling page renders its own sticky timer header.
+  const hideHeader = step.type === 'paywall'
+
   return (
     <div className="min-h-screen w-full flex flex-col">
       {/* Full-width header */}
+      {!hideHeader && (
       <header className="w-full px-5 sm:px-8 pt-4">
         <div className="flex items-center justify-between pb-2.5">
           <div className="flex items-center gap-3">
@@ -79,6 +83,7 @@ export function FunnelApp() {
           </div>
         )}
       </header>
+      )}
 
       {/* Centered content column */}
       <div className="mx-auto flex w-full max-w-[460px] flex-1 flex-col px-5 pb-10 pt-2">

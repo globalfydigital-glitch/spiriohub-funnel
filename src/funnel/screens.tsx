@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Step, Answers, Option, Plan, BundleItem, LoaderStage, SummaryRow, InfoCard } from './types'
+import { MEDIA } from './steps'
 
 const RED = '#e0584f'
 
@@ -77,7 +78,7 @@ function PrimaryButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="w-full rounded-2xl bg-[#1f9d6b] text-white font-semibold py-4 text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
+      className="w-full rounded-2xl bg-[#1f9d6b] text-white font-semibold py-4 text-base transition-all disabled:bg-[#6e6a72] disabled:text-white/80 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
     >
       {children}
     </button>
@@ -200,13 +201,20 @@ function Callout({ text, goldWords }: { text: string; goldWords?: string[] }) {
 }
 
 // Star rating (precise partial fill via CSS clip — no obscure glyphs).
-function Stars({ rating }: { rating: number }) {
-  const pct = Math.max(0, Math.min(100, (rating / 5) * 100))
+// Trustpilot-style rating: green squares (filled to the rating) with white stars.
+function TrustStars({ rating }: { rating: number }) {
   return (
-    <span className="relative inline-block text-sm leading-none" aria-label={`${rating} / 5`}>
-      <span className="text-gold/25">★★★★★</span>
-      <span className="absolute left-0 top-0 overflow-hidden whitespace-nowrap text-gold" style={{ width: `${pct}%` }}>★★★★★</span>
-    </span>
+    <div className="flex gap-0.5" aria-label={`${rating} / 5`}>
+      {Array.from({ length: 5 }).map((_, i) => {
+        const fill = Math.max(0, Math.min(1, rating - i))
+        return (
+          <span key={i} className="relative flex h-[18px] w-[18px] items-center justify-center overflow-hidden rounded-[3px]" style={{ background: '#c9ccd1' }}>
+            <span className="absolute inset-y-0 left-0" style={{ width: `${fill * 100}%`, background: '#00b67a' }} />
+            <span className="relative text-[12px] leading-none text-white">★</span>
+          </span>
+        )
+      })}
+    </div>
   )
 }
 
@@ -262,23 +270,24 @@ function ConsciousnessChart({ rows }: { rows: { label: string; value: string }[]
           )
         })}
       </div>
-      {/* Expansive (top) / Destructive (bottom) with arrows */}
+      {/* Expansive (top) / Destructive (bottom) — one continuous gradient double arrow */}
       <div className="flex w-[58px] shrink-0 flex-col items-center justify-between py-0.5">
         <span className="text-[9px] font-bold leading-none" style={{ color: scaleColor(0, n) }}>Expansive</span>
-        <svg viewBox="0 0 20 100" preserveAspectRatio="none" className="w-4 flex-1" aria-hidden>
-          <defs>
-            <linearGradient id="arrUp" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0" stopColor="#a3e635" /><stop offset="1" stopColor="#22d3ee" />
-            </linearGradient>
-            <linearGradient id="arrDn" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#f59e0b" /><stop offset="1" stopColor="#f87171" />
-            </linearGradient>
-          </defs>
-          <line x1="10" y1="46" x2="10" y2="9" stroke="url(#arrUp)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-          <path d="M5 16 L10 6 L15 16" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          <line x1="10" y1="54" x2="10" y2="91" stroke="url(#arrDn)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-          <path d="M5 84 L10 94 L15 84" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-        </svg>
+        <div className="relative my-1 w-4 flex-1">
+          {/* gradient line cyan(top) -> red(bottom) */}
+          <div
+            className="absolute inset-y-2 left-1/2 w-[2.5px] -translate-x-1/2 rounded-full"
+            style={{ background: 'linear-gradient(to bottom, #22d3ee, #4ade80, #fde047, #f59e0b, #ef4444)' }}
+          />
+          {/* up arrowhead (cyan) */}
+          <svg viewBox="0 0 16 12" className="absolute left-1/2 top-0 h-3 w-4 -translate-x-1/2" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M3 9 L8 3 L13 9" />
+          </svg>
+          {/* down arrowhead (red) */}
+          <svg viewBox="0 0 16 12" className="absolute bottom-0 left-1/2 h-3 w-4 -translate-x-1/2" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M3 3 L8 9 L13 3" />
+          </svg>
+        </div>
         <span className="text-[9px] font-bold leading-none" style={{ color: scaleColor(n - 1, n) }}>Destructive</span>
       </div>
     </div>
@@ -300,7 +309,8 @@ function PhotoCard({
   return (
     <button
       onClick={onClick}
-      className="group overflow-hidden rounded-2xl border border-cardborder transition-all hover:border-violet/60 active:scale-[0.99]"
+      className="group overflow-hidden rounded-2xl border-2 transition-all hover:brightness-105 active:scale-[0.99]"
+      style={{ borderColor: option.color }}
     >
       {option.image && <img src={option.image} alt="" loading="lazy" className={`w-full ${aspect} object-cover ${objectTop ? 'object-top' : ''}`} />}
       <div className="flex items-center justify-between px-4 py-3 font-medium text-white" style={{ backgroundColor: option.color }}>
@@ -413,7 +423,7 @@ export function StepView({
       return <SignupView step={step} answers={answers} onAnswer={onAnswer} onNext={onNext} />
 
     case 'paywall':
-      return <PaywallView step={step} onAnswer={onAnswer} onNext={onNext} />
+      return <PaywallView step={step} answers={answers} onAnswer={onAnswer} onNext={onNext} />
 
     case 'upsell':
       return <UpsellView step={step} onAnswer={onAnswer} onNext={onNext} />
@@ -444,7 +454,7 @@ function InfoView({
   const [revealed, setRevealed] = useState(!step.sequential)
   useEffect(() => {
     if (!step.sequential) return
-    const t = setTimeout(() => setRevealed(true), 2200)
+    const t = setTimeout(() => setRevealed(true), 2800)
     return () => clearTimeout(t)
   }, [step.sequential])
   const calloutInner = step.callout ? <Callout text={calloutText} goldWords={step.goldWords} /> : null
@@ -464,7 +474,7 @@ function InfoView({
             <div
               key={i}
               className="flex items-center gap-4 overflow-hidden rounded-2xl border border-cardborder p-4"
-              style={{ background: c.glow ? `radial-gradient(120% 130% at 20% 40%, ${c.glow}3a 0%, ${c.glow}14 38%, rgba(255,255,255,0.03) 100%)` : 'rgba(255,255,255,0.04)' }}
+              style={{ background: c.glow ? `radial-gradient(135% 135% at 24% 38%, ${c.glow}22 0%, ${c.glow}0a 44%, rgba(255,255,255,0.03) 80%)` : 'rgba(255,255,255,0.04)' }}
             >
               <img src={c.image} alt="" loading="lazy" className="h-16 w-16 shrink-0 object-contain" />
               <p className="text-[13px] leading-snug text-white/90">{gold(c.text, c.gold)}</p>
@@ -502,6 +512,15 @@ function InfoView({
 
   // Full-bleed background teaser (signals / coping / self-conscious / really-wish / consent)
   if (step.fullBleed && step.image) {
+    // Sequential screens (really-wish): the question replaces the title — name in white, question in gold.
+    const nm = (answers['name'] as string) || ''
+    const rawQ = (step.callout || '').replace(/\{\{name\}\},?\s*/g, '')
+    const questionNode = (
+      <h1 className="text-center text-[1.6rem] font-semibold leading-tight text-white">
+        {nm && <span>{nm}, </span>}
+        <span className="text-gold">{nm ? rawQ : cap(rawQ)}</span>
+      </h1>
+    )
     return (
       <>
         <div
@@ -511,17 +530,48 @@ function InfoView({
         <div className="flex min-h-[78vh] flex-col animate-fadeUp">
           <div className="text-center" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.7)' }}>
             {step.waveform && <div className="mb-5 flex justify-center"><Waveform /></div>}
-            {titleNode}
-            {step.body && <Subtitle>{step.body}</Subtitle>}
-            {callout}
+            {step.sequential ? (
+              <div className="grid">
+                <div style={{ gridArea: '1 / 1' }} className={`transition-opacity duration-500 ${revealed ? 'opacity-0' : 'opacity-100'}`}>
+                  {titleNode}
+                </div>
+                <div style={{ gridArea: '1 / 1' }} className={`transition-opacity duration-500 ${revealed ? 'opacity-100' : 'opacity-0'}`}>
+                  {questionNode}
+                </div>
+              </div>
+            ) : (
+              <>
+                {titleNode}
+                {step.body && <Subtitle>{step.body}</Subtitle>}
+                {callout}
+              </>
+            )}
           </div>
           <div className="flex-1" />
           <div className="space-y-2 pt-6">
-            <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+            <PrimaryButton disabled={!!step.sequential && !revealed} onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
             {step.decline && <DeclineButton onClick={onNext}>{step.decline}</DeclineButton>}
           </div>
         </div>
       </>
+    )
+  }
+
+  // Text-first info (not-alone): title + callout at top, image below, CTA pinned to the bottom.
+  if (step.imageBelow) {
+    return (
+      <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
+        {titleNode}
+        {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
+        {step.callout && (
+          <p className="mt-2 text-center text-sm font-medium leading-relaxed text-white/90">{gold(calloutText, step.goldWords)}</p>
+        )}
+        {step.image && <img src={step.image} alt="" loading="lazy" className="mx-auto mt-6 w-full max-w-[340px] object-contain" />}
+        <div className="mt-auto space-y-2 pt-8">
+          <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+          {step.decline && <DeclineButton onClick={onNext}>{step.decline}</DeclineButton>}
+        </div>
+      </div>
     )
   }
 
@@ -593,7 +643,14 @@ function SummaryView({
   onNext: () => void
 }) {
   const v = step.gaugeValue ?? 0
+  // Animate the "You" marker sliding to its position on the bar.
+  const [markerPos, setMarkerPos] = useState(0)
+  useEffect(() => {
+    const t = setTimeout(() => setMarkerPos(v), 150)
+    return () => clearTimeout(t)
+  }, [v])
   const accent = step.titleAccent
+  const img = answers.gender === 'female' && step.imageFemale ? step.imageFemale : step.image
   const titleNode = accent
     ? <RichTitle title={step.title.replace(accent, '')} accent={accent} accentColor={RED} />
     : <Title>{step.title}</Title>
@@ -614,12 +671,12 @@ function SummaryView({
             </div>
             <div className="relative mb-2 mt-9">
               {step.gaugeYou && (
-                <div className="absolute -top-8 -translate-x-1/2 whitespace-nowrap" style={{ left: `${v}%` }}>
+                <div className="absolute -top-8 -translate-x-1/2 whitespace-nowrap" style={{ left: `${markerPos}%`, transition: 'left 1s cubic-bezier(0.22,1,0.36,1)' }}>
                   <span className="rounded-lg bg-white px-3 py-1 text-sm font-bold text-ink">{step.gaugeYou}</span>
                 </div>
               )}
               <div className="h-1.5 w-full rounded-full" style={{ background: 'linear-gradient(90deg, #ef4444 0%, #f59e0b 27%, #fde047 50%, #4ade80 73%, #22d3ee 100%)' }} />
-              <div className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white" style={{ left: `${v}%`, background: '#ef4444' }} />
+              <div className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white" style={{ left: `${markerPos}%`, background: '#ef4444', transition: 'left 1s cubic-bezier(0.22,1,0.36,1)' }} />
             </div>
             <div className="flex justify-between text-[10px] font-medium uppercase tracking-wide text-muted">
               <span>Low</span><span>Normal</span><span>Medium</span><span>High</span>
@@ -629,8 +686,8 @@ function SummaryView({
 
         {/* Alert */}
         {step.alertTitle && (
-          <div className="relative z-10 mt-4 flex gap-3 rounded-xl p-3" style={{ background: 'rgba(224,88,79,0.14)', border: '1px solid rgba(224,88,79,0.4)' }}>
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ background: RED }}>
+          <div className="relative z-10 mt-4 flex gap-3 rounded-xl p-3.5" style={{ background: '#753131' }}>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ background: '#e0584f' }}>
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z" />
                 <line x1="12" y1="9" x2="12" y2="13" />
@@ -638,8 +695,8 @@ function SummaryView({
               </svg>
             </div>
             <div>
-              <div className="text-sm font-bold tracking-wide" style={{ color: '#ff6b61' }}>{step.alertTitle}</div>
-              {step.alertDescription && <p className="mt-1 text-[13px] leading-snug text-white/85">{step.alertDescription}</p>}
+              <div className="text-sm font-bold tracking-wide text-white">{step.alertTitle}</div>
+              {step.alertDescription && <p className="mt-1 text-[13px] leading-snug text-white/90">{step.alertDescription}</p>}
             </div>
           </div>
         )}
@@ -647,9 +704,9 @@ function SummaryView({
         {/* Breakdown rows + person image anchored to the card's bottom-right corner */}
         {step.rows && step.rows.length > 0 && (
           <div className="relative mt-5 min-h-[190px]">
-            {step.image && (
+            {img && (
               <img
-                src={step.image}
+                src={img}
                 alt=""
                 loading="lazy"
                 className="pointer-events-none absolute -bottom-4 -right-4 z-0 h-[210px] w-auto object-contain object-bottom"
@@ -799,7 +856,7 @@ function EventChartView({
   return (
     <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
       <Title>{gold(title, [titleGold])}</Title>
-      <p className="mt-2 text-center text-sm text-muted">{gold(subtitle, [word])}</p>
+      <p className="mt-2 text-center text-sm text-muted">{gold(subtitle, span?.date ? [word, span.date] : [word])}</p>
 
       <div className="mt-6 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
         <div className="relative">
@@ -942,6 +999,7 @@ function InputView({
   }
   const isEmail = step.field === 'email'
   const caption = step.caption && answers.gender === 'female' ? step.caption.replace('men', 'women') : step.caption
+  const socialImg = answers.gender === 'female' && step.imageFemale ? step.imageFemale : step.image
   const showError = touched && !valid && isEmail && value.length > 0 && step.error
   const titleNode = <Title>{step.titleGold ? gold(step.title, [step.titleGold]) : step.title}</Title>
 
@@ -970,9 +1028,9 @@ function InputView({
           />
         </div>
         {showError && <p className="mt-2 text-[12px]" style={{ color: RED }}>{step.error}</p>}
-        {(step.image || caption) && (
+        {(socialImg || caption) && (
           <div className="mt-5 flex items-center gap-3">
-            {step.image && <img src={step.image} alt="" loading="lazy" className="h-7 w-auto shrink-0" />}
+            {socialImg && <img src={socialImg} alt="" loading="lazy" className="h-7 w-auto shrink-0" />}
             {caption && (
               <p className="text-[13px] font-semibold leading-tight text-white">
                 {caption}<span className="text-gold">{step.captionAccent}</span>
@@ -1023,58 +1081,67 @@ function InputView({
 /* ---- Multi-stage "creating your plan" loader ---- */
 function LoaderView({ step, onNext }: { step: Extract<Step, { type: 'loader' }>; onNext: () => void }) {
   const stages: LoaderStage[] = step.stages ?? []
-  const per = (step.duration ?? 8000) / Math.max(1, stages.length)
-  const [si, setSi] = useState(0)
-  const [p, setP] = useState(0)
+  const [si, setSi] = useState(0) // current stage index
+  const [pct, setPct] = useState(0) // current stage fill %
   const [modal, setModal] = useState(false)
-  const [done, setDone] = useState(false)
 
   useEffect(() => {
-    if (modal || done) return
-    if (si >= stages.length) { const t = setTimeout(onNext, 350); return () => clearTimeout(t) }
-    setP(0)
+    if (si >= stages.length) {
+      const t = setTimeout(onNext, 500)
+      return () => clearTimeout(t)
+    }
+    if (modal) return // paused at 45% while the question is up
+    const stage = stages[si]
+    const from = pct
+    const target = stage.modal && from < 45 ? 45 : 100
+    if (from >= target) {
+      if (target === 45) setModal(true)
+      else { setSi((s) => s + 1); setPct(0) }
+      return
+    }
+    const dur = Math.min(2200, Math.max(700, (target - from) * 34))
     const start = performance.now()
     let raf = 0
-    const tick = (t: number) => {
-      const pr = Math.min(100, ((t - start) / per) * 100)
-      setP(pr)
-      if (pr < 100) raf = requestAnimationFrame(tick)
-      else {
-        if (stages[si].modal) setModal(true)
-        else advance()
-      }
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / dur)
+      setPct(from + (target - from) * t)
+      if (t < 1) raf = requestAnimationFrame(tick)
+      else if (target === 45) setModal(true)
+      else { setSi((s) => s + 1); setPct(0) }
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [si, modal, done])
+  }, [si, modal])
 
-  function advance() {
-    if (si + 1 >= stages.length) { setDone(true); setTimeout(onNext, 450) }
-    else setSi(si + 1)
-  }
   const t = stages[Math.min(si, stages.length - 1)]?.testimonial
 
   return (
-    <Stack center>
+    <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
       <Title>{step.titleGold ? gold(step.title, [step.titleGold]) : step.title}</Title>
 
-      <div className="mt-6 space-y-3 rounded-2xl border border-cardborder bg-white/[0.04] p-4">
+      {/* Stages reveal one at a time; each fills to 45% -> modal -> 100% -> gold check. */}
+      <div className="mt-6 space-y-4 rounded-2xl border border-cardborder bg-white/[0.04] p-4">
         {stages.map((s, i) => {
-          const fillPct = i < si || done ? 100 : i === si ? p : 0
-          const complete = i < si || done
+          if (i > si) return null
+          const showCheck = i < si || pct >= 100
           return (
-            <div key={s.label} className="flex items-center gap-3">
-              <div className="flex-1">
-                <div className="mb-1 flex items-center justify-between text-[13px]">
-                  <span className={complete || i === si ? 'text-white' : 'text-muted'}>{s.label}</span>
-                  <span className="tabular-nums text-muted">{Math.round(fillPct)}%</span>
-                </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-cardborder">
-                  <div className="h-full rounded-full bg-gold transition-all" style={{ width: `${fillPct}%` }} />
-                </div>
+            <div key={s.label}>
+              <div className="flex items-center justify-between text-[13px]">
+                <span className="font-medium text-white">{s.label}</span>
+                {showCheck ? (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold text-[11px] font-bold text-ink">✓</span>
+                ) : (
+                  <span className="tabular-nums text-muted">{Math.round(pct)}%</span>
+                )}
               </div>
-              <span className={`w-4 text-center text-gold ${complete ? '' : 'opacity-0'}`}>✓</span>
+              {showCheck ? (
+                <div className="mt-3 h-px w-full bg-white/[0.08]" />
+              ) : (
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-cardborder">
+                  <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
+                </div>
+              )}
             </div>
           )
         })}
@@ -1082,32 +1149,33 @@ function LoaderView({ step, onNext }: { step: Extract<Step, { type: 'loader' }>;
 
       {t && (
         <div className="mt-4 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
-          <div className="flex items-center justify-between">
-            <Stars rating={t.rating} />
+          <TrustStars rating={t.rating} />
+          <div className="mt-2.5 flex items-baseline justify-between">
+            <span className="text-sm font-bold text-white">{t.title}</span>
             <span className="text-[12px] text-muted">{t.name}</span>
           </div>
-          <div className="mt-1 text-sm font-semibold text-white">{t.title}</div>
-          <p className="mt-1 text-[13px] leading-snug text-white/80">{t.quote}</p>
+          <p className="mt-1.5 text-[13px] leading-snug text-white/80">{t.quote}</p>
         </div>
       )}
 
+      {/* White modal so it stands out against the dimmed page */}
       {modal && stages[si]?.modal && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center">
-          <div className="w-full max-w-[420px] rounded-2xl border border-cardborder p-5 animate-fadeUp" style={{ background: '#1a1626' }}>
-            <p className="text-center text-base font-semibold text-white">{stages[si].modal!.question}</p>
-            <p className="mt-1 text-center text-xs text-muted">{stages[si].modal!.prompt}</p>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <button onClick={() => { setModal(false); advance() }} className="rounded-2xl border border-white/15 bg-white/[0.03] py-3 font-medium text-white hover:border-white/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-6">
+          <div className="w-full max-w-[280px] rounded-2xl bg-white px-5 py-5 text-center shadow-2xl">
+            <p className="text-[11px] font-medium text-gray-400">{stages[si].modal!.prompt}</p>
+            <p className="mt-1 text-[15px] font-bold leading-snug text-gray-900">{stages[si].modal!.question}</p>
+            <div className="mt-4 grid grid-cols-2 gap-2.5">
+              <button onClick={() => setModal(false)} className="rounded-xl bg-gray-200 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-300">
                 {stages[si].modal!.no}
               </button>
-              <button onClick={() => { setModal(false); advance() }} className="rounded-2xl bg-[#1f9d6b] py-3 font-semibold text-white hover:brightness-110">
+              <button onClick={() => setModal(false)} className="rounded-xl bg-gray-200 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-300">
                 {stages[si].modal!.yes}
               </button>
             </div>
           </div>
         </div>
       )}
-    </Stack>
+    </div>
   )
 }
 
@@ -1316,66 +1384,322 @@ function SignupView({
 }
 
 /* ---- Paywall / selling page ---- */
+/* ---- Pink check used in the selling-page lists ---- */
+function PinkCheck() {
+  return (
+    <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full" style={{ background: '#e0598a' }}>
+      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+    </span>
+  )
+}
+const PAY = ['PayPal', 'Pay', 'VISA', 'MC', 'Maestro', 'Disc', 'Amex']
+const WHAT_YOU_GET = [
+  'See why your energy feels blocked', 'Get a clear plan to shift daily', 'Release blocks in love and money',
+  'Shift from scarcity into abundance', 'Reprogram your subconscious', 'Live as the “lucky” version of you',
+  'The right people are drawn into your life', 'Feel lighter, confident, and magnetic',
+]
+const WITHOUT = ['Stuck in scarcity', 'Forced positivity', 'Clinging, chasing', 'Thinking one way, acting against it', 'Feeling “not one of the lucky ones”', 'Same old cycles']
+const WITH = ['Abundance flows', 'Grounded mind', 'Choosing from worth', 'Your thoughts & actions are aligned', 'Money, support & chances flow more', 'Your entire life shifts']
+const STATS = [
+  { n: '82%', t: 'raised their vibrations after just 4 weeks' },
+  { n: '78%', t: 'reached their peak in abundance & life quality' },
+  { n: '45%', t: 'started in the same low-vibration state as you' },
+]
+const FEATURED = ['USA TODAY', 'Forbes', 'WSJ', "Women's Health", 'healthline', 'Mashable']
+const REVIEWS = [
+  { name: 'Laura S.', rating: '5.0', when: '1 day ago', img: MEDIA.ageAf, text: "I didn’t realize how much inner trauma was blocking my manifestations. With Spirio, I finally healed the energy I’d been holding for years. As soon as I released it, everything started flowing—clarity, confidence, and the things I’d been trying to attract showed up effortlessly." },
+  { name: 'Ann R.', rating: '5.0', when: '1 week ago', img: MEDIA.ageDf, text: 'Since using Spirio, my entire energy around abundance has shifted. I stopped chasing and started receiving. Opportunities, money, and support began flowing in once I aligned with the frequency of having—not lacking.' },
+  { name: 'Scott G.', rating: '4.8', when: '2 months ago', initials: 'SG', bg: '#f0a87e', text: "I didn’t believe in manifestation until I felt completely stuck. Spirio gave me the tools to clear old energy and reprogram my mindset. Now, I feel aligned, magnetic, and finally attracting love—in every sense." },
+]
+const FAQS = [
+  "What if I’ve used other things before and they didn’t help me?",
+  "What if I don’t have enough willpower to stick to my plan?",
+  'What if I feel worry about starting this plan?',
+]
+const BP_DAYS = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7']
+const BP_ICONS = ['❤️', '🎯', '💤', '🧘', '🔥', '🌙', '✨']
+const BP_MINS = [
+  [5, 4, 6, 7, 7, 8, 5],
+  [3, 5, 6, 6, 7, 6, 8],
+  [4, 6, 5, 7, 8, 9, 10],
+]
+
 function PaywallView({
   step,
+  answers,
   onAnswer,
   onNext,
 }: {
   step: Extract<Step, { type: 'paywall' }>
+  answers: Answers
   onAnswer: (key: string, value: string) => void
   onNext: () => void
 }) {
-  const [plan, setPlan] = useState<string>(step.plans.find((p) => p.popular)?.id ?? step.plans[0].id)
+  const [plan, setPlan] = useState<string>(step.plans[0].id) // 1-Month selected by default (per the original)
+  const [secs, setSecs] = useState(600)
+  const [faq, setFaq] = useState<number | null>(null)
+  useEffect(() => {
+    const t = setInterval(() => setSecs((s) => (s > 0 ? s - 1 : 0)), 1000)
+    return () => clearInterval(t)
+  }, [])
+  const mmss = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`
+
+  const G = answers.gender === 'female'
+  const name = (answers.name as string) || ''
+  const goal = goalWord(answers, 'love')
+  const goalCap = cap(goal)
+  const nowImg = G ? MEDIA.summaryFemale : MEDIA.summary
+  const goalImg = G ? MEDIA.female : MEDIA.male
+  const selected = step.plans.find((p) => p.id === plan) ?? step.plans[0]
+  const buy = () => { onAnswer('plan', plan); onNext() }
+
+  const GET = (cls = '') => (
+    <button onClick={buy} className={`rounded-full bg-[#1f9d6b] font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] ${cls}`}>GET MY PLAN</button>
+  )
+  const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+    <div className={`rounded-2xl border border-cardborder bg-white/[0.03] p-4 ${className}`}>{children}</div>
+  )
+
   return (
-    <Stack>
-      <Title>{step.titleGold ? gold(step.title, [step.titleGold]) : step.title}</Title>
-      {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
-      <div className="grid grid-cols-1 gap-3 mt-6">
-        {step.plans.map((p: Plan) => (
-          <button
-            key={p.id}
-            onClick={() => setPlan(p.id)}
-            className={[
-              'relative w-full flex items-center justify-between rounded-2xl border px-4 py-4 text-left transition-all',
-              plan === p.id ? 'border-gold bg-gold/10' : 'border-cardborder bg-card hover:border-violet/60',
-            ].join(' ')}
-          >
-            {p.popular && (
-              <span className="absolute -top-2 right-4 bg-gold text-ink text-[10px] font-bold px-2 py-0.5 rounded-full">
-                MOST POPULAR
-              </span>
-            )}
-            <div>
-              <div className="font-semibold text-white">{p.name}</div>
-              <div className="text-xs text-muted">
-                {p.old && <span className="line-through mr-1">{p.old}</span>}
-                {p.price}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-gold font-bold">{p.perDay}</div>
-              <div className={`mt-1 ml-auto h-4 w-4 rounded-full border ${plan === p.id ? 'bg-gold border-gold' : 'border-muted'}`} />
-            </div>
-          </button>
-        ))}
-      </div>
-      <div className="mt-6">
-        <PrimaryButton onClick={() => { onAnswer('plan', plan); onNext() }}>{step.cta ?? 'Continue'}</PrimaryButton>
+    <div className="-mx-5 animate-fadeUp">
+      {/* Sticky timer header */}
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/5 px-5 py-3" style={{ background: '#141319' }}>
+        <span className="text-xl font-extrabold tabular-nums text-gold">{mmss}</span>
+        {GET('px-5 py-2.5 text-sm')}
       </div>
 
-      {step.moneyBackTitle && (
-        <div className="mt-5 rounded-2xl border border-cardborder bg-white/[0.03] p-4 text-center">
-          <div className="text-sm font-bold text-gold">🛡️ {step.moneyBackTitle}</div>
-          {step.moneyBackBody && <p className="mt-1.5 text-[12px] leading-snug text-white/80">{step.moneyBackBody}</p>}
-          {step.moneyBackLinkText && (
-            <p className="mt-2 text-[11px] text-muted">
-              {step.moneyBackLinkPrefix}
-              <a href={step.moneyBackLinkUrl} target="_blank" rel="noreferrer" className="text-gold underline">{step.moneyBackLinkText}</a>
-            </p>
-          )}
+      <div className="px-5 pb-12 pt-5">
+        {/* Discount + title */}
+        <p className="text-center text-sm font-semibold text-muted">🎁 Special discount: <span style={{ color: '#ef4444' }}>{selected.discount ?? '-54%'}</span></p>
+        <h1 className="mt-3 text-center text-[1.7rem] font-bold leading-tight text-white">
+          {name ? `${name}, ` : ''}your personal {gold('High-Vibration Plan', ['High-Vibration Plan'])} to attract {gold(goal, [goal])} in your life
+        </h1>
+        <p className="mt-2 text-center text-sm text-muted">Become a high-vibration person</p>
+
+        {/* Now vs goal */}
+        <div className="mt-6 grid grid-cols-2 gap-3 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+          {[{ goalCol: false, img: nowImg, pill: 'Now', vib: 'Low', love: 'Blocked', opp: 'Stalled' }, { goalCol: true, img: goalImg, pill: 'Your goal', vib: 'High', love: 'Flowing', opp: 'Showing up' }].map((c, i) => {
+            const col = c.goalCol ? '#22c55e' : '#ef4444'
+            return (
+              <div key={i} className={i === 0 ? 'border-r border-white/10 pr-3' : 'pl-3'}>
+                <div className="mb-2 flex justify-center">
+                  <span className="rounded-lg px-3 py-1 text-xs font-bold text-white" style={{ background: c.goalCol ? '#1f8a5c' : '#2a2535' }}>{c.pill}</span>
+                </div>
+                <img src={c.img} alt="" loading="lazy" className="mx-auto h-24 w-24 rounded-full object-cover object-top" />
+                <div className="mt-3 text-[11px] text-muted">Vibrations</div>
+                <div className="text-sm font-bold" style={{ color: col }}>{c.goalCol ? '↑' : '↓'} {c.vib}</div>
+                <div className="mt-2 text-[11px] text-muted">Love</div>
+                <div className="text-sm font-bold text-white">{c.love}</div>
+                <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-cardborder"><div className="h-full rounded-full" style={{ width: c.goalCol ? '88%' : '24%', background: col }} /></div>
+                <div className="mt-2 text-[11px] text-muted">Opportunities</div>
+                <div className="text-sm font-bold text-white">{c.opp}</div>
+                <div className="mt-1 flex gap-1">{[0, 1, 2].map((s) => <div key={s} className="h-1.5 flex-1 rounded-full" style={{ background: c.goalCol ? col : s === 0 ? col : '#3a3545' }} />)}</div>
+              </div>
+            )
+          })}
         </div>
-      )}
-    </Stack>
+
+        {/* Plan recap */}
+        <h2 className="mt-8 text-center text-xl font-bold text-white">{name ? `${name}, ` : ''}your personalized plan is ready!</h2>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="flex items-start gap-2.5 border-r border-white/10 pr-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="brain" /></span>
+            <div className="leading-tight"><div className="text-[11px] text-muted">Current pattern</div><div className="text-[13px] font-bold text-white">Fear, negative loops</div></div>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="target" /></span>
+            <div className="leading-tight"><div className="text-[11px] text-muted">What you want</div><div className="text-[13px] font-bold text-white">{goalCap}</div></div>
+          </div>
+        </div>
+
+        {/* Promo code */}
+        <div className="mt-5 rounded-2xl p-4" style={{ background: '#1f8a5c' }}>
+          <div className="flex items-center gap-2 font-bold text-white">🏷️ Your promo code applied!</div>
+          <div className="mt-3 flex items-stretch gap-2">
+            <div className="flex flex-1 items-center gap-2 rounded-xl bg-black/25 px-3 py-2.5 text-sm text-white"><span className="text-gold">✓</span> {(name || 'you').toLowerCase()}_haz26</div>
+            <div className="flex items-center rounded-xl bg-black/25 px-3 text-lg font-extrabold tabular-nums text-gold">{mmss}</div>
+          </div>
+        </div>
+
+        {/* Plans */}
+        <div className="mt-5 space-y-3">
+          {step.plans.map((p: Plan) => {
+            const sel = plan === p.id
+            const m = p.perDay.match(/(\d+)[.,](\d+)/)
+            return (
+              <button key={p.id} onClick={() => setPlan(p.id)} className={`relative block w-full overflow-hidden rounded-2xl border-2 text-left transition-all ${sel ? 'border-gold' : 'border-cardborder'}`} style={{ background: sel ? 'rgba(245,196,81,0.07)' : 'rgba(255,255,255,0.03)' }}>
+                {p.popular && <div className="bg-gold py-1 text-center text-[10px] font-bold uppercase tracking-wider text-ink">Most Popular</div>}
+                <div className="flex items-center gap-3 p-4 pt-5">
+                  {p.discount && <span className="absolute left-0 top-0 rounded-br-xl px-2 py-0.5 text-[11px] font-bold text-white" style={{ background: '#ef4444' }}>{p.discount}</span>}
+                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${sel ? 'border-gold' : 'border-muted'}`}>{sel && <span className="h-2.5 w-2.5 rounded-full bg-gold" />}</span>
+                  <div className="flex-1">
+                    <div className="font-bold text-white">{p.name}</div>
+                    <div className="text-sm"><span className="text-muted line-through">{p.old}</span> <span className="text-white">{p.price}</span></div>
+                  </div>
+                  <div className="relative flex items-center rounded-lg px-3 py-1.5" style={{ background: sel ? '#fff' : '#b6b0c0', color: '#1a1626' }}>
+                    <span className="absolute -left-1 h-2.5 w-2.5 rounded-full" style={{ background: '#141319' }} />
+                    <span className="mr-0.5 text-sm font-semibold">€</span>
+                    <span className="text-3xl font-extrabold leading-none">{m ? m[1] : '0'}</span>
+                    <span className="ml-0.5 flex flex-col text-[10px] font-bold leading-tight"><span>{m ? m[2] : ''}</span><span className="text-gray-500">day</span></span>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="mt-4 flex items-center justify-center gap-2 text-[13px] font-semibold text-white"><span style={{ color: '#22c55e' }}>🛡️</span> 30-day money-back guarantee</div>
+        <div className="mt-4">{GET('w-full py-4 text-base')}</div>
+        <div className="mt-3 flex justify-center"><span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ borderColor: '#1f9d6b', color: '#1f9d6b' }}>🛡️ Pay safe & secure</span></div>
+        <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+          {PAY.map((b) => <span key={b} className="rounded bg-white px-1.5 py-1 text-[9px] font-bold text-gray-700">{b}</span>)}
+        </div>
+        <p className="mt-3 text-center text-[11px] leading-relaxed text-muted">
+          By completing your purchase you agree to automatic renewal of the subscription. You’ll be charged {selected.price} now, then €39.99 every month. Cancel anytime in the app or by emailing support@spiriohub.com.
+        </p>
+
+        {/* Money-back card */}
+        {step.moneyBackTitle && (
+          <Card className="mt-6 text-center">
+            <div className="text-2xl">🛡️</div>
+            <div className="mt-1 text-lg font-bold text-white">{step.moneyBackTitle}</div>
+            {step.moneyBackBody && <p className="mt-2 text-[13px] leading-snug text-white/80">{step.moneyBackBody}</p>}
+            {step.moneyBackLinkText && <p className="mt-3 text-[12px] text-muted">{step.moneyBackLinkPrefix}<a href={step.moneyBackLinkUrl} target="_blank" rel="noreferrer" className="text-gold underline">{step.moneyBackLinkText}</a></p>}
+          </Card>
+        )}
+
+        {/* Info safe */}
+        <Card className="mt-4">
+          <div className="text-sm font-bold text-white">🔒 Your information is safe</div>
+          <p className="mt-1 text-[12px] text-muted">We won’t sell or rent your personal contact information for any marketing purposes whatsoever.</p>
+          <div className="mt-3 text-sm font-bold text-white">💳 Secure checkout</div>
+          <p className="mt-1 text-[12px] text-muted">All information is encrypted and transmitted without risk using a Secure Socket Layer protocol.</p>
+        </Card>
+
+        {/* What you get */}
+        <h2 className="mt-8 text-center text-xl font-bold text-white">What you get</h2>
+        <div className="mt-4 space-y-3">
+          {WHAT_YOU_GET.map((w) => <div key={w} className="flex items-start gap-3"><PinkCheck /><span className="text-[14px] text-white/90">{w}</span></div>)}
+        </div>
+
+        {/* Without / With */}
+        <div className="mt-8 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-cardborder bg-white/[0.02] p-4">
+            <div className="mb-3 text-sm font-bold text-white">Without Spirio</div>
+            {WITHOUT.map((w) => <div key={w} className="mb-2.5 flex items-start gap-2 text-[12px] text-muted"><span style={{ color: '#9aa0ab' }}>✕</span> {w}</div>)}
+          </div>
+          <div className="rounded-2xl p-4" style={{ background: 'linear-gradient(160deg, #3a2456, #2a1c3e)' }}>
+            <div className="mb-3 text-sm font-bold text-white">With Spirio</div>
+            {WITH.map((w) => <div key={w} className="mb-2.5 flex items-start gap-2 text-[12px] text-white/90"><span className="text-gold">✓</span> {w}</div>)}
+          </div>
+        </div>
+
+        {/* Harvard */}
+        <Card className="mt-4 flex items-center gap-4">
+          <img src={MEDIA.harvard} alt="" loading="lazy" className="h-12 w-12 shrink-0 object-contain" />
+          <p className="text-[13px] leading-snug text-white/90">{gold('Harvard Medical School research shows spiritual people are happier & healthier', ['Harvard Medical School'])}</p>
+        </Card>
+
+        {/* Social proof + stats */}
+        <h2 className="mt-8 text-center text-[1.4rem] font-bold leading-tight text-white">{gold(`284,620 ${G ? 'women' : 'men'} just like you`, [`284,620 ${G ? 'women' : 'men'}`])} achieved great results</h2>
+        <Card className="mt-4">
+          <div className="mb-4 h-40 w-full rounded-xl" style={{ background: `linear-gradient(160deg, rgba(168,85,247,0.35), rgba(20,19,25,0.6)), url(${MEDIA.meditationBg}) center/cover` }} />
+          {STATS.map((s) => <div key={s.n} className="mb-3 flex items-start gap-3"><span className="text-2xl font-extrabold text-gold">{s.n}</span><span className="mt-1 text-[13px] text-white/85">of users {s.t}</span></div>)}
+        </Card>
+
+        {/* As featured */}
+        <p className="mt-8 text-center text-sm text-muted">Our program is based on methodology</p>
+        <h3 className="text-center text-xl font-bold text-gold">As featured in</h3>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+          {FEATURED.map((f) => <span key={f} className="font-serif text-lg font-semibold text-white/45">{f}</span>)}
+        </div>
+        <Card className="mt-6 flex items-center gap-4">
+          <div className="text-3xl">🏆</div>
+          <p className="text-[13px] leading-snug text-white/90"><span className="font-bold text-gold">Spirio</span> is proudly nominated for an: <span className="font-bold">Best Well-being Product Innovation Award – 2023</span></p>
+        </Card>
+
+        {/* Blueprint */}
+        <h2 className="mt-8 text-center text-xl font-bold text-white">A better version of you. Everyday.</h2>
+        <p className="mt-1 text-center text-sm text-muted">Your tailored high-vibration growth blueprint</p>
+        <div className="relative mt-4 overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03] p-3">
+          {/* Day header */}
+          <div className="flex gap-1 pl-10">
+            {BP_DAYS.map((d) => (
+              <span key={d} className="flex-1 text-center text-[9px] font-medium text-muted">{d}</span>
+            ))}
+          </div>
+          {/* Week rows */}
+          <div className="mt-1.5 space-y-1.5">
+            {BP_MINS.map((mins, w) => (
+              <div key={w} className="flex items-stretch gap-1">
+                <span
+                  className="flex w-8 shrink-0 items-center justify-center rounded-md text-[9px] font-bold tracking-wider text-white"
+                  style={{ background: '#1f8a5c', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                >
+                  WEEK {w + 1}
+                </span>
+                <div className="flex flex-1 gap-1">
+                  {BP_ICONS.map((ic, d) => (
+                    <div key={d} className="flex flex-1 flex-col items-center justify-center gap-0.5 rounded-lg bg-white/[0.06] py-1.5">
+                      <span className="text-base leading-none">{ic}</span>
+                      <span className="text-[7px] leading-none text-muted">{mins[d]} min</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Meditation figure overlaid on the grid (gender-conditional), feathered into the dark */}
+          <img
+            src={nowImg}
+            alt=""
+            className="pointer-events-none absolute left-1/2 top-[46%] h-[78%] w-auto -translate-x-1/2 -translate-y-1/2 select-none object-contain"
+            style={{ WebkitMaskImage: 'radial-gradient(58% 58% at 50% 45%, #000 60%, transparent 100%)', maskImage: 'radial-gradient(58% 58% at 50% 45%, #000 60%, transparent 100%)' }}
+          />
+          {/* Bottom fade so the lower rows dissolve into the panel */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#15141b] to-transparent" />
+        </div>
+
+        {/* Testimonials */}
+        <h2 className="mt-8 text-center text-xl font-bold text-white">People love Spirio</h2>
+        <div className="mt-4 space-y-3">
+          {REVIEWS.map((r) => (
+            <Card key={r.name}>
+              <div className="flex items-start gap-3">
+                {r.img ? (
+                  <img src={r.img} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" style={{ objectPosition: 'center 20%' }} />
+                ) : (
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: r.bg }}>{r.initials}</span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-sm font-bold text-white">{r.name}</span>
+                    <span className="whitespace-nowrap text-[11px] text-muted">{r.when}</span>
+                  </div>
+                  <div className="mt-0.5 text-sm leading-none text-gold">★★★★★ <span className="text-xs text-white/70">{r.rating}</span></div>
+                </div>
+              </div>
+              <p className="mt-3 text-[13px] leading-snug text-white/80">{r.text}</p>
+            </Card>
+          ))}
+        </div>
+
+        {/* FAQ */}
+        <h2 className="mt-8 text-center text-xl font-bold text-white">People often ask</h2>
+        <div className="mt-4 space-y-3">
+          {FAQS.map((q, i) => (
+            <button key={i} onClick={() => setFaq(faq === i ? null : i)} className="flex w-full items-start gap-3 rounded-2xl border border-cardborder bg-white/[0.03] p-4 text-left">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold text-sm font-bold text-ink">?</span>
+              <span className="flex-1 text-[14px] font-medium text-white">{q}</span>
+              <span className="text-muted">{faq === i ? '▾' : '▸'}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Final CTA */}
+        <div className="mt-8">{GET('w-full py-4 text-base')}</div>
+      </div>
+    </div>
   )
 }
 

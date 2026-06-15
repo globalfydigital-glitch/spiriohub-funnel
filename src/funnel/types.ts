@@ -7,6 +7,7 @@ export type Plan = {
   perDay: string
   old?: string
   popular?: boolean
+  discount?: string
 }
 
 // 3-in-1 bundle line items.
@@ -33,18 +34,18 @@ export type Step =
   | {
       id: string; type: 'info'; title: string; titleGold?: string; subtitle?: string; body?: string
       callout?: string; goldWords?: string[]; card?: boolean; emoji?: string; image?: string
-      fullBleed?: boolean; waveform?: boolean; sequential?: boolean; cta?: string; decline?: string; infoCards?: InfoCard[]
+      fullBleed?: boolean; waveform?: boolean; sequential?: boolean; imageBelow?: boolean; cta?: string; decline?: string; infoCards?: InfoCard[]
       scale?: { label: string; value: string }[]
     }
   | {
       id: string; type: 'input'; field: 'name' | 'email'; title: string; titleGold?: string; subtitle?: string
-      placeholder: string; image?: string; caption?: string; captionAccent?: string; tip?: string
+      placeholder: string; image?: string; imageFemale?: string; caption?: string; captionAccent?: string; tip?: string
       error?: string; skip?: string; cta?: string; saveAs: string
     }
   | { id: string; type: 'loader'; title: string; titleGold?: string; duration?: number; stages?: LoaderStage[] }
   | { id: string; type: 'ringloader'; title: string; image?: string; duration?: number }
   | {
-      id: string; type: 'summary'; title: string; titleAccent?: string; body?: string; image?: string; cta?: string
+      id: string; type: 'summary'; title: string; titleAccent?: string; body?: string; image?: string; imageFemale?: string; cta?: string
       alertTitle?: string; alertDescription?: string; gaugeValue?: number; gaugeTarget?: string; gaugeYou?: string
       rows?: SummaryRow[]; goalFrom?: string
     }
@@ -61,7 +62,7 @@ export type Step =
       cta?: string; saveEmailAs: string; savePasswordAs: string
     }
   | {
-      id: string; type: 'paywall'; title: string; titleGold?: string; subtitle?: string; plans: Plan[]; cta?: string
+      id: string; type: 'paywall'; title: string; titleGold?: string; subtitle?: string; plans: Plan[]; cta?: string; goalFrom?: string
       moneyBackTitle?: string; moneyBackBody?: string; moneyBackLinkPrefix?: string; moneyBackLinkText?: string; moneyBackLinkUrl?: string
     }
   | {
