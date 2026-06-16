@@ -16,9 +16,26 @@ function initialIndex() {
   return Number.isFinite(n) && n >= 0 && n < STEPS.length ? n : 0
 }
 
+// Preview/testing + ad-traffic convenience: seed answers from the URL
+// (?gender=&age=&goal=&name=, also accepts the original's gen_type/attract).
+function initialAnswers(): Answers {
+  if (typeof window === 'undefined') return {}
+  const p = new URLSearchParams(window.location.search)
+  const a: Answers = {}
+  const gender = p.get('gender') || p.get('gen_type')
+  if (gender) a.gender = gender
+  const age = p.get('age')
+  if (age) a.age = age
+  const goalRaw = p.get('goal') || p.get('attract')
+  if (goalRaw) a.goal = goalRaw.toLowerCase().replace(/\s+/g, '-')
+  const name = p.get('name')
+  if (name) a.name = name
+  return a
+}
+
 export function FunnelApp() {
   const [index, setIndex] = useState(initialIndex)
-  const [answers, setAnswers] = useState<Answers>({})
+  const [answers, setAnswers] = useState<Answers>(initialAnswers)
 
   const step = STEPS[index]
 

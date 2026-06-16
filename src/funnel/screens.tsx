@@ -653,7 +653,7 @@ function SummaryView({
   // Figure is age-binary (18-34 vs the rest) per the original; male 18-34 uses a dedicated asset.
   const young = answers.age === '18-34'
   const img = answers.gender === 'female'
-    ? (step.imageFemale ?? step.image)
+    ? (young ? MEDIA.summaryWomanYoung : MEDIA.summaryWomanOld)
     : (young ? MEDIA.summaryManYoung : step.image)
   const titleNode = accent
     ? <RichTitle title={step.title.replace(accent, '')} accent={accent} accentColor={RED} />
@@ -1449,13 +1449,6 @@ const FAQS = [
   { q: "What if I don’t have enough willpower to stick to my plan?", a: "You don’t need willpower. Your plan is just 3–20 minutes a day, guided step by step, and it’s built around how you answered the quiz — so it fits your real life, not an ideal one." },
   { q: 'What if I feel worry about starting this plan?', a: "That’s completely normal — and there’s zero risk. Start today, follow the daily sessions at your own pace, and if you don’t feel a difference you can request a full refund within 30 days." },
 ]
-const BP_DAYS = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7']
-const BP_ICONS = ['❤️', '🎯', '💤', '🧘', '🔥', '🌙', '✨']
-const BP_MINS = [
-  [5, 4, 6, 7, 7, 8, 5],
-  [3, 5, 6, 6, 7, 6, 8],
-  [4, 6, 5, 7, 8, 9, 10],
-]
 // Free bonus modules shown in the "Additional discount" modal after GET MY PLAN.
 const BONUSES = [
   { name: 'Tantric Guide To Boost Intimacy', old: '€39' },
@@ -1502,8 +1495,8 @@ function PaywallView({
   const goal = goalWord(answers, 'love')
   const goalCap = cap(goal)
   const young = answers.age === '18-34' // figure is age-binary (18-34 vs the rest)
-  const nowImg = G ? MEDIA.summaryFemale : young ? MEDIA.nowManYoung : MEDIA.nowManOld
-  const goalImg = G ? MEDIA.female : young ? MEDIA.goalManYoung : MEDIA.goalManOld
+  const nowImg = G ? (young ? MEDIA.nowWomanYoung : MEDIA.nowWomanOld) : young ? MEDIA.nowManYoung : MEDIA.nowManOld
+  const goalImg = G ? (young ? MEDIA.goalWomanYoung : MEDIA.goalWomanOld) : young ? MEDIA.goalManYoung : MEDIA.goalManOld
   const selected = step.plans.find((p) => p.id === plan) ?? step.plans[0]
   const buy = () => { onAnswer('plan', selected.id); onNext() }
 
@@ -1527,28 +1520,32 @@ function PaywallView({
         </h1>
         <p className="mt-2 text-center text-sm text-muted">Become a high-vibration person</p>
 
-        {/* Now vs goal */}
-        <div className="relative mt-6 grid grid-cols-2 gap-3 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
-          {/* centered divider, split to leave a clean gap around the (transparent) chevron */}
-          <div className="pointer-events-none absolute left-1/2 top-4 h-[3.25rem] w-px -translate-x-1/2 bg-white/10" />
-          <div className="pointer-events-none absolute bottom-4 left-1/2 top-[7.75rem] w-px -translate-x-1/2 bg-white/10" />
-          {/* animated chevron › → ›› pointing from Now to the goal (transparent bg) */}
-          <div className="pointer-events-none absolute left-1/2 top-24 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center text-[2.6rem] font-bold leading-none text-gold">
+        {/* Now vs goal — large portrait figures filling each column (only the avatar changes by gender/age) */}
+        <div className="relative mt-6 grid grid-cols-2 gap-3 overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+          {/* full-height centered divider + animated chevron at the figures' level */}
+          <div className="pointer-events-none absolute inset-y-4 left-1/2 w-px -translate-x-1/2 bg-white/10" />
+          <div className="pointer-events-none absolute left-1/2 top-[8.6rem] z-20 flex -translate-x-1/2 -translate-y-1/2 items-center text-[2.4rem] font-bold leading-none text-gold">
             <span>›</span>
             <span className="-ml-3 animate-[chev2_1.3s_ease-in-out_infinite]">›</span>
           </div>
-          {[{ goalCol: false, img: nowImg, pill: 'Now', vib: 'Low', love: 'Blocked', opp: 'Stalled' }, { goalCol: true, img: goalImg, pill: 'Your goal', vib: 'High', love: 'Flowing', opp: 'Showing up' }].map((c, i) => {
+          {[{ goalCol: false, img: nowImg, pill: 'Now', vib: 'Low', val: 'Blocked', opp: 'Stalled' }, { goalCol: true, img: goalImg, pill: 'Your goal', vib: 'High', val: 'Flowing', opp: 'Showing up' }].map((c, i) => {
             const col = c.goalCol ? '#22c55e' : '#ef4444'
             return (
-              <div key={i} className={i === 0 ? 'pr-3' : 'pl-3'}>
+              <div key={i} className={i === 0 ? 'pr-2' : 'pl-2'}>
                 <div className="mb-2 flex justify-center">
                   <span className="rounded-lg px-3 py-1 text-xs font-bold text-white" style={{ background: c.goalCol ? '#1f8a5c' : '#2a2535' }}>{c.pill}</span>
                 </div>
-                <img src={c.img} alt="" loading="lazy" className="mx-auto h-24 w-24 rounded-full object-cover object-top" />
+                <div className="relative h-48 w-full overflow-hidden">
+                  {/* colored glow behind the figure: red for Now (low), green for the goal (high) */}
+                  <div className="pointer-events-none absolute inset-0" style={{ background: `radial-gradient(68% 58% at 50% 50%, ${col}66 0%, ${col}1f 42%, transparent 74%)` }} />
+                  <img src={c.img} alt="" loading="lazy" className="absolute inset-0 mx-auto h-full w-auto select-none object-contain object-bottom" />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#16151c] to-transparent" />
+                </div>
+                <div className="mt-2 h-px w-full bg-white/10" />
                 <div className="mt-3 text-[11px] text-muted">Vibrations</div>
                 <div className="text-sm font-bold" style={{ color: col }}>{c.goalCol ? '↑' : '↓'} {c.vib}</div>
-                <div className="mt-2 text-[11px] text-muted">Love</div>
-                <div className="text-sm font-bold text-white">{c.love}</div>
+                <div className="mt-2 text-[11px] text-muted">{goalCap}</div>
+                <div className="text-sm font-bold text-white">{c.val}</div>
                 <div className="relative mt-1 h-1.5 w-full rounded-full bg-cardborder">
                   <div className="h-full rounded-full" style={{ width: c.goalCol ? '70%' : '30%', background: col }} />
                   <span className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/10 bg-white shadow-sm" style={{ left: c.goalCol ? '70%' : '30%' }} />
@@ -1681,7 +1678,7 @@ function PaywallView({
         <Card className="mt-4 overflow-hidden p-0">
           <div className="relative h-52 w-full overflow-hidden" style={{ background: 'radial-gradient(115% 80% at 50% 40%, #5b4677 0%, #3b2d54 44%, #241b32 74%, #17131e 100%)' }}>
             <img src={MEDIA.socialPetals} alt="" loading="lazy" className="pointer-events-none absolute inset-x-0 top-0 w-full select-none" />
-            <img src={MEDIA.socialMan} alt="" loading="lazy" className="pointer-events-none absolute bottom-0 left-1/2 h-[84%] w-auto -translate-x-1/2 select-none" />
+            <img src={G ? MEDIA.socialWoman : MEDIA.socialMan} alt="" loading="lazy" className="pointer-events-none absolute bottom-0 left-1/2 h-[84%] w-auto -translate-x-1/2 select-none" />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#15141b] to-transparent" />
           </div>
           <div className="px-4 pb-3 pt-1">
@@ -1715,48 +1712,7 @@ function PaywallView({
         {/* Blueprint */}
         <h2 className="mt-8 text-center text-xl font-bold text-white">A better version of you. Everyday.</h2>
         <p className="mt-1 text-center text-sm text-muted">Your tailored high-vibration growth blueprint</p>
-        {G ? (
-        <div className="relative mt-4 overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03] p-3">
-          {/* Day header */}
-          <div className="flex gap-1 pl-9">
-            {BP_DAYS.map((d) => (
-              <span key={d} className="flex-1 text-center text-[9px] font-medium text-muted">{d}</span>
-            ))}
-          </div>
-          {/* Week rows */}
-          <div className="mt-1.5 space-y-1.5">
-            {BP_MINS.map((mins, w) => (
-              <div key={w} className="flex items-stretch gap-1">
-                <span
-                  className="flex w-8 shrink-0 items-center justify-center whitespace-nowrap rounded-md text-[9px] font-bold text-white"
-                  style={{ background: '#1f8a5c', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                >
-                  WEEK {w + 1}
-                </span>
-                <div className="flex flex-1 gap-1">
-                  {BP_ICONS.map((ic, d) => (
-                    <div key={d} className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg bg-white/[0.06] py-1.5">
-                      <span className="text-base leading-none">{ic}</span>
-                      <span className="text-[7px] leading-none text-muted">{mins[d]} min</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Meditation figure overlaid on the grid (gender-conditional), feathered into the dark */}
-          <img
-            src={nowImg}
-            alt=""
-            className="pointer-events-none absolute left-1/2 top-[46%] h-[78%] w-auto -translate-x-1/2 -translate-y-1/2 select-none object-contain"
-            style={{ WebkitMaskImage: 'radial-gradient(58% 58% at 50% 45%, #000 60%, transparent 100%)', maskImage: 'radial-gradient(58% 58% at 50% 45%, #000 60%, transparent 100%)' }}
-          />
-          {/* Bottom fade so the lower rows dissolve into the panel */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#15141b] to-transparent" />
-        </div>
-        ) : (
-          <img src={MEDIA.blueprintMale} alt="Your tailored weekly plan" loading="lazy" className="mt-4 w-full rounded-2xl border border-cardborder" />
-        )}
+        <img src={G ? MEDIA.blueprintFemale : MEDIA.blueprintMale} alt="Your tailored weekly plan" loading="lazy" className="mt-4 w-full rounded-2xl border border-cardborder" />
 
         {/* Testimonials */}
         <h2 className="mt-8 text-center text-xl font-bold text-white">People love Spirio</h2>
