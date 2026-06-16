@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { STEPS } from './steps'
+import { STEPS, LIGHT_STEPS } from './steps'
 import { QUESTION_TYPES, type Answers } from './types'
 import { StepView } from './screens'
 import { Dashboard } from './Dashboard'
@@ -48,6 +48,7 @@ function Funnel() {
   const [answers, setAnswers] = useState<Answers>(initialAnswers)
   // Synced synchronously so onNext reads the just-set answer without a stale closure.
   const answersRef = useRef<Answers>(answers)
+  const [leaving, setLeaving] = useState(false)
 
   const step = STEPS[index]
 
@@ -74,6 +75,16 @@ function Funnel() {
     }
   }
 
+  // "Blink" transition: fade the current screen out to just the background, then switch + fade the new one in.
+  const go = (change: () => void) => {
+    if (leaving) return
+    setLeaving(true)
+    setTimeout(() => {
+      change()
+      setLeaving(false)
+    }, 200)
+  }
+
   const onNext = () => {
     // Log the step's final answer (skip name/email = PII). Multi-select arrays joined with '|'.
     const sa = (step as { saveAs?: string }).saveAs
@@ -81,9 +92,9 @@ function Funnel() {
       const v = answersRef.current[sa]
       if (v != null && v !== '') track('answer', step.id, index, Array.isArray(v) ? v.join('|') : String(v), answersRef.current)
     }
-    setIndex((i) => (i < STEPS.length - 1 ? i + 1 : 0))
+    go(() => setIndex((i) => (i < STEPS.length - 1 ? i + 1 : 0)))
   }
-  const onBack = () => setIndex((i) => Math.max(0, i - 1))
+  const onBack = () => go(() => setIndex((i) => Math.max(0, i - 1)))
 
   const isFirst = index === 0
   // Progress bar/counter: on every counted question (name included), hidden only on email.
@@ -96,21 +107,24 @@ function Funnel() {
   // The selling page renders its own sticky timer header.
   const hideHeader = step.type === 'paywall'
 
+  // Light "checkout" theme on the late-funnel screens (acclimates the lead to the Salduu checkout look).
+  const light = LIGHT_STEPS.has(step.id)
+
   return (
-    <div className="min-h-screen w-full flex flex-col">
+    <div className="min-h-screen w-full flex flex-col overflow-x-hidden" style={light ? { background: '#F5F5F5' } : undefined}>
       {/* Full-width header */}
       {!hideHeader && (
       <header className="w-full px-5 sm:px-8 pt-4">
         <div className="flex items-center justify-between pb-2.5">
           <div className="flex items-center gap-3">
             {showBack && (
-              <button onClick={onBack} aria-label="Back" className="text-xl leading-none text-white hover:opacity-70">
+              <button onClick={onBack} aria-label="Back" className="text-xl leading-none text-white hover:opacity-70" style={light ? { color: '#1c1a26' } : undefined}>
                 ←
               </button>
             )}
-            <span className="font-serif text-xl tracking-wide text-white">
+            <span className="font-serif text-xl tracking-wide text-white" style={light ? { color: '#1c1a26' } : undefined}>
               Spirio
-              <span className="ml-2 align-middle font-sans text-xs font-normal tracking-[0.2em] text-muted">| QUIZ</span>
+              <span className="ml-2 align-middle font-sans text-xs font-normal tracking-[0.2em] text-muted" style={light ? { color: '#8a8694' } : undefined}>| QUIZ</span>
             </span>
           </div>
           {isFirst ? (
@@ -135,8 +149,8 @@ function Funnel() {
 
       {/* Centered content column */}
       <div className="mx-auto flex w-full max-w-[460px] flex-1 flex-col px-5 pb-10 pt-2">
-        <div className="flex flex-1 flex-col justify-center">
-          <StepView key={step.id} step={step} answers={answers} onAnswer={onAnswer} onNext={onNext} />
+        <div key={step.id} className={`flex flex-1 flex-col justify-center ${leaving ? 'opacity-0 transition-opacity duration-200 ease-in' : 'animate-[stepIn_0.3s_ease-out]'}`}>
+          <StepView step={step} answers={answers} onAnswer={onAnswer} onNext={onNext} />
         </div>
       </div>
     </div>

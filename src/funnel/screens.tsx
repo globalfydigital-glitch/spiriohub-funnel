@@ -1,17 +1,31 @@
 import { useEffect, useState } from 'react'
 import type { Step, Answers, Option, Plan, BundleItem, LoaderStage, SummaryRow, InfoCard } from './types'
-import { MEDIA } from './steps'
+import { MEDIA, LIGHT_STEPS } from './steps'
 
 const RED = '#e0584f'
 
+// Light "checkout" theme tokens (Salduu checkout look): light page, dark ink, green CTA.
+// Content cards stay dark (DARK_CARD) so they read well on the light page.
+const CHECKOUT_GREEN = '#22C55E'
+const LIGHT_INK = '#1c1a26' // primary dark text on the light page
+const LIGHT_DIM = '#6f6b7a' // secondary/dim text on the light page
+const DARK_CARD = '#1b1a22' // solid dark surface kept for content cards on light pages
+// Salduu checkout card elevation (Tailwind tw-shadow-2xl) — wraps the content cards on light pages.
+const CHECKOUT_SHADOW = '0 25px 50px -12px rgba(0,0,0,0.25)'
+const LIGHT_GOLD = '#9a6300' // dark gold for accent words sitting on the light page (the bright gold is illegible there)
+
 /* ------------------------------ Token helpers ----------------------------- */
 // Split a string and paint the matched words in accent gold.
-function gold(text: string, words?: string[]) {
+function gold(text: string, words?: string[], light?: boolean) {
   if (!text) return text
   if (!words || !words.length) return text
   const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const parts = text.split(new RegExp('(' + words.map(esc).join('|') + ')', 'g'))
-  return parts.map((p, i) => (words.includes(p) ? <span key={i} className="text-gold">{p}</span> : <span key={i}>{p}</span>))
+  return parts.map((p, i) =>
+    words.includes(p)
+      ? <span key={i} className={light ? '' : 'text-gold'} style={light ? { color: LIGHT_GOLD } : undefined}>{p}</span>
+      : <span key={i}>{p}</span>,
+  )
 }
 
 // Consciousness-scale row color: cyan (top / high vibration) -> red (bottom / low).
@@ -59,26 +73,28 @@ function fill(text: string | undefined, answers: Answers): string {
 }
 
 /* ------------------------------- UI helpers ------------------------------- */
-function Title({ children }: { children: React.ReactNode }) {
-  return <h1 className="text-[1.6rem] leading-tight font-semibold text-white text-center">{children}</h1>
+function Title({ children, light }: { children: React.ReactNode; light?: boolean }) {
+  return <h1 className="text-[1.6rem] leading-tight font-semibold text-white text-center" style={light ? { color: LIGHT_INK } : undefined}>{children}</h1>
 }
-function Subtitle({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-muted text-center mt-2">{children}</p>
+function Subtitle({ children, light }: { children: React.ReactNode; light?: boolean }) {
+  return <p className="text-sm text-muted text-center mt-2" style={light ? { color: LIGHT_DIM } : undefined}>{children}</p>
 }
 function PrimaryButton({
   children,
   disabled,
   onClick,
+  light,
 }: {
   children: React.ReactNode
   disabled?: boolean
   onClick: () => void
+  light?: boolean
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className="w-full rounded-2xl bg-[#1f9d6b] text-white font-semibold py-4 text-base transition-all disabled:bg-[#6e6a72] disabled:text-white/80 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
+      className={`w-full rounded-2xl text-white font-semibold py-4 text-base transition-all disabled:bg-[#6e6a72] disabled:text-white/80 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99] ${light ? 'bg-[#22C55E]' : 'bg-[#1f9d6b]'}`}
     >
       {children}
     </button>
@@ -172,9 +188,9 @@ function Hero({ src, fallbackEmoji, className }: { src?: string; fallbackEmoji?:
 }
 
 // Two-tone title: white base + gold accent appended.
-function RichTitle({ title, accent, accentColor }: { title: string; accent?: string; accentColor?: string }) {
+function RichTitle({ title, accent, accentColor, light }: { title: string; accent?: string; accentColor?: string; light?: boolean }) {
   return (
-    <h1 className="text-[1.7rem] leading-tight font-semibold text-white text-center">
+    <h1 className="text-[1.7rem] leading-tight font-semibold text-white text-center" style={light ? { color: LIGHT_INK } : undefined}>
       {title}
       {accent && <span style={accentColor ? { color: accentColor } : undefined} className={accentColor ? '' : 'text-gold'}>{accent}</span>}
     </h1>
@@ -193,11 +209,11 @@ function Disclaimer({ text }: { text: string }) {
 }
 
 // Gold callout: whole line gold, or only the goldWords gold if given.
-function Callout({ text, goldWords }: { text: string; goldWords?: string[] }) {
+function Callout({ text, goldWords, light }: { text: string; goldWords?: string[]; light?: boolean }) {
   if (!goldWords || !goldWords.length) {
-    return <p className="mt-3 text-sm font-semibold leading-relaxed text-gold">{text}</p>
+    return <p className="mt-3 text-sm font-semibold leading-relaxed text-gold" style={light ? { color: LIGHT_GOLD } : undefined}>{text}</p>
   }
-  return <p className="text-sm font-semibold leading-relaxed text-white">{gold(text, goldWords)}</p>
+  return <p className="text-sm font-semibold leading-relaxed text-white" style={light ? { color: LIGHT_INK } : undefined}>{gold(text, goldWords, light)}</p>
 }
 
 // Star rating (precise partial fill via CSS clip — no obscure glyphs).
@@ -439,6 +455,24 @@ function Stack({ children, center, top }: { children: React.ReactNode; center?: 
 }
 
 /* ---- Info (teasers, cards, authority cards, full-bleed, subscribe) ---- */
+// Drifting light motes for the immersive meditation teaser screens (fixed, deterministic config).
+const MOTES = [
+  { left: 6, size: 5, dur: 13, delay: 5, sway: 18 },
+  { left: 17, size: 8, dur: 17, delay: 13, sway: -14 },
+  { left: 28, size: 4, dur: 11, delay: 3, sway: 20 },
+  { left: 39, size: 7, dur: 19, delay: 15, sway: -10 },
+  { left: 48, size: 5, dur: 14, delay: 8, sway: 16 },
+  { left: 58, size: 9, dur: 21, delay: 2, sway: -20 },
+  { left: 67, size: 4, dur: 12, delay: 9, sway: 12 },
+  { left: 76, size: 6, dur: 16, delay: 12, sway: -16 },
+  { left: 85, size: 7, dur: 18, delay: 6, sway: 14 },
+  { left: 93, size: 5, dur: 13, delay: 10, sway: -12 },
+  { left: 12, size: 4, dur: 15, delay: 4, sway: 22 },
+  { left: 34, size: 6, dur: 20, delay: 17, sway: -18 },
+  { left: 62, size: 5, dur: 15, delay: 11, sway: 10 },
+  { left: 81, size: 8, dur: 22, delay: 19, sway: -14 },
+]
+
 function InfoView({
   step,
   answers,
@@ -448,6 +482,7 @@ function InfoView({
   answers: Answers
   onNext: () => void
 }) {
+  const light = LIGHT_STEPS.has(step.id)
   const title = fill(step.title, answers)
   const calloutText = fill(step.callout, answers)
   // Sequential reveal: show the title first, then fade in the callout a few seconds later.
@@ -457,11 +492,12 @@ function InfoView({
     const t = setTimeout(() => setRevealed(true), 2800)
     return () => clearTimeout(t)
   }, [step.sequential])
+  // calloutInner sits INSIDE the (dark) frequency card even on light pages → keep dark-card styling (white text + bright gold).
   const calloutInner = step.callout ? <Callout text={calloutText} goldWords={step.goldWords} /> : null
   const callout = calloutInner && step.sequential
     ? <div className={`transition-opacity duration-700 ${revealed ? 'opacity-100' : 'opacity-0'}`}>{calloutInner}</div>
     : calloutInner
-  const titleNode = step.titleGold ? <Title>{gold(title, [step.titleGold])}</Title> : <Title>{title}</Title>
+  const titleNode = step.titleGold ? <Title light={light}>{gold(title, [step.titleGold], light)}</Title> : <Title light={light}>{title}</Title>
 
   // Authority / credibility cards (university screen)
   if (step.infoCards && step.infoCards.length) {
@@ -494,8 +530,8 @@ function InfoView({
     return (
       <Stack center>
         {titleNode}
-        {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
-        <div className="mx-auto mt-6 w-full max-w-[340px] rounded-2xl border border-cardborder bg-white/[0.04] p-3">
+        {step.subtitle && <Subtitle light={light}>{step.subtitle}</Subtitle>}
+        <div className={`mx-auto mt-6 w-full max-w-[340px] rounded-2xl border border-cardborder p-3 ${light ? '' : 'bg-white/[0.04]'}`} style={light ? { background: DARK_CARD, boxShadow: CHECKOUT_SHADOW } : undefined}>
           {scaleRows && scaleRows.length ? (
             <ConsciousnessChart rows={scaleRows} />
           ) : (
@@ -504,7 +540,7 @@ function InfoView({
           {step.callout && <div className="mt-4 text-left">{callout}</div>}
         </div>
         <div className="mt-8">
-          <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+          <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
         </div>
       </Stack>
     )
@@ -527,6 +563,20 @@ function InfoView({
           className="fixed inset-0 -z-10 bg-cover bg-center"
           style={{ backgroundImage: `linear-gradient(rgba(20,19,25,0.80), rgba(20,19,25,0.80)), url(${step.image})` }}
         />
+        {/* soft light ambience: warm aura behind the figure + drifting light motes */}
+        <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <div
+            className="absolute left-1/2 top-[64%]"
+            style={{ width: '62vw', maxWidth: 380, height: 360, background: 'radial-gradient(circle, rgba(255,222,150,0.5), rgba(255,196,110,0.12) 45%, transparent 72%)', mixBlendMode: 'screen', animation: 'aura 7s ease-in-out infinite' }}
+          />
+          {MOTES.map((m, i) => (
+            <span
+              key={i}
+              className="absolute top-0 rounded-full"
+              style={{ left: `${m.left}%`, width: m.size, height: m.size, background: 'radial-gradient(circle, rgba(255,248,222,0.95), rgba(255,248,222,0) 70%)', filter: 'blur(0.4px)', ['--sway']: `${m.sway}px`, animation: `mote ${m.dur}s linear -${m.delay}s infinite` } as React.CSSProperties}
+            />
+          ))}
+        </div>
         <div className="flex min-h-[78vh] flex-col animate-fadeUp">
           <div className="text-center" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.7)' }}>
             {step.waveform && <div className="mb-5 flex justify-center"><Waveform /></div>}
@@ -562,13 +612,13 @@ function InfoView({
     return (
       <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
         {titleNode}
-        {step.subtitle && <Subtitle>{step.subtitle}</Subtitle>}
+        {step.subtitle && <Subtitle light={light}>{step.subtitle}</Subtitle>}
         {step.callout && (
-          <p className="mt-2 text-center text-sm font-medium leading-relaxed text-white/90">{gold(calloutText, step.goldWords)}</p>
+          <p className="mt-2 text-center text-sm font-medium leading-relaxed text-white/90" style={light ? { color: LIGHT_INK } : undefined}>{gold(calloutText, step.goldWords, light)}</p>
         )}
         {step.image && <img src={step.image} alt="" loading="lazy" className="mx-auto mt-6 w-full max-w-[340px] object-contain" />}
         <div className="mt-auto space-y-2 pt-8">
-          <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+          <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
           {step.decline && <DeclineButton onClick={onNext}>{step.decline}</DeclineButton>}
         </div>
       </div>
@@ -650,20 +700,21 @@ function SummaryView({
     return () => clearTimeout(t)
   }, [v])
   const accent = step.titleAccent
+  const light = LIGHT_STEPS.has(step.id)
   // Figure is age-binary (18-34 vs the rest) per the original; male 18-34 uses a dedicated asset.
   const young = answers.age === '18-34'
   const img = answers.gender === 'female'
     ? (young ? MEDIA.summaryWomanYoung : MEDIA.summaryWomanOld)
     : (young ? MEDIA.summaryManYoung : step.image)
   const titleNode = accent
-    ? <RichTitle title={step.title.replace(accent, '')} accent={accent} accentColor={RED} />
-    : <Title>{step.title}</Title>
+    ? <RichTitle title={step.title.replace(accent, '')} accent={accent} accentColor={RED} light={light} />
+    : <Title light={light}>{step.title}</Title>
   return (
     <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
       {titleNode}
-      {step.body && <Subtitle>{step.body}</Subtitle>}
+      {step.body && <Subtitle light={light}>{step.body}</Subtitle>}
 
-      <div className="relative mt-5 overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+      <div className={`relative mt-5 overflow-hidden rounded-2xl border border-cardborder p-4 ${light ? '' : 'bg-white/[0.03]'}`} style={light ? { background: DARK_CARD, boxShadow: CHECKOUT_SHADOW } : undefined}>
         {/* Gauge */}
         {step.gaugeValue != null && (
           <div className="relative z-10">
@@ -737,7 +788,7 @@ function SummaryView({
       </div>
 
       <div className="mt-auto pt-6">
-        <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+        <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
     </div>
   )
@@ -826,6 +877,7 @@ function EventChartView({
   answers: Answers
   onNext: () => void
 }) {
+  const light = LIGHT_STEPS.has(step.id)
   const isDream = firstGoal(answers) === 'dream-life'
   const word = goalWord(answers, step.defaultGoal ?? 'love')
   // Left axis = current month, right axis = next month (computed client-side).
@@ -859,10 +911,10 @@ function EventChartView({
 
   return (
     <div className="flex min-h-[80vh] w-full flex-col animate-fadeUp">
-      <Title>{gold(title, [titleGold])}</Title>
-      <p className="mt-2 text-center text-sm text-muted">{gold(subtitle, span?.date ? [word, span.date] : [word])}</p>
+      <Title light={light}>{gold(title, [titleGold], light)}</Title>
+      <p className="mt-2 text-center text-sm text-muted" style={light ? { color: LIGHT_DIM } : undefined}>{gold(subtitle, span?.date ? [word, span.date] : [word], light)}</p>
 
-      <div className="mt-6 rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+      <div className={`mt-6 rounded-2xl border border-cardborder p-4 ${light ? '' : 'bg-white/[0.03]'}`} style={light ? { background: DARK_CARD, boxShadow: CHECKOUT_SHADOW } : undefined}>
         <div className="relative">
           <svg viewBox="0 0 320 200" className="block w-full">
             <defs>
@@ -930,9 +982,9 @@ function EventChartView({
         </div>
       </div>
 
-      {step.footnote && <p className="mt-3 text-center text-[11px] text-muted">{step.footnote}</p>}
+      {step.footnote && <p className="mt-3 text-center text-[11px] text-muted" style={light ? { color: LIGHT_DIM } : undefined}>{step.footnote}</p>}
       <div className="mt-auto pt-8">
-        <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
+        <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
     </div>
   )
@@ -982,6 +1034,8 @@ function MultiView({
 }
 
 /* ---- Text input (name / email) ---- */
+const EMAIL_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'icloud.com', 'outlook.com', 'live.com']
+
 function InputView({
   step,
   answers,
@@ -1002,6 +1056,12 @@ function InputView({
     onNext()
   }
   const isEmail = step.field === 'email'
+  // Suggest common domains once the user types "@" — tap to complete the email.
+  const at = value.indexOf('@')
+  const emailSuggestions =
+    isEmail && at > 0 && !/\s/.test(value) && !EMAIL_DOMAINS.includes(value.slice(at + 1).toLowerCase())
+      ? EMAIL_DOMAINS.filter((d) => d.startsWith(value.slice(at + 1).toLowerCase()))
+      : []
   const caption = step.caption && answers.gender === 'female' ? step.caption.replace('men', 'women') : step.caption
   const socialImg = answers.gender === 'female' && step.imageFemale ? step.imageFemale : step.image
   const showError = touched && !valid && isEmail && value.length > 0 && step.error
@@ -1030,6 +1090,15 @@ function InputView({
             placeholder={step.placeholder}
             className="w-full rounded-2xl border border-cardborder bg-card py-4 pl-11 pr-4 text-white placeholder:text-muted outline-none focus:border-gold"
           />
+          {emailSuggestions.length > 0 && (
+            <ul className="absolute left-0 right-0 top-full z-30 mt-2 max-h-48 overflow-y-auto rounded-2xl border border-cardborder py-1 shadow-[0_18px_44px_rgba(0,0,0,0.6)]" style={{ background: '#1b1a22' }}>
+              {emailSuggestions.map((d) => (
+                <li key={d}>
+                  <button type="button" onMouseDown={(e) => { e.preventDefault(); setValue(`${value.slice(0, at)}@${d}`) }} className="block w-full px-5 py-2.5 text-left text-[15px] text-white/85 hover:bg-white/[0.06]">@{d}</button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
         {showError && <p className="mt-2 text-[12px]" style={{ color: RED }}>{step.error}</p>}
         {(socialImg || caption) && (
@@ -1103,7 +1172,7 @@ function LoaderView({ step, onNext }: { step: Extract<Step, { type: 'loader' }>;
       else { setSi((s) => s + 1); setPct(0) }
       return
     }
-    const dur = Math.min(2200, Math.max(700, (target - from) * 34))
+    const dur = Math.min(5000, Math.max(1500, (target - from) * 70))
     const start = performance.now()
     let raf = 0
     const tick = (now: number) => {
@@ -1397,8 +1466,8 @@ function PinkCheck() {
   )
 }
 // Lifted to module scope so the per-second countdown re-render doesn't remount the whole subtree.
-function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`rounded-2xl border border-cardborder bg-white/[0.03] p-4 ${className}`}>{children}</div>
+function Card({ children, className = '', light }: { children: React.ReactNode; className?: string; light?: boolean }) {
+  return <div className={`rounded-2xl border border-cardborder p-4 ${light ? '' : 'bg-white/[0.03]'} ${className}`} style={light ? { background: DARK_CARD, boxShadow: CHECKOUT_SHADOW } : undefined}>{children}</div>
 }
 // Real payment-brand marks (inline SVG / styled wordmarks on white chips), no external CDN dependency.
 function PaymentLogos() {
@@ -1469,7 +1538,6 @@ function PaywallView({
   onNext: () => void
 }) {
   const COUNTDOWN_SECS = 600
-  const [plan, setPlan] = useState<string>(step.plans[0]?.id ?? '') // 1-Month selected by default (per the original)
   const [secs, setSecs] = useState(COUNTDOWN_SECS)
   const [faq, setFaq] = useState<number | null>(null)
   useEffect(() => {
@@ -1490,6 +1558,7 @@ function PaywallView({
   }, [showModal])
   const mmssModal = `${String(Math.floor(modalSecs / 60)).padStart(2, '0')}:${String(modalSecs % 60).padStart(2, '0')}`
 
+  const light = LIGHT_STEPS.has(step.id)
   const G = answers.gender === 'female'
   const name = (answers.name as string) || ''
   const goal = goalWord(answers, 'love')
@@ -1497,11 +1566,35 @@ function PaywallView({
   const young = answers.age === '18-34' // figure is age-binary (18-34 vs the rest)
   const nowImg = G ? (young ? MEDIA.nowWomanYoung : MEDIA.nowWomanOld) : young ? MEDIA.nowManYoung : MEDIA.nowManOld
   const goalImg = G ? (young ? MEDIA.goalWomanYoung : MEDIA.goalWomanOld) : young ? MEDIA.goalManYoung : MEDIA.goalManOld
-  const selected = step.plans.find((p) => p.id === plan) ?? step.plans[0]
+  // Plans/pricing now live on the Salduu checkout — keep a default plan id only for the buy() event + CTA aria.
+  const selected = step.plans[0]
   const buy = () => { onAnswer('plan', selected.id); onNext() }
 
   const GET = (cls = '') => (
-    <button onClick={() => setShowModal(true)} aria-label={`Get my plan — ${selected.name}, ${selected.price}`} className={`rounded-2xl bg-[#227e64] font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] ${cls}`}>GET MY PLAN</button>
+    <button onClick={() => setShowModal(true)} aria-label="Get my plan" className={`rounded-2xl font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] ${light ? 'bg-[#22C55E]' : 'bg-[#227e64]'} ${cls}`}>GET MY PLAN</button>
+  )
+
+  // Plan recap (pattern + goal) — appears twice; loose on the page so it flips to dark text on light pages.
+  const Recap = ({ mt }: { mt: string }) => (
+    <>
+      <h2 className={`${mt} break-words text-center text-xl font-bold text-white`} style={light ? { color: LIGHT_INK } : undefined}>{name ? `${name}, ` : ''}your personalized plan is ready!</h2>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className={`flex items-start gap-2.5 border-r pr-3 ${light ? 'border-black/10' : 'border-white/10'}`}>
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${light ? 'bg-black/[0.05] text-black/60' : 'bg-white/[0.06] text-white/75'}`}><RowIcon name="brain" /></span>
+          <div className="leading-tight">
+            <div className="text-[11px] text-muted" style={light ? { color: LIGHT_DIM } : undefined}>Current pattern</div>
+            <div className="text-[13px] font-bold text-white" style={light ? { color: LIGHT_INK } : undefined}>Fear, negative loops</div>
+          </div>
+        </div>
+        <div className="flex items-start gap-2.5">
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${light ? 'bg-black/[0.05] text-black/60' : 'bg-white/[0.06] text-white/75'}`}><RowIcon name="target" /></span>
+          <div className="leading-tight">
+            <div className="text-[11px] text-muted" style={light ? { color: LIGHT_DIM } : undefined}>What you want</div>
+            <div className="text-[13px] font-bold text-white" style={light ? { color: LIGHT_INK } : undefined}>{goalCap}</div>
+          </div>
+        </div>
+      </div>
+    </>
   )
 
   return (
@@ -1514,14 +1607,14 @@ function PaywallView({
 
       <div className="px-5 pb-12 pt-5">
         {/* Discount + title */}
-        <p className="text-center text-sm font-semibold text-muted">🎁 Special discount: <span style={{ color: '#ef4444' }}>{selected.discount ?? '-54%'}</span></p>
-        <h1 className="mt-3 break-words text-center text-[1.7rem] font-bold leading-tight text-white">
-          {name ? `${name}, ` : ''}your personal {gold('High-Vibration Plan', ['High-Vibration Plan'])} to attract {goal} into your life
+        <p className="text-center text-sm font-semibold text-muted" style={light ? { color: LIGHT_DIM } : undefined}>🎁 Special discount: <span style={{ color: '#ef4444' }}>{selected.discount ?? '-54%'}</span></p>
+        <h1 className="mt-3 break-words text-center text-[1.7rem] font-bold leading-tight text-white" style={light ? { color: LIGHT_INK } : undefined}>
+          {name ? `${name}, ` : ''}your personal {gold('High-Vibration Plan', ['High-Vibration Plan'], light)} to attract {goal} into your life
         </h1>
-        <p className="mt-2 text-center text-sm text-muted">Become a high-vibration person</p>
+        <p className="mt-2 text-center text-sm text-muted" style={light ? { color: LIGHT_DIM } : undefined}>Become a high-vibration person</p>
 
         {/* Now vs goal — large portrait figures filling each column (only the avatar changes by gender/age) */}
-        <div className="relative mt-6 grid grid-cols-2 gap-3 overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03] p-4">
+        <div className={`relative mt-6 grid grid-cols-2 gap-3 overflow-hidden rounded-2xl border border-cardborder p-4 ${light ? '' : 'bg-white/[0.03]'}`} style={light ? { background: DARK_CARD, boxShadow: CHECKOUT_SHADOW } : undefined}>
           {/* full-height centered divider + animated chevron at the figures' level */}
           <div className="pointer-events-none absolute inset-y-4 left-1/2 w-px -translate-x-1/2 bg-white/10" />
           <div className="pointer-events-none absolute left-1/2 top-[8.6rem] z-20 flex -translate-x-1/2 -translate-y-1/2 items-center text-[2.4rem] font-bold leading-none text-gold">
@@ -1559,65 +1652,17 @@ function PaywallView({
         </div>
 
         {/* Plan recap */}
-        <h2 className="mt-8 break-words text-center text-xl font-bold text-white">{name ? `${name}, ` : ''}your personalized plan is ready!</h2>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <div className="flex items-start gap-2.5 border-r border-white/10 pr-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="brain" /></span>
-            <div className="leading-tight"><div className="text-[11px] text-muted">Current pattern</div><div className="text-[13px] font-bold text-white">Fear, negative loops</div></div>
-          </div>
-          <div className="flex items-start gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="target" /></span>
-            <div className="leading-tight"><div className="text-[11px] text-muted">What you want</div><div className="text-[13px] font-bold text-white">{goalCap}</div></div>
-          </div>
-        </div>
+        <Recap mt="mt-8" />
 
-        {/* Promo code */}
-        <div className="mt-5 rounded-2xl p-4" style={{ background: '#1f8a5c' }}>
-          <div className="flex items-center gap-2 font-bold text-white">🏷️ Your promo code applied!</div>
-          <div className="mt-3 flex items-stretch gap-2">
-            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-black/25 px-3 py-2.5 text-sm text-white"><span className="text-gold">✓</span> <span className="truncate">{(name || 'you').toLowerCase()}_haz26</span></div>
-            <div aria-hidden="true" className="flex shrink-0 items-center rounded-xl bg-black/25 px-3 text-lg font-extrabold tabular-nums text-gold">{mmss}</div>
-          </div>
-        </div>
-
-        {/* Plans */}
-        <div role="radiogroup" aria-label="Choose your plan" className="mt-5 space-y-3">
-          {step.plans.map((p: Plan) => {
-            const sel = plan === p.id
-            const m = p.perDay.match(/(\d+)[.,](\d+)/)
-            return (
-              <button key={p.id} type="button" role="radio" aria-checked={sel} aria-label={`${p.name}, ${p.price}${p.discount ? `, ${p.discount}` : ''}`} onClick={() => setPlan(p.id)} className={`relative block w-full overflow-hidden rounded-2xl border-2 text-left transition-all ${sel ? 'border-gold' : 'border-cardborder'}`} style={{ background: sel ? 'linear-gradient(160deg, rgba(99,64,150,0.45), rgba(58,40,86,0.4))' : 'rgba(255,255,255,0.03)' }}>
-                {p.popular && <div className="bg-gold py-1 text-center text-[10px] font-bold uppercase tracking-wider text-ink">Most Popular</div>}
-                <div className="flex items-center gap-3 p-4 pt-5">
-                  {p.discount && <span className="absolute left-0 top-0 rounded-br-xl px-2 py-0.5 text-[11px] font-bold text-white" style={{ background: '#ef4444' }}>{p.discount}</span>}
-                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${sel ? 'border-gold' : 'border-muted'}`}>{sel && <span className="h-2.5 w-2.5 rounded-full bg-gold" />}</span>
-                  <div className="flex-1">
-                    <div className="font-bold uppercase text-white">{p.name}</div>
-                    <div className="text-sm text-muted">{p.price}</div>
-                  </div>
-                  <div className="relative flex items-center rounded-lg px-3 py-1.5" style={{ background: sel ? '#fff' : '#b6b0c0', color: '#1a1626' }}>
-                    <span className="absolute -left-1 h-2.5 w-2.5 rounded-full" style={{ background: '#141319' }} />
-                    <span className="mr-0.5 text-sm font-semibold">€</span>
-                    <span className="text-3xl font-extrabold leading-none">{m ? m[1] : '0'}</span>
-                    <span className="ml-0.5 flex flex-col text-[10px] font-bold leading-tight"><span>{m ? m[2] : ''}</span><span className="text-gray-500">day</span></span>
-                  </div>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-
-        <div className="mt-4 flex items-center justify-center gap-2 text-[13px] font-semibold text-white"><span style={{ color: '#22c55e' }}>🛡️</span> 30-day money-back guarantee</div>
+        {/* Plans + promo code removed — pricing/discount handled on the Salduu checkout. CTA below leads there. */}
+        <div className="mt-6 flex items-center justify-center gap-2 text-[13px] font-semibold text-white" style={light ? { color: LIGHT_INK } : undefined}><span style={{ color: '#22c55e' }}>🛡️</span> 30-day money-back guarantee</div>
         <div className="mt-4">{GET('w-full py-4 text-base')}</div>
         <div className="mt-3 flex justify-center"><span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ borderColor: '#227e64', color: '#227e64' }}>🛡️ Pay safe & secure</span></div>
         <PaymentLogos />
-        <p className="mt-3 text-center text-[11px] leading-relaxed text-muted">
-          By completing your purchase you agree to automatic renewal of the subscription. First month for {selected.price}, then €39.99 every month. Cancel anytime in the mobile application or by emailing support@spiriohub.com. See Terms of Use.
-        </p>
 
         {/* Money-back card */}
         {step.moneyBackTitle && (
-          <Card className="mt-6 text-center">
+          <Card light={light} className="mt-6 text-center">
             <div className="text-2xl">🛡️</div>
             <div className="mt-1 text-lg font-bold text-white">{step.moneyBackTitle}</div>
             {step.moneyBackBody && <p className="mt-2 text-[13px] leading-snug text-white/80">{step.moneyBackBody}</p>}
@@ -1626,7 +1671,7 @@ function PaywallView({
         )}
 
         {/* Info safe */}
-        <Card className="mt-4">
+        <Card light={light} className="mt-4">
           <div className="text-sm font-bold text-white">🔒 Your information is safe</div>
           <p className="mt-1 text-[12px] text-muted">We won’t sell or rent your personal contact information for any marketing purposes whatsoever.</p>
           <div className="mt-3 text-sm font-bold text-white">💳 Secure checkout</div>
@@ -1634,9 +1679,9 @@ function PaywallView({
         </Card>
 
         {/* What you get */}
-        <h2 className="mt-8 text-center text-xl font-bold text-white">What you get</h2>
+        <h2 className="mt-8 text-center text-xl font-bold text-white" style={light ? { color: LIGHT_INK } : undefined}>What you get</h2>
         <div className="mt-4 space-y-3">
-          {WHAT_YOU_GET.map((w) => <div key={w} className="flex items-start gap-3"><PinkCheck /><span className="text-[14px] text-white/90">{w}</span></div>)}
+          {WHAT_YOU_GET.map((w) => <div key={w} className="flex items-start gap-3"><PinkCheck /><span className="text-[14px] text-white/90" style={light ? { color: LIGHT_INK } : undefined}>{w}</span></div>)}
         </div>
 
         {/* Without / With — the "With" card is raised and overlaps the "Without" card, drawing the eye (matches the original) */}
@@ -1654,7 +1699,7 @@ function PaywallView({
             ))}
           </div>
           {/* Without Spirio — lower, behind (extra right padding so text wraps clear of the overlapping card) */}
-          <div className="mt-9 w-[53%] rounded-2xl border border-cardborder bg-white/[0.02] p-4 pr-7">
+          <div className={`mt-9 w-[53%] rounded-2xl border border-cardborder p-4 pr-7 ${light ? '' : 'bg-white/[0.02]'}`} style={light ? { background: DARK_CARD } : undefined}>
             <div className="mb-3 text-sm font-bold text-white">Without Spirio</div>
             {WITHOUT.map((w) => (
               <div key={w} className="mb-2.5 flex items-start gap-2 text-[12px] leading-snug text-muted">
@@ -1668,14 +1713,14 @@ function PaywallView({
         </div>
 
         {/* Harvard */}
-        <Card className="mt-4 flex items-center gap-4">
+        <Card light={light} className="mt-4 flex items-center gap-4">
           <img src={MEDIA.harvard} alt="Harvard Medical School" loading="lazy" className="h-12 w-12 shrink-0 object-contain" />
           <p className="text-[13px] leading-snug text-white/90">{gold('Harvard Medical School research shows spiritual people are happier & healthier', ['Harvard Medical School'])}</p>
         </Card>
 
         {/* Social proof + stats */}
-        <h2 className="mt-8 text-center text-[1.4rem] font-bold leading-tight text-white">{gold(`284,620 ${G ? 'women' : 'men'} just like you`, [`284,620 ${G ? 'women' : 'men'}`])} achieved great results</h2>
-        <Card className="mt-4 overflow-hidden p-0">
+        <h2 className="mt-8 text-center text-[1.4rem] font-bold leading-tight text-white" style={light ? { color: LIGHT_INK } : undefined}>{gold(`284,620 ${G ? 'women' : 'men'} just like you`, [`284,620 ${G ? 'women' : 'men'}`], light)} achieved great results</h2>
+        <Card light={light} className="mt-4 overflow-hidden p-0">
           <div className="relative h-52 w-full overflow-hidden" style={{ background: 'radial-gradient(115% 80% at 50% 40%, #5b4677 0%, #3b2d54 44%, #241b32 74%, #17131e 100%)' }}>
             <img src={MEDIA.socialPetals} alt="" loading="lazy" className="pointer-events-none absolute inset-x-0 top-0 w-full select-none" />
             <img src={G ? MEDIA.socialWoman : MEDIA.socialMan} alt="" loading="lazy" className="pointer-events-none absolute bottom-0 left-1/2 h-[84%] w-auto -translate-x-1/2 select-none" />
@@ -1692,7 +1737,7 @@ function PaywallView({
         </Card>
 
         {/* As featured */}
-        <Card className="mt-8 text-center">
+        <Card light={light} className="mt-8 text-center">
           <p className="text-sm text-muted">Our program is based on methodology</p>
           <h3 className="mt-1 text-xl font-bold text-gold">As featured in</h3>
           <div className="mx-auto mt-5 flex max-w-[300px] flex-wrap items-center justify-center gap-x-7 gap-y-4 text-white/55">
@@ -1704,21 +1749,21 @@ function PaywallView({
             <span className="text-xl font-extrabold leading-none tracking-tight">Mashable</span>
           </div>
         </Card>
-        <Card className="mt-6 flex items-center gap-4">
+        <Card light={light} className="mt-6 flex items-center gap-4">
           <img src={MEDIA.awardBadge} alt="Best Well-being Product Innovation Award 2023" loading="lazy" className="h-16 w-auto shrink-0" />
           <p className="text-[13px] leading-snug text-white/90"><span className="font-bold text-gold">Spirio</span> is proudly nominated for an: <span className="font-bold">Best Well-being Product Innovation Award – 2023</span></p>
         </Card>
 
         {/* Blueprint */}
-        <h2 className="mt-8 text-center text-xl font-bold text-white">A better version of you. Everyday.</h2>
-        <p className="mt-1 text-center text-sm text-muted">Your tailored high-vibration growth blueprint</p>
+        <h2 className="mt-8 text-center text-xl font-bold text-white" style={light ? { color: LIGHT_INK } : undefined}>A better version of you. Everyday.</h2>
+        <p className="mt-1 text-center text-sm text-muted" style={light ? { color: LIGHT_DIM } : undefined}>Your tailored high-vibration growth blueprint</p>
         <img src={G ? MEDIA.blueprintFemale : MEDIA.blueprintMale} alt="Your tailored weekly plan" loading="lazy" className="mt-4 w-full rounded-2xl border border-cardborder" />
 
         {/* Testimonials */}
-        <h2 className="mt-8 text-center text-xl font-bold text-white">People love Spirio</h2>
+        <h2 className="mt-8 text-center text-xl font-bold text-white" style={light ? { color: LIGHT_INK } : undefined}>People love Spirio</h2>
         <div className="mt-4 space-y-3">
           {REVIEWS.map((r) => (
-            <Card key={r.name}>
+            <Card light={light} key={r.name}>
               <div className="flex items-start gap-3">
                 {r.img ? (
                   <img src={r.img} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" style={{ objectPosition: 'center 20%' }} />
@@ -1739,12 +1784,12 @@ function PaywallView({
         </div>
 
         {/* FAQ */}
-        <h2 className="mt-8 text-center text-xl font-bold text-white">People often ask</h2>
+        <h2 className="mt-8 text-center text-xl font-bold text-white" style={light ? { color: LIGHT_INK } : undefined}>People often ask</h2>
         <div className="mt-4 space-y-3">
           {FAQS.map((f, i) => {
             const open = faq === i
             return (
-              <div key={f.q} className="overflow-hidden rounded-2xl border border-cardborder bg-white/[0.03]">
+              <div key={f.q} className={`overflow-hidden rounded-2xl border border-cardborder ${light ? '' : 'bg-white/[0.03]'}`} style={light ? { background: DARK_CARD, boxShadow: CHECKOUT_SHADOW } : undefined}>
                 <button type="button" aria-expanded={open} aria-controls={`faq-panel-${i}`} onClick={() => setFaq(open ? null : i)} className="flex w-full items-start gap-3 p-4 text-left">
                   <span aria-hidden="true" className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold text-sm font-bold text-ink">?</span>
                   <span className="flex-1 text-[14px] font-medium text-white">{f.q}</span>
@@ -1756,55 +1801,16 @@ function PaywallView({
           })}
         </div>
 
-        {/* Offer repeated after the FAQ (price + guarantee), matching the original */}
-        <h2 className="mt-10 break-words text-center text-xl font-bold text-white">{name ? `${name}, ` : ''}your personalized plan is ready!</h2>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <div className="flex items-start gap-2.5 border-r border-white/10 pr-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="brain" /></span>
-            <div className="leading-tight"><div className="text-[11px] text-muted">Current pattern</div><div className="text-[13px] font-bold text-white">Fear, negative loops</div></div>
-          </div>
-          <div className="flex items-start gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/75"><RowIcon name="target" /></span>
-            <div className="leading-tight"><div className="text-[11px] text-muted">What you want</div><div className="text-[13px] font-bold text-white">{goalCap}</div></div>
-          </div>
-        </div>
+        {/* Offer repeated after the FAQ (guarantee + CTA → Salduu checkout) */}
+        <Recap mt="mt-10" />
 
-        <div role="radiogroup" aria-label="Choose your plan" className="mt-5 space-y-3">
-          {step.plans.map((p: Plan) => {
-            const sel = plan === p.id
-            const m = p.perDay.match(/(\d+)[.,](\d+)/)
-            return (
-              <button key={p.id} type="button" role="radio" aria-checked={sel} aria-label={`${p.name}, ${p.price}${p.discount ? `, ${p.discount}` : ''}`} onClick={() => setPlan(p.id)} className={`relative block w-full overflow-hidden rounded-2xl border-2 text-left transition-all ${sel ? 'border-gold' : 'border-cardborder'}`} style={{ background: sel ? 'linear-gradient(160deg, rgba(99,64,150,0.45), rgba(58,40,86,0.4))' : 'rgba(255,255,255,0.03)' }}>
-                {p.popular && <div className="bg-gold py-1 text-center text-[10px] font-bold uppercase tracking-wider text-ink">Most Popular</div>}
-                <div className="flex items-center gap-3 p-4 pt-5">
-                  {p.discount && <span className="absolute left-0 top-0 rounded-br-xl px-2 py-0.5 text-[11px] font-bold text-white" style={{ background: '#ef4444' }}>{p.discount}</span>}
-                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${sel ? 'border-gold' : 'border-muted'}`}>{sel && <span className="h-2.5 w-2.5 rounded-full bg-gold" />}</span>
-                  <div className="flex-1">
-                    <div className="font-bold uppercase text-white">{p.name}</div>
-                    <div className="text-sm text-muted">{p.price}</div>
-                  </div>
-                  <div className="relative flex items-center rounded-lg px-3 py-1.5" style={{ background: sel ? '#fff' : '#b6b0c0', color: '#1a1626' }}>
-                    <span className="absolute -left-1 h-2.5 w-2.5 rounded-full" style={{ background: '#141319' }} />
-                    <span className="mr-0.5 text-sm font-semibold">€</span>
-                    <span className="text-3xl font-extrabold leading-none">{m ? m[1] : '0'}</span>
-                    <span className="ml-0.5 flex flex-col text-[10px] font-bold leading-tight"><span>{m ? m[2] : ''}</span><span className="text-gray-500">day</span></span>
-                  </div>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-
-        <div className="mt-4 flex items-center justify-center gap-2 text-[13px] font-semibold text-white"><span style={{ color: '#22c55e' }}>🛡️</span> 30-day money-back guarantee</div>
+        <div className="mt-6 flex items-center justify-center gap-2 text-[13px] font-semibold text-white" style={light ? { color: LIGHT_INK } : undefined}><span style={{ color: '#22c55e' }}>🛡️</span> 30-day money-back guarantee</div>
         <div className="mt-4">{GET('w-full py-4 text-base')}</div>
         <div className="mt-3 flex justify-center"><span className="rounded-full border px-3 py-1.5 text-xs font-semibold" style={{ borderColor: '#227e64', color: '#227e64' }}>🛡️ Pay safe & secure</span></div>
         <PaymentLogos />
-        <p className="mt-3 text-center text-[11px] leading-relaxed text-muted">
-          By completing your purchase you agree to automatic renewal of the subscription. First month for {selected.price}, then €39.99 every month. Cancel anytime in the mobile application or by emailing support@spiriohub.com. See Terms of Use.
-        </p>
 
         {step.moneyBackTitle && (
-          <Card className="mt-6 text-center">
+          <Card light={light} className="mt-6 text-center">
             <div className="text-2xl">🛡️</div>
             <div className="mt-1 text-lg font-bold text-white">{step.moneyBackTitle}</div>
             {step.moneyBackBody && <p className="mt-2 text-[13px] leading-snug text-white/80">{step.moneyBackBody}</p>}
@@ -1812,7 +1818,7 @@ function PaywallView({
           </Card>
         )}
 
-        <Card className="mt-4">
+        <Card light={light} className="mt-4">
           <div className="text-sm font-bold text-white">🔒 Your information is safe</div>
           <p className="mt-1 text-[12px] text-muted">We won’t sell or rent your personal contact information for any marketing purposes whatsoever.</p>
           <div className="mt-3 text-sm font-bold text-white">💳 Secure checkout</div>

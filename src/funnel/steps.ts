@@ -3,6 +3,11 @@ import type { Step, Option } from './types'
 // Brand — change this to your own brand name.
 export const BRAND = 'Spirio'
 
+// Steps rendered in the light "checkout" theme (#F5F5F5 page + green #22C55E CTA),
+// so the lead gets used to the Salduu checkout look before reaching it. Content
+// cards stay dark; only the page background + loose text + button flip.
+export const LIGHT_STEPS = new Set<string>(['summary', 'frequency', 'event', 'not-alone', 'paywall'])
+
 // ---------------------------------------------------------------------------
 // TEMPORARY placeholder images (hot-linked from the original funnel CDN).
 // ⚠️ REPLACE these with your own assets before going live.
