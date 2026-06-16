@@ -36,6 +36,12 @@ export const MEDIA = {
   // Award badge (gold shield) + male blueprint composite (grid + praying figure baked in).
   awardBadge: '/award-badge.webp',
   blueprintMale: '/blueprint-male.webp',
+  // Result/paywall figures — age-binary (18-34 vs the rest = 35+) per gender. MALE both tiers provided.
+  summaryManYoung: '/summary-man-young.webp', // 18-34 worried (summary "low") — summary 35+ uses MEDIA.summary (nathan)
+  nowManYoung: '/now-man-young.webp',         // 18-34 arms-crossed (paywall "Now")
+  goalManYoung: '/goal-man-young.webp',       // 18-34 smiling (paywall "goal")
+  nowManOld: '/now-man-old.webp',             // 35+ hands-on-cheeks (paywall "Now")
+  goalManOld: '/goal-man-old.webp',           // 35+ smiling, white top (paywall "goal")
 }
 
 // Exact answer-button colors from the original funnel.

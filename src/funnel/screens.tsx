@@ -650,7 +650,11 @@ function SummaryView({
     return () => clearTimeout(t)
   }, [v])
   const accent = step.titleAccent
-  const img = answers.gender === 'female' && step.imageFemale ? step.imageFemale : step.image
+  // Figure is age-binary (18-34 vs the rest) per the original; male 18-34 uses a dedicated asset.
+  const young = answers.age === '18-34'
+  const img = answers.gender === 'female'
+    ? (step.imageFemale ?? step.image)
+    : (young ? MEDIA.summaryManYoung : step.image)
   const titleNode = accent
     ? <RichTitle title={step.title.replace(accent, '')} accent={accent} accentColor={RED} />
     : <Title>{step.title}</Title>
@@ -1497,8 +1501,9 @@ function PaywallView({
   const name = (answers.name as string) || ''
   const goal = goalWord(answers, 'love')
   const goalCap = cap(goal)
-  const nowImg = G ? MEDIA.summaryFemale : MEDIA.summary
-  const goalImg = G ? MEDIA.female : MEDIA.male
+  const young = answers.age === '18-34' // figure is age-binary (18-34 vs the rest)
+  const nowImg = G ? MEDIA.summaryFemale : young ? MEDIA.nowManYoung : MEDIA.nowManOld
+  const goalImg = G ? MEDIA.female : young ? MEDIA.goalManYoung : MEDIA.goalManOld
   const selected = step.plans.find((p) => p.id === plan) ?? step.plans[0]
   const buy = () => { onAnswer('plan', selected.id); onNext() }
 
@@ -1518,7 +1523,7 @@ function PaywallView({
         {/* Discount + title */}
         <p className="text-center text-sm font-semibold text-muted">🎁 Special discount: <span style={{ color: '#ef4444' }}>{selected.discount ?? '-54%'}</span></p>
         <h1 className="mt-3 break-words text-center text-[1.7rem] font-bold leading-tight text-white">
-          {name ? `${name}, ` : ''}your personal {gold('High-Vibration Plan', ['High-Vibration Plan'])} to attract {goal} in your life
+          {name ? `${name}, ` : ''}your personal {gold('High-Vibration Plan', ['High-Vibration Plan'])} to attract {goal} into your life
         </h1>
         <p className="mt-2 text-center text-sm text-muted">Become a high-vibration person</p>
 
