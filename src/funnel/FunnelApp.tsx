@@ -1,7 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { STEPS } from './steps'
 import { QUESTION_TYPES, type Answers } from './types'
 import { StepView } from './screens'
+import { Dashboard } from './Dashboard'
+import { track } from './analytics'
 
 const isQuestion = (t: string) => (QUESTION_TYPES as readonly string[]).includes(t)
 
@@ -34,10 +36,25 @@ function initialAnswers(): Answers {
 }
 
 export function FunnelApp() {
+  // Internal analytics dashboard at ?dashboard — kept out of the funnel flow / hooks.
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('dashboard')) {
+    return <Dashboard />
+  }
+  return <Funnel />
+}
+
+function Funnel() {
   const [index, setIndex] = useState(initialIndex)
   const [answers, setAnswers] = useState<Answers>(initialAnswers)
+  // Synced synchronously so onNext reads the just-set answer without a stale closure.
+  const answersRef = useRef<Answers>(answers)
 
   const step = STEPS[index]
+
+  // Funnel-flow analytics: log each screen view.
+  useEffect(() => {
+    track('view', step.id, index, null, answersRef.current)
+  }, [index, step.id])
 
   // Original counts 19 question screens (matches the live funnel's "x/19"):
   // age + 12 scale + name + goal + familiar + leave-past + time + feel-year. Gender & email excluded.
@@ -48,10 +65,24 @@ export function FunnelApp() {
     return { totalQuestions: total, currentQuestion: current }
   }, [index])
 
-  const onAnswer = (key: string, value: string | string[]) =>
+  const onAnswer = (key: string, value: string | string[]) => {
+    answersRef.current = { ...answersRef.current, [key]: value }
     setAnswers((a) => ({ ...a, [key]: value }))
+    // plan + upsell choices have no saveAs on their step → log them here.
+    if (key === 'plan' || value === 'accept' || value === 'decline') {
+      track('answer', step.id, index, String(value), answersRef.current)
+    }
+  }
 
-  const onNext = () => setIndex((i) => (i < STEPS.length - 1 ? i + 1 : 0))
+  const onNext = () => {
+    // Log the step's final answer (skip name/email = PII). Multi-select arrays joined with '|'.
+    const sa = (step as { saveAs?: string }).saveAs
+    if (sa && sa !== 'name' && sa !== 'email') {
+      const v = answersRef.current[sa]
+      if (v != null && v !== '') track('answer', step.id, index, Array.isArray(v) ? v.join('|') : String(v), answersRef.current)
+    }
+    setIndex((i) => (i < STEPS.length - 1 ? i + 1 : 0))
+  }
   const onBack = () => setIndex((i) => Math.max(0, i - 1))
 
   const isFirst = index === 0
