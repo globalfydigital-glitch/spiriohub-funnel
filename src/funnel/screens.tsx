@@ -83,18 +83,16 @@ function PrimaryButton({
   children,
   disabled,
   onClick,
-  light,
 }: {
   children: React.ReactNode
   disabled?: boolean
   onClick: () => void
-  light?: boolean
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full rounded-2xl text-white font-semibold py-4 text-base transition-all disabled:bg-[#6e6a72] disabled:text-white/80 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99] ${light ? 'bg-[#22C55E]' : 'bg-[#1f9d6b]'}`}
+      className="w-full rounded-2xl bg-[#22C55E] text-white font-semibold py-4 text-base transition-all disabled:bg-[#6e6a72] disabled:text-white/80 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.99]"
     >
       {children}
     </button>
@@ -540,7 +538,7 @@ function InfoView({
           {step.callout && <div className="mt-4 text-left">{callout}</div>}
         </div>
         <div className="mt-8">
-          <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
+          <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
         </div>
       </Stack>
     )
@@ -618,7 +616,7 @@ function InfoView({
         )}
         {step.image && <img src={step.image} alt="" loading="lazy" className="mx-auto mt-6 w-full max-w-[340px] object-contain" />}
         <div className="mt-auto space-y-2 pt-8">
-          <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
+          <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
           {step.decline && <DeclineButton onClick={onNext}>{step.decline}</DeclineButton>}
         </div>
       </div>
@@ -788,7 +786,7 @@ function SummaryView({
       </div>
 
       <div className="mt-auto pt-6">
-        <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
+        <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
     </div>
   )
@@ -984,7 +982,7 @@ function EventChartView({
 
       {step.footnote && <p className="mt-3 text-center text-[11px] text-muted" style={light ? { color: LIGHT_DIM } : undefined}>{step.footnote}</p>}
       <div className="mt-auto pt-8">
-        <PrimaryButton onClick={onNext} light={light}>{step.cta ?? 'Continue'}</PrimaryButton>
+        <PrimaryButton onClick={onNext}>{step.cta ?? 'Continue'}</PrimaryButton>
       </div>
     </div>
   )
@@ -1172,7 +1170,7 @@ function LoaderView({ step, onNext }: { step: Extract<Step, { type: 'loader' }>;
       else { setSi((s) => s + 1); setPct(0) }
       return
     }
-    const dur = Math.min(5000, Math.max(1500, (target - from) * 70))
+    const dur = Math.min(8000, Math.max(3000, (target - from) * 130))
     const start = performance.now()
     let raf = 0
     const tick = (now: number) => {
@@ -1379,7 +1377,7 @@ function ScratchView({ step, onNext }: { step: Extract<Step, { type: 'scratch' }
             {step.revealNote && <div className="mx-auto mt-4 max-w-[260px] border-t border-gray-200 pt-3 text-[11px] text-gray-400">{step.revealNote}</div>}
             <button
               onClick={onNext}
-              className="mt-4 w-full rounded-2xl bg-[#1f9d6b] py-4 text-base font-semibold text-white transition-all hover:brightness-110 active:scale-[0.99]"
+              className="mt-4 w-full rounded-2xl bg-[#22C55E] py-4 text-base font-semibold text-white transition-all hover:brightness-110 active:scale-[0.99]"
             >
               {step.cta}
             </button>
@@ -1571,7 +1569,7 @@ function PaywallView({
   const buy = () => { onAnswer('plan', selected.id); onNext() }
 
   const GET = (cls = '') => (
-    <button onClick={() => setShowModal(true)} aria-label="Get my plan" className={`rounded-2xl font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] ${light ? 'bg-[#22C55E]' : 'bg-[#227e64]'} ${cls}`}>GET MY PLAN</button>
+    <button onClick={() => setShowModal(true)} aria-label="Get my plan" className={`rounded-2xl bg-[#22C55E] font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] ${cls}`}>GET MY PLAN</button>
   )
 
   // Plan recap (pattern + goal) — appears twice; loose on the page so it flips to dark text on light pages.
@@ -1856,7 +1854,7 @@ function PaywallView({
               ))}
             </div>
 
-            <button onClick={buy} className="mt-5 w-full rounded-2xl bg-[#227e64] py-4 text-base font-bold text-white transition-all hover:brightness-110 active:scale-[0.99]">CONTINUE</button>
+            <button onClick={buy} className="mt-5 w-full rounded-2xl bg-[#22C55E] py-4 text-base font-bold text-white transition-all hover:brightness-110 active:scale-[0.99]">CONTINUE</button>
           </div>
         </div>
       )}
